@@ -1,10 +1,12 @@
+systemVersion = "0.0.8";
+
 fileSystem = new SoyFileSystem();
 
 fileSystem.loadFromString(systemFiles);
 
 function printConsole(string) {
   console.log(string);
-  document.getElementById("output").innerText = string;
+  printOut(string);
 }
 
 class Shell {
@@ -16,8 +18,8 @@ class Shell {
     this.text = text;
   }
   flush() {
-    console.log("flushing");
     this.outputFunction(this.text);
+    this.text = "";
   }
 }
 
@@ -98,11 +100,3 @@ function executeCommand(command) {
   outputShell.print("unknown command");
   outputShell.flush();
 }
-
-const node = document.getElementById("input");
-node.addEventListener("keyup", function (event) {
-  if (event.key === "Enter") {
-    executeCommand(node.value);
-    node.value = "";
-  }
-});
