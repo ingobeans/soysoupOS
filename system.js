@@ -2,6 +2,27 @@ fileSystem = new SoyFileSystem();
 
 fileSystem.loadFromString(systemFiles);
 
+function printConsole(string) {
+  console.log(string);
+  document.getElementById("output").innerText = string;
+}
+
+class Shell {
+  constructor(outputFunction) {
+    this.outputFunction = outputFunction;
+    this.text = "";
+  }
+  print(text) {
+    this.text = text;
+  }
+  flush() {
+    console.log("flushing");
+    this.outputFunction(this.text);
+  }
+}
+
+shell = new Shell(printConsole);
+
 class Program {
   quit() {
     const index = programs.indexOf(this);
@@ -10,25 +31,31 @@ class Program {
     }
     console.log("PID " + index + " quit");
   }
-  load(args) {}
+  load(args, outputShell) {}
   update() {}
 }
 
-function printConsole(string) {
-  console.log(string);
-  document.getElementById("output").innerText = string;
+function splitAtLastOccurrence(str, delimiter) {
+  let lastIndex = str.lastIndexOf(delimiter);
+  if (lastIndex === -1) {
+    return [str];
+  }
+  let firstPart = str.substring(0, lastIndex);
+  let secondPart = str.substring(lastIndex + delimiter.length);
+  return [firstPart, secondPart];
 }
 
 var programs = [];
 
-function executeFile(path, argsRaw) {
+function executeFile(path, argsRaw, outputShell) {
+  console.log(outputShell);
   var data = fileSystem.readFile(path);
   if (data.includes("ProgramSource") == false) {
-    printConsole("the program " + path + " is invalid.");
+    shell.print("the program " + path + " is invalid.");
     return;
   }
   eval(data + "\nprograms.unshift(new ProgramSource)");
-  programs[0].load(argsRaw);
+  programs[0].load(argsRaw, outputShell);
 }
 
 function parseToParts(command) {
@@ -42,17 +69,36 @@ function parseToParts(command) {
 }
 
 function executeCommand(command) {
+  var outputShell = shell;
+
+  if (command.indexOf(">") != -1) {
+    var splitted = splitAtLastOccurrence(command, ">");
+    var outputDestination = splitted[1];
+    command = splitted[0];
+    outputShell = new Shell(function (text) {
+      if (fileSystem.isFile(outputDestination) != true) {
+        fileSystem.createFile(outputDestination, text);
+      } else {
+        fileSystem.writeFile(outputDestination, text);
+      }
+    });
+  }
+
   var args = parseToParts(command);
   var keyword = args.shift();
 
+  console.log(outputShell);
   if (fileSystem.readDirectory("soysoup").includes(keyword + ".soup")) {
     executeFile(
       "soysoup/" + keyword + ".soup",
-      command.slice(keyword.length + 1)
+      command.slice(keyword.length + 1),
+      outputShell
     );
+    outputShell.flush();
     return;
   }
-  printConsole("unknown command");
+  outputShell.print("unknown command");
+  outputShell.flush();
 }
 
 const node = document.getElementById("input");

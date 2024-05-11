@@ -1,12 +1,12 @@
 class ProgramSource extends Program {
-  load(args) {
+  load(args, outputShell) {
     if (
       fileSystem.pathExists(args) == false ||
       fileSystem.isFile(args) == true
     ) {
-      printConsole("path doesn't exist or is not a directory");
+      outputShell.print("path doesn't exist or is not a directory");
       return;
     }
-    printConsole(fileSystem.readDirectory(args).join("\n"));
+    outputShell.print(fileSystem.readDirectory(args).join("\n"));
   }
 }

@@ -1,5 +1,5 @@
 class ProgramSource extends Program {
-  load(args) {
+  load(args, outputShell) {
     var g = "1";
     if (fileSystem.pathExists("soysoup/files_counter.txt") == false) {
       fileSystem.createFile("soysoup/files_counter.txt", "0");
@@ -7,7 +7,7 @@ class ProgramSource extends Program {
       g = fileSystem.readFile("soysoup/files_counter.txt");
     }
 
-    printConsole(
+    outputShell.print(
       "this is the file browser app. it has been opened " + g + " times."
     );
 
