@@ -95,10 +95,14 @@ inputElement.addEventListener("keydown", function (event) {
   // for auto completions
   else if (event.key === "Tab") {
     event.preventDefault();
+    var selectionIndex = inputElement.selectionStart;
     inputElement.value =
-      inputElement.value.slice(0, inputElement.selectionStart) +
+      inputElement.value.slice(0, selectionIndex) +
       "    " +
-      inputElement.value.slice(inputElement.selectionStart);
+      inputElement.value.slice(selectionIndex);
+
+    inputElement.selectionStart = selectionIndex + 4;
+    inputElement.selectionEnd = selectionIndex + 4;
     return; // will replace tab indenting with tab completions later on
     let value =
       inputElement.value.split(" ")[inputElement.value.split(" ").length - 1]; // auto complete the last word in input only
