@@ -1,4 +1,4 @@
-systemVersion = "0.0.10";
+systemVersion = "0.0.11";
 
 fileSystem = new SoyFileSystem();
 
@@ -97,6 +97,6 @@ function executeCommand(command) {
     outputShell.flush();
     return;
   }
-  outputShell.print("unknown command");
+  outputShell.print("error: unknown command '" + keyword + "'");
   outputShell.flush();
 }

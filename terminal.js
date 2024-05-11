@@ -3,6 +3,9 @@ const terminalElement = document.getElementById("terminal");
 const promptSpanElement = document.getElementById("prompt-span");
 
 function printOut(text, color = "inherit") {
+  if (text.startsWith("error: ")) {
+    color = "#ff7676";
+  }
   var textElement = document.createElement("p");
   textElement.innerText = text;
   textElement.innerHTML = textElement.innerHTML.replace(
