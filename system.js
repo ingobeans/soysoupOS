@@ -1,4 +1,4 @@
-systemVersion = "0.1.1";
+systemVersion = "0.1.2";
 
 fileSystem = new SoyFileSystem();
 
@@ -62,7 +62,7 @@ var programs = [];
 function executeFile(path, argsRaw, outputShell) {
   var data = fileSystem.readFile(path);
   if (data.includes("ProgramSource") == false) {
-    outputShell.println("the program " + path + " is invalid.");
+    outputShell.println("error: the program " + path + " is invalid.");
     return;
   }
   eval(data + "\nprograms.unshift(new ProgramSource)");
