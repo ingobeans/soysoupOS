@@ -23,6 +23,9 @@ class SoyFileSystem {
   }
   pathExists(path) {
     const segments = this.getPathSegments(path);
+    if (segments.length == 0) {
+      return true; // to ensure root is flagged as valid path
+    }
     const fileName = segments.pop();
     const directory = this.traverse(segments);
 

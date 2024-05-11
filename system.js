@@ -1,12 +1,16 @@
 fileSystem = new SoyFileSystem();
 
-systemFiles =
-  '{"type":"directory","content":{"soysoup":{"type":"directory","content":{"files.soup":{"type":"file","content":"class Program {\\n  load() {\\n    var g = \\"1\\";\\n    if (fileSystem.pathExists(\\"soysoup/files_counter.txt\\") == false) {\\n      fileSystem.createFile(\\"soysoup/files_counter.txt\\", \\"0\\");\\n    } else {\\n      g = fileSystem.readFile(\\"soysoup/files_counter.txt\\");\\n    }\\n\\n    printConsole(\\n      \\"this is the file browser app. it has been opened \\" + g + \\" times.\\"\\n    );\\n\\n    fileSystem.writeFile(\\"soysoup/files_counter.txt\\", (Number(g) + 1).toString());\\n  }\\n}\\n"},"test app.soup":{"type":"file","content":"class Program {\\n    load(){\\n        printConsole(\\"this is the file browser app\\");\\n    }\\n}"}}},"home":{"type":"directory","content":{"downloads":{"type":"directory","content":{}},"documents":{"type":"directory","content":{}},"programs":{"type":"directory","content":{}}}}}}';
-
 fileSystem.loadFromString(systemFiles);
 
 class Program {
-  load() {}
+  quit() {
+    const index = programs.indexOf(this);
+    if (index > -1) {
+      programs.splice(index, 1);
+    }
+    console.log("PID " + index + " quit");
+  }
+  load(args) {}
   update() {}
 }
 
@@ -17,12 +21,12 @@ function printConsole(string) {
 
 var programs = [];
 
-function executeFile(path) {
-  eval(fileSystem.readFile(path) + "\nprograms.unshift(new Program)");
-  programs[0].load();
+function executeFile(path, argsRaw) {
+  eval(fileSystem.readFile(path) + "\nprograms.unshift(new ProgramSource)");
+  programs[0].load(argsRaw);
 }
 
-function parseCommandToParts(command) {
+function parseToParts(command) {
   let parts = [];
   let regex = /[^\s"]+|"([^"]*)"/gi;
   let match;
@@ -33,11 +37,14 @@ function parseCommandToParts(command) {
 }
 
 function executeCommand(command) {
-  var args = parseCommandToParts(command);
+  var args = parseToParts(command);
   var keyword = args.shift();
 
   if (fileSystem.readDirectory("soysoup").includes(keyword + ".soup")) {
-    executeFile("soysoup/" + keyword + ".soup");
+    executeFile(
+      "soysoup/" + keyword + ".soup",
+      command.slice(keyword.length + 1)
+    );
     return;
   }
   printConsole("unknown command");
