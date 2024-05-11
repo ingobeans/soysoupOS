@@ -3,15 +3,6 @@ const terminalElement = document.getElementById("terminal");
 const promptSpanElement = document.getElementById("prompt-span");
 
 function printOut(text, color = "inherit") {
-  if (text.includes("\n") && false) {
-    text = text.split("\n");
-    text.forEach((message) => {
-      printOut(message);
-    });
-    return;
-  }
-  // if multiple lines, split to individual messages and print each individually
-
   var textElement = document.createElement("p");
   textElement.innerText = text;
   textElement.innerHTML = textElement.innerHTML.replace(
@@ -79,6 +70,7 @@ inputElement.addEventListener("keydown", function (event) {
 
   // for auto completions
   else if (event.key === "Tab") {
+    return; // haven't reimplemented tab completion yet.
     event.preventDefault();
     let value =
       inputElement.value.split(" ")[inputElement.value.split(" ").length - 1]; // auto complete the last word in input only
@@ -86,7 +78,7 @@ inputElement.addEventListener("keydown", function (event) {
       return;
     }
 
-    let directoryContents = listDirectory(cwd).all;
+    let directoryContents = fileSystem.readDirectory("");
 
     for (const content of directoryContents) {
       if (content.startsWith(value)) {

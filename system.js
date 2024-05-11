@@ -1,4 +1,4 @@
-systemVersion = "0.0.8";
+systemVersion = "0.0.10";
 
 fileSystem = new SoyFileSystem();
 

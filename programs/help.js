@@ -1,10 +1,9 @@
 class ProgramSource extends Program {
   load(args, outputShell) {
-    var helpMessage =
-      "soysoupOS v" +
-      systemVersion +
-      " help.\n\n\navailable commands: \n" +
-      fileSystem.readDirectory("soysoup").join("\n\t");
+    var helpMessage = `cat - read contents of file
+echo - print a string to shell
+ls - list contents of directory
+reload - reset file system`;
     outputShell.print(helpMessage);
   }
 }
