@@ -18,7 +18,7 @@ function printOut(text, color = "inherit") {
 
 function printOutLine(text, color = "inherit") {
   if (text.startsWith("error: ")) {
-    color = "#ff7676";
+    color = "rgb(255, 101, 101)";
   }
   if (text.startsWith(">")) {
     color = "#999999";
