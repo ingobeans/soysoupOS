@@ -1,7 +1,7 @@
 fileSystem = new SoyFileSystem();
 
 systemFiles =
-  '{"type":"directory","content":{"soysoup":{"type":"directory","content":{"files.soup":{"type":"file","content":"class Program {\\n    load(){\\n        printConsole(\\"this is the file browser app\\");\\n    }\\n}"},"test app.soup":{"type":"file","content":"class Program {\\n    load(){\\n        printConsole(\\"this is the test app\\");\\n    }\\n}"}}},"home":{"type":"directory","content":{"downloads":{"type":"directory","content":{}},"documents":{"type":"directory","content":{}},"programs":{"type":"directory","content":{}}}}}}';
+  '{"type":"directory","content":{"soysoup":{"type":"directory","content":{"files.soup":{"type":"file","content":"class Program {\\n  load() {\\n    var g = \\"1\\";\\n    if (fileSystem.pathExists(\\"soysoup/files_counter.txt\\") == false) {\\n      fileSystem.createFile(\\"soysoup/files_counter.txt\\", \\"0\\");\\n    } else {\\n      g = fileSystem.readFile(\\"soysoup/files_counter.txt\\");\\n    }\\n\\n    printConsole(\\n      \\"this is the file browser app. it has been opened \\" + g + \\" times.\\"\\n    );\\n\\n    fileSystem.writeFile(\\"soysoup/files_counter.txt\\", (Number(g) + 1).toString());\\n  }\\n}\\n"},"test app.soup":{"type":"file","content":"class Program {\\n    load(){\\n        printConsole(\\"this is the file browser app\\");\\n    }\\n}"}}},"home":{"type":"directory","content":{"downloads":{"type":"directory","content":{}},"documents":{"type":"directory","content":{}},"programs":{"type":"directory","content":{}}}}}}';
 
 fileSystem.loadFromString(systemFiles);
 

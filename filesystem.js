@@ -21,6 +21,17 @@ class SoyFileSystem {
       content: content,
     };
   }
+  pathExists(path) {
+    const segments = this.getPathSegments(path);
+    const fileName = segments.pop();
+    const directory = this.traverse(segments);
+
+    if (!directory || !directory.content[fileName]) {
+      return false;
+    }
+
+    return true;
+  }
 
   createDirectory(path) {
     const segments = this.getPathSegments(path);
