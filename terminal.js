@@ -1,10 +1,28 @@
 const inputElement = document.getElementById("prompt");
 const terminalElement = document.getElementById("terminal");
 const promptSpanElement = document.getElementById("prompt-span");
+const outputElement = document.getElementById("output");
 
 function printOut(text, color = "inherit") {
+  outputElement.innerHTML = "";
+  text = text.trim();
+
+  if (!text) {
+    return;
+  }
+
+  text = text.split("\n");
+  text.forEach((message) => {
+    printOutLine(message);
+  });
+}
+
+function printOutLine(text, color = "inherit") {
   if (text.startsWith("error: ")) {
     color = "#ff7676";
+  }
+  if (text.startsWith(">")) {
+    color = "#999999";
   }
   var textElement = document.createElement("p");
   textElement.innerText = text;
@@ -16,7 +34,8 @@ function printOut(text, color = "inherit") {
 
   textElement.classList.add("text-output");
   textElement.style = "color: " + color;
-  terminalElement.insertBefore(textElement, inputElement.parentElement);
+  //terminalElement.insertBefore(textElement, inputElement.parentElement);
+  outputElement.appendChild(textElement);
   window.scrollTo(0, document.body.scrollHeight);
 }
 
@@ -32,7 +51,8 @@ inputElement.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
     let value = inputElement.value;
     console.log('"' + value + '"');
-    printOut(">" + value, "#999999");
+    //printOut(">" + value, "#999999");
+    defaultShell.println(">" + value);
     if (value) {
       executeCommand(value);
     }
@@ -112,4 +132,6 @@ function keyPressed(event) {
 document.addEventListener("keydown", keyPressed);
 
 setPrefix(">");
-printOut("booted soysoupOS v" + systemVersion + "\ntype 'help' for help");
+defaultShell.println(
+  "booted soysoupOS v" + systemVersion + "\ntype 'help' for help"
+);

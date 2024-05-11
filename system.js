@@ -1,4 +1,4 @@
-systemVersion = "0.0.12";
+systemVersion = "0.1.0";
 
 fileSystem = new SoyFileSystem();
 
@@ -15,11 +15,14 @@ class Shell {
     this.text = "";
   }
   print(text) {
-    this.text = text;
+    this.text += text;
+  }
+  println(text) {
+    this.text += text + "\n";
+    this.flush();
   }
   flush() {
     this.outputFunction(this.text);
-    this.text = "";
   }
 }
 
@@ -52,7 +55,7 @@ var programs = [];
 function executeFile(path, argsRaw, outputShell) {
   var data = fileSystem.readFile(path);
   if (data.includes("ProgramSource") == false) {
-    outputShell.print("the program " + path + " is invalid.");
+    outputShell.println("the program " + path + " is invalid.");
     return;
   }
   eval(data + "\nprograms.unshift(new ProgramSource)");
@@ -97,6 +100,6 @@ function executeCommand(command) {
     outputShell.flush();
     return;
   }
-  outputShell.print("error: unknown command '" + keyword + "'");
+  outputShell.println("error: unknown command '" + keyword + "'");
   outputShell.flush();
 }

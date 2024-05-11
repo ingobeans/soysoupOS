@@ -1,5 +1,6 @@
 class ProgramSource extends Program {
   load(args, outputShell) {
-    outputShell.println(args);
+    outputShell.text = "";
+    outputShell.flush();
   }
 }
