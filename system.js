@@ -102,13 +102,15 @@ function executeCommand(command) {
   var args = parseToParts(command);
   var keyword = args.shift();
 
+  var path = keyword;
+
   if (fileSystem.readDirectory("soysoup").includes(keyword + ".soup")) {
-    executeFile(
-      "soysoup/" + keyword + ".soup",
-      command.slice(keyword.length + 1),
-      outputShell
-    );
+    path = "soysoup/" + keyword + ".soup";
+  }
+  if (fileSystem.isFile(path)) {
+    executeFile(path, command.slice(keyword.length + 1), outputShell);
     return;
   }
+
   outputShell.println("error: unknown command '" + keyword + "'");
 }
