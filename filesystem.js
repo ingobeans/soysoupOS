@@ -55,6 +55,23 @@ class SoyFileSystem {
     return directory.content[fileName].content;
   }
 
+  writeFile(path, content) {
+    const segments = this.getPathSegments(path);
+    const fileName = segments.pop();
+    const directory = this.traverse(segments);
+
+    if (
+      !directory ||
+      !directory.content[fileName] ||
+      directory.content[fileName].type !== "file"
+    ) {
+      console.error("File not found or invalid path.");
+      return;
+    }
+
+    directory.content[fileName].content = content;
+  }
+
   readDirectory(path) {
     const segments = this.getPathSegments(path);
     const directory = this.traverse(segments);
