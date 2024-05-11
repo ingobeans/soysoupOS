@@ -1,4 +1,4 @@
-systemVersion = "0.1.0";
+systemVersion = "0.1.1";
 
 fileSystem = new SoyFileSystem();
 
@@ -14,12 +14,19 @@ class Shell {
     this.outputFunction = outputFunction;
     this.text = "";
   }
-  print(text) {
+  print(text, flush = true) {
     this.text += text;
+
+    if (flush) {
+      this.flush();
+    }
   }
-  println(text) {
+  println(text, flush = true) {
     this.text += text + "\n";
-    this.flush();
+
+    if (flush) {
+      this.flush();
+    }
   }
   flush() {
     this.outputFunction(this.text);
@@ -97,9 +104,7 @@ function executeCommand(command) {
       command.slice(keyword.length + 1),
       outputShell
     );
-    outputShell.flush();
     return;
   }
   outputShell.println("error: unknown command '" + keyword + "'");
-  outputShell.flush();
 }
