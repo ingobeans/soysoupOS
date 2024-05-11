@@ -1,4 +1,4 @@
-systemVersion = "0.1.2";
+systemVersion = "0.1.3";
 
 fileSystem = new SoyFileSystem();
 
@@ -22,7 +22,11 @@ class Shell {
     }
   }
   println(text, flush = true) {
-    this.text += text + "\n";
+    if (this.text == "") {
+      this.text += text;
+    } else {
+      this.text += "\n" + text;
+    }
 
     if (flush) {
       this.flush();

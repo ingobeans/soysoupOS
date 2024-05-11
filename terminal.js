@@ -5,7 +5,6 @@ const outputElement = document.getElementById("output");
 
 function printOut(text, color = "inherit") {
   outputElement.innerHTML = "";
-  text = text.trim();
 
   if (!text) {
     return;
