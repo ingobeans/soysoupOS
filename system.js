@@ -22,7 +22,12 @@ function printConsole(string) {
 var programs = [];
 
 function executeFile(path, argsRaw) {
-  eval(fileSystem.readFile(path) + "\nprograms.unshift(new ProgramSource)");
+  var data = fileSystem.readFile(path);
+  if (data.includes("ProgramSource") == false) {
+    printConsole("the program " + path + " is invalid.");
+    return;
+  }
+  eval(data + "\nprograms.unshift(new ProgramSource)");
   programs[0].load(argsRaw);
 }
 

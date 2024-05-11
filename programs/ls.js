@@ -4,7 +4,7 @@ class ProgramSource extends Program {
       fileSystem.pathExists(args) == false ||
       fileSystem.isFile(args) == true
     ) {
-      printConsole("path doesn't exist or is invalid");
+      printConsole("path doesn't exist or is not a directory");
       return;
     }
     printConsole(fileSystem.readDirectory(args).join("\n"));
