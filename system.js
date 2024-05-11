@@ -21,7 +21,7 @@ class Shell {
   }
 }
 
-shell = new Shell(printConsole);
+var defaultShell = new Shell(printConsole);
 
 class Program {
   quit() {
@@ -48,10 +48,9 @@ function splitAtLastOccurrence(str, delimiter) {
 var programs = [];
 
 function executeFile(path, argsRaw, outputShell) {
-  console.log(outputShell);
   var data = fileSystem.readFile(path);
   if (data.includes("ProgramSource") == false) {
-    shell.print("the program " + path + " is invalid.");
+    outputShell.print("the program " + path + " is invalid.");
     return;
   }
   eval(data + "\nprograms.unshift(new ProgramSource)");
@@ -69,7 +68,7 @@ function parseToParts(command) {
 }
 
 function executeCommand(command) {
-  var outputShell = shell;
+  var outputShell = defaultShell;
 
   if (command.indexOf(">") != -1) {
     var splitted = splitAtLastOccurrence(command, ">");
@@ -87,7 +86,6 @@ function executeCommand(command) {
   var args = parseToParts(command);
   var keyword = args.shift();
 
-  console.log(outputShell);
   if (fileSystem.readDirectory("soysoup").includes(keyword + ".soup")) {
     executeFile(
       "soysoup/" + keyword + ".soup",
