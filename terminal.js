@@ -50,10 +50,12 @@ inputElement.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
     let value = inputElement.value;
     console.log('"' + value + '"');
-    //printOut(">" + value, "#999999");
     defaultShell.println(">" + value);
-    if (value) {
-      executeCommand(value);
+    if (value.endsWith("\\")) {
+      currentInput = currentInput + value.substring(0, value.length - 1) + "\n";
+    } else if (currentInput + value) {
+      executeCommand(currentInput + value);
+      currentInput = "";
     }
     inputElement.value = "";
 
@@ -129,6 +131,8 @@ function keyPressed(event) {
 }
 
 document.addEventListener("keydown", keyPressed);
+
+var currentInput = "";
 
 setPrefix(">");
 defaultShell.println(
