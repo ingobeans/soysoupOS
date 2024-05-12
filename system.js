@@ -1,4 +1,4 @@
-systemVersion = "0.2.6";
+systemVersion = "0.2.7";
 
 fileSystem = new SoyFileSystem();
 
@@ -74,7 +74,11 @@ function splitAtLastOccurrence(str, delimiter) {
 
 var programs = [];
 
-function executeFile(path, argsRaw, outputShell, exitResolve) {
+function executeFile(path, argsRaw, outputShell) {
+  var exitResolve = undefined;
+  var promise = new Promise((resolve) => {
+    exitResolve = resolve;
+  });
   var data = fileSystem.readFile(path);
   if (data.includes("ProgramSource") == false) {
     outputShell.println("error: the program " + path + " is invalid.");
@@ -85,6 +89,7 @@ function executeFile(path, argsRaw, outputShell, exitResolve) {
   programs[0].filepath = path;
   programs[0].exitResolve = exitResolve;
   programs[0].load(argsRaw, outputShell);
+  return promise;
 }
 
 function parseToParts(command) {
@@ -127,17 +132,7 @@ function executeCommand(command, shell = defaultShell) {
     path = "soysoup/" + keyword + ".soup";
   }
   if (fileSystem.isFile(path)) {
-    var exitResolve = undefined;
-    var promise = new Promise((resolve) => {
-      exitResolve = resolve;
-    });
-    executeFile(
-      path,
-      command.slice(keyword.length + 1),
-      outputShell,
-      exitResolve
-    );
-    return promise;
+    return executeFile(path, command.slice(keyword.length + 1), outputShell);
   }
 
   outputShell.println("error: unknown command '" + keyword + "'");

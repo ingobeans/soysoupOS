@@ -63,17 +63,11 @@ document.addEventListener("paste", (event) => {
 // make pasting text act as if each character was individually pressed
 
 async function createTerminal() {
-  var exitResolve = undefined;
-  var promise = new Promise((resolve) => {
-    exitResolve = resolve;
-  });
-
   terminalPath = "soysoup/terminal.soup";
   if (fileSystem.isFile(terminalPath) != true) {
     defaultShell.println("error: terminal is missing");
   }
-  executeFile(terminalPath, "", defaultShell, exitResolve);
-  await promise;
+  await executeFile(terminalPath, "", defaultShell);
 
   defaultShell.println("powered off soysoupOS");
 }
