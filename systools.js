@@ -11,8 +11,12 @@ function insert(origString, stringToAdd, indexPosition) {
 }
 
 class CommandlineInput {
-  constructor(outputShell) {
+  constructor(outputShell, useHistory = false) {
     this.outputShell = outputShell;
+    this.useHistory = useHistory;
+
+    this.commandHistory = [];
+    this.historyIndex = -1;
   }
   async prompt(question = ">", allowMultiline = true) {
     this.allowMultiline = allowMultiline;
@@ -70,7 +74,36 @@ class CommandlineInput {
         this.handleSubmit(this.currentLineInput);
         this.finished = true;
         this.outputShell.flush();
+        if (
+          this.currentLineInput != "" &&
+          this.commandHistory[0] != this.currentLineInput &&
+          this.useHistory
+        ) {
+          this.commandHistory.unshift(this.currentLineInput);
+          this.historyIndex = -1;
+        }
         return;
+      }
+    }
+
+    // for history navigation:
+    else if (event.key === "ArrowUp" && this.useHistory) {
+      event.preventDefault();
+      if (this.historyIndex < this.commandHistory.length - 1) {
+        this.historyIndex++;
+        this.currentLineInput = this.commandHistory[this.historyIndex];
+        this.selectionIndex = this.currentLineInput.length;
+      }
+    } else if (event.key === "ArrowDown" && this.useHistory) {
+      event.preventDefault();
+      if (this.historyIndex > 0) {
+        this.historyIndex--;
+        this.currentLineInput = this.commandHistory[this.historyIndex];
+        this.selectionIndex = this.currentLineInput.length;
+      } else if (this.historyIndex === 0) {
+        this.historyIndex = -1;
+        this.currentLineInput = "";
+        // show empty input at top of history
       }
     } else if (event.key == "ArrowLeft") {
       this.selectionIndex = Math.max(0, this.selectionIndex - 1);

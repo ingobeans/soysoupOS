@@ -15,7 +15,7 @@ class ProgramSource extends Program {
     this.handleSubmit(result);
   }
   load(args) {
-    this.prompt = new CommandlineInput(this.outputShell);
+    this.prompt = new CommandlineInput(this.outputShell, true);
     this.outputShell.text =
       "booted soysoupOS v" + systemVersion + "\ntype 'help' for help";
 
