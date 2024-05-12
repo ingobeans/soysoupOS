@@ -34,10 +34,7 @@ class CommandlineInput {
     });
   }
 
-  // called by event listener
-  handleSubmit(text) {
-    this.promiseResolver(this.currentLineInput);
-  }
+  handleSubmit(text) {}
 
   removeCharacter(str, index) {
     index -= 1;
@@ -71,7 +68,7 @@ class CommandlineInput {
       } else {
         this.outputShell.text =
           this.text + "\n" + this.question + this.currentLineInput;
-        this.handleSubmit(this.currentLineInput);
+        this.promiseResolver(this.currentLineInput);
         this.finished = true;
         this.outputShell.flush();
         if (
