@@ -1,11 +1,4 @@
 class ProgramSource extends Program {
-  insert(origString, stringToAdd, indexPosition) {
-    return (
-      origString.slice(0, indexPosition) +
-      stringToAdd +
-      origString.slice(indexPosition)
-    );
-  }
   removeCharacter(str, index) {
     index -= 1;
     if (index < 0 || index >= str.length) {
@@ -17,7 +10,7 @@ class ProgramSource extends Program {
   onKeypress(event) {
     console.log(event.key.length);
     if (event.key.length == 1) {
-      this.currentLineInput = this.insert(
+      this.currentLineInput = insert(
         this.currentLineInput,
         event.key,
         this.selectionIndex
@@ -25,7 +18,7 @@ class ProgramSource extends Program {
       this.selectionIndex += 1;
     } else if (event.key == "Enter") {
       if (event.shiftKey) {
-        this.currentLineInput = this.insert(
+        this.currentLineInput = insert(
           this.currentLineInput,
           "\n",
           this.selectionIndex
@@ -92,7 +85,7 @@ class ProgramSource extends Program {
       this.outputShell.text =
         this.shell.text +
         "\n>" +
-        this.insert(this.currentLineInput, "|", this.selectionIndex);
+        insert(this.currentLineInput, "|", this.selectionIndex);
     } else {
       this.outputShell.text = this.shell.text;
     }
