@@ -7,6 +7,17 @@ class ProgramSource extends Program {
     return str.slice(0, index) + str.slice(index + 1);
   }
 
+  handleSubmit(text) {
+    if (this.currentLineInput == "exit") {
+      this.quit();
+      this.currentLineInput = "";
+      this.selectionIndex = 0;
+      this.flush();
+      return;
+    }
+    executeCommand(this.currentLineInput, this.shell);
+  }
+
   onKeypress(event) {
     console.log(event.key.length);
     if (event.key.length == 1) {
@@ -26,18 +37,9 @@ class ProgramSource extends Program {
         this.selectionIndex += 1;
       } else {
         this.shell.println(">" + this.currentLineInput);
-        if (this.currentLineInput == "exit") {
-          this.quit();
-          this.currentLineInput = "";
-          this.currentInputTotal = "";
-          this.selectionIndex = 0;
-          this.flush();
-          return;
-        }
-        executeCommand(this.currentLineInput, this.shell);
+        this.handleSubmit(this.currentLineInput);
 
         this.currentLineInput = "";
-        this.currentInputTotal = "";
         this.selectionIndex = 0;
       }
     } else if (event.key == "ArrowLeft") {
@@ -64,13 +66,10 @@ class ProgramSource extends Program {
   load(args) {
     var self = this;
     this.shell = new Shell(function (text) {
-      console.log(text);
-      //self.text = text;
       self.flush();
     });
 
     this.currentLineInput = "";
-    this.currentInputTotal = "";
     this.selectionIndex = 0;
 
     this.shell.text =
