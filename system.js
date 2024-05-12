@@ -1,11 +1,11 @@
-systemVersion = "0.2.3";
+systemVersion = "0.2.4";
 
 fileSystem = new SoyFileSystem();
 
 fileSystem.loadFromString(systemFiles);
 
 function printConsole(string) {
-  //console.log(string);
+  console.log(string);
   printOut(string);
 }
 
@@ -49,6 +49,7 @@ class Program {
     if (index > -1) {
       programs.splice(index, 1);
     }
+    this.outputShell.flush();
     console.log("PID " + index + " quit");
   }
   load(args) {}
@@ -91,6 +92,9 @@ function parseToParts(command) {
 }
 
 function executeCommand(command, shell = defaultShell) {
+  if (!command) {
+    return;
+  }
   var outputShell = shell;
 
   if (command.indexOf(">") != -1) {

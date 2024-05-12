@@ -11,19 +11,28 @@ function insert(origString, stringToAdd, indexPosition) {
 }
 
 class CommandlineInput {
-  constructor(onAnswer, outputShell, allowMultiline = true) {
-    this.onAnswer = onAnswer;
-    this.allowMultiline = allowMultiline;
+  constructor(outputShell, allowMultiline = true) {
     this.outputShell = outputShell;
+  }
+  async prompt(question = ">", allowMultiline = true) {
+    this.allowMultiline = allowMultiline;
+    this.question = question;
+    this.finished = false;
 
     this.currentLineInput = "";
     this.selectionIndex = 0;
 
     this.text = this.outputShell.text;
-    this.commandHistory = [];
-    this.historyIndex = -1;
 
     this.flush();
+    return new Promise((resolve) => {
+      this.promiseResolver = resolve;
+    });
+  }
+
+  // called by event listener
+  handleSubmit(text) {
+    this.promiseResolver(this.currentLineInput);
   }
 
   removeCharacter(str, index) {
@@ -34,11 +43,10 @@ class CommandlineInput {
     return str.slice(0, index) + str.slice(index + 1);
   }
 
-  handleSubmit(text) {
-    this.onAnswer(text);
-  }
-
   onKeypress(event) {
+    if (this.finished) {
+      return;
+    }
     if (event.key.length == 1) {
       this.currentLineInput = insert(
         this.currentLineInput,
@@ -47,16 +55,20 @@ class CommandlineInput {
       );
       this.selectionIndex += 1;
     } else if (event.key == "Enter") {
-      if (event.shiftKey && this.allowMultiline) {
-        this.currentLineInput = insert(
-          this.currentLineInput,
-          "\n",
-          this.selectionIndex
-        );
-        this.selectionIndex += 1;
+      if (event.shiftKey) {
+        if (this.allowMultiline) {
+          this.currentLineInput = insert(
+            this.currentLineInput,
+            "\n",
+            this.selectionIndex
+          );
+          this.selectionIndex += 1;
+        }
       } else {
-        this.outputShell.text = this.text + "\n>" + this.currentLineInput;
+        this.outputShell.text =
+          this.text + "\n" + this.question + this.currentLineInput;
         this.handleSubmit(this.currentLineInput);
+        this.finished = true;
         this.outputShell.flush();
         return;
       }
@@ -82,7 +94,8 @@ class CommandlineInput {
   flush() {
     this.outputShell.text =
       this.text +
-      "\n>" +
+      "\n" +
+      this.question +
       insert(this.currentLineInput, "|", this.selectionIndex);
 
     this.outputShell.flush();

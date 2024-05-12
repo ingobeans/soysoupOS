@@ -4,18 +4,14 @@ class ProgramSource extends Program {
       this.prompt.onKeypress(event);
     }
   }
-  load(args) {
+  async load(args) {
     var self = this;
-    this.outputShell.println("What is your name?");
-    this.prompt = new CommandlineInput(
-      function (answer) {
-        self.prompt = undefined;
-        self.outputShell.println("Hello there, " + answer);
-        self.quit();
-      },
-      this.outputShell,
-      false
-    );
+    this.prompt = new CommandlineInput(this.outputShell);
+
+    var result = await this.prompt.prompt("What is your name?: ", false);
+    this.outputShell.println("Howdy, " + result);
+
+    this.quit();
     return;
   }
 }
