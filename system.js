@@ -1,4 +1,4 @@
-systemVersion = "0.2.7";
+systemVersion = "0.2.8";
 
 fileSystem = new SoyFileSystem();
 
@@ -111,7 +111,10 @@ function executeCommand(command, shell = defaultShell) {
   if (command.indexOf(">") != -1) {
     var splitted = splitAtLastOccurrence(command, ">");
     var outputDestination = splitted[1];
-    if (outputDestination) {
+    if (
+      outputDestination &&
+      fileSystem.isValidParentDirectory(outputDestination)
+    ) {
       command = splitted[0];
       outputShell = new Shell(function (text) {
         if (fileSystem.isFile(outputDestination) != true) {
@@ -127,6 +130,10 @@ function executeCommand(command, shell = defaultShell) {
   var keyword = args.shift();
 
   var path = keyword;
+
+  if (!keyword) {
+    return;
+  }
 
   if (fileSystem.readDirectory("soysoup").includes(keyword + ".soup")) {
     path = "soysoup/" + keyword + ".soup";

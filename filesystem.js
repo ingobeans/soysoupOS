@@ -84,6 +84,13 @@ class SoyFileSystem {
 
     return directory.content[fileName].content;
   }
+  isValidParentDirectory(path) {
+    const parentPath = this.getParentDirectory(path);
+    const segments = this.getPathSegments(parentPath);
+    const parentDirectory = this.traverse(segments);
+
+    return parentDirectory !== null && parentDirectory.type === "directory";
+  }
 
   writeFile(path, content) {
     const segments = this.getPathSegments(path);

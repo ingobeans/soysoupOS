@@ -40,11 +40,14 @@ let commandHistory = [];
 let historyIndex = -1;
 
 document.addEventListener("keydown", function (event) {
-  if (event.ctrlKey) {
+  if (event.ctrlKey && (event.key == "c" || event.key == "v")) {
     return;
-  } else {
-    defaultShell.onKeypress(event);
   }
+  if (event.key.length == 2 && event.key.startsWith("F")) {
+    return;
+  }
+  event.preventDefault();
+  defaultShell.onKeypress(event);
 });
 
 document.addEventListener("paste", (event) => {

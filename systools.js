@@ -43,12 +43,30 @@ class CommandlineInput {
     }
     return str.slice(0, index) + str.slice(index + 1);
   }
+  completeCheck(event) {
+    return event.key == "Enter" && !event.shiftKey;
+  }
 
   onKeypress(event) {
     if (this.finished) {
       return;
     }
-    if (event.key.length == 1) {
+    if (this.completeCheck(event)) {
+      this.outputShell.text =
+        this.text + "\n" + this.question + this.currentLineInput;
+      this.promiseResolver(this.currentLineInput);
+      this.finished = true;
+      this.outputShell.flush();
+      if (
+        this.currentLineInput != "" &&
+        this.messageHistory[0] != this.currentLineInput &&
+        this.useHistory
+      ) {
+        this.messageHistory.unshift(this.currentLineInput);
+      }
+      this.historyIndex = -1;
+      return;
+    } else if (event.key.length == 1) {
       this.currentLineInput = insert(
         this.currentLineInput,
         event.key,
@@ -56,30 +74,13 @@ class CommandlineInput {
       );
       this.selectionIndex += 1;
     } else if (event.key == "Enter") {
-      if (event.shiftKey) {
-        if (this.allowMultiline) {
-          this.currentLineInput = insert(
-            this.currentLineInput,
-            "\n",
-            this.selectionIndex
-          );
-          this.selectionIndex += 1;
-        }
-      } else {
-        this.outputShell.text =
-          this.text + "\n" + this.question + this.currentLineInput;
-        this.promiseResolver(this.currentLineInput);
-        this.finished = true;
-        this.outputShell.flush();
-        if (
-          this.currentLineInput != "" &&
-          this.messageHistory[0] != this.currentLineInput &&
-          this.useHistory
-        ) {
-          this.messageHistory.unshift(this.currentLineInput);
-        }
-        this.historyIndex = -1;
-        return;
+      if (this.allowMultiline) {
+        this.currentLineInput = insert(
+          this.currentLineInput,
+          "\n",
+          this.selectionIndex
+        );
+        this.selectionIndex += 1;
       }
     }
 
