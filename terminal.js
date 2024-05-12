@@ -8,6 +8,10 @@ function printOut(text, color = "inherit") {
     return;
   }
 
+  if (text.startsWith("\n")) {
+    text = text.slice(1);
+  }
+
   text = text.split("\n");
   text.forEach((message) => {
     printOutLine(message);
