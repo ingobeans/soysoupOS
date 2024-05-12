@@ -40,11 +40,7 @@ let commandHistory = [];
 let historyIndex = -1;
 
 document.addEventListener("keydown", function (event) {
-  const selection = window.getSelection().toString().trim();
-  // check to stop focus being moved while the user is selecting text
-  // without this check, the user can't copy paste text, as the focus is moved from the text selection to input box
-
-  if (selection || event.ctrlKey) {
+  if (event.ctrlKey) {
     return;
   } else {
     defaultShell.onKeypress(event);
@@ -55,7 +51,6 @@ document.addEventListener("paste", (event) => {
   const clipboardText = event.clipboardData.getData("text");
   for (let index = 0; index < clipboardText.length; index++) {
     const character = clipboardText[index];
-    // Create a new keydown event
     const keydownEvent = new KeyboardEvent("keydown", {
       key: character,
       keyCode: character.charCodeAt(0),
