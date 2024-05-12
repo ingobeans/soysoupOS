@@ -1,6 +1,8 @@
 const terminalElement = document.getElementById("terminal");
 const outputElement = document.getElementById("output");
 
+const ansi_up = new AnsiUp();
+
 function printOut(text, color = "inherit") {
   outputElement.innerHTML = "";
 
@@ -18,15 +20,10 @@ function printOut(text, color = "inherit") {
   });
 }
 
-function printOutLine(text, color = "inherit") {
-  if (text.startsWith("error: ")) {
-    color = "rgb(255, 101, 101)";
-  }
-  if (text.startsWith(">")) {
-    color = "#999999";
-  }
+function printOutLine(text) {
   var textElement = document.createElement("p");
-  textElement.innerText = text;
+  textElement.innerHTML = ansi_up.ansi_to_html(text);
+
   textElement.innerHTML = textElement.innerHTML.replace(
     /(https:\/\/\S+)/,
     '<a href="$1" target="_blank">$1</a>'
@@ -34,8 +31,6 @@ function printOutLine(text, color = "inherit") {
   // replace URLs with clickable URLs
 
   textElement.classList.add("text-output");
-  textElement.style = "color: " + color;
-  //terminalElement.insertBefore(textElement, inputElement.parentElement);
   outputElement.appendChild(textElement);
   window.scrollTo(0, document.body.scrollHeight);
 }
