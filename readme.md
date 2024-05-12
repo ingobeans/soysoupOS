@@ -57,6 +57,7 @@ After the code is written, you can get the program to the website in two ways.
 ### Option A (temporary):
 
 To temporarily have the program as a file, you can `echo` the program in the terminal, and pipe the output to a file. You can then enter the path to the file to run it. **Do note:** if the program is placed in the soysoup directory, it can be ran by simply typing the name of the file (without the extension). This is equivalent to having an exe in path, in windows.
+Example: `echo class ProgramSource extends Program {load(args) {this.outputShell.println("hi world!");this.quit();}}>my_program.soup`
 
 ### Option B (permanent install):
 
