@@ -66,7 +66,7 @@ class CommandlineInput {
       }
       this.historyIndex = -1;
       return;
-    } else if (event.key.length == 1) {
+    } else if (event.key.length == 1 && !event.ctrlKey) {
       this.currentLineInput = insert(
         this.currentLineInput,
         event.key,

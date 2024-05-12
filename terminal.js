@@ -44,17 +44,18 @@ let commandHistory = [];
 let historyIndex = -1;
 
 document.addEventListener("keydown", function (event) {
-  if (event.ctrlKey && (event.key == "c" || event.key == "v")) {
-    return;
-  }
   if (
     (event.key.length == 2 || event.key.length == 3) &&
     event.key.startsWith("F")
   ) {
     return;
   }
-  event.preventDefault();
   defaultShell.onKeypress(event);
+
+  if (event.ctrlKey && (event.key == "c" || event.key == "v")) {
+    return;
+  }
+  event.preventDefault();
 });
 
 document.addEventListener("paste", (event) => {
