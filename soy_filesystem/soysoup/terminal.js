@@ -33,6 +33,14 @@ class ProgramSource extends Program {
         this.selectionIndex += 1;
       } else {
         this.shell.println(">" + this.currentLineInput);
+        if (this.currentLineInput == "exit") {
+          this.quit();
+          this.currentLineInput = "";
+          this.currentInputTotal = "";
+          this.selectionIndex = 0;
+          this.flush();
+          return;
+        }
         executeCommand(this.currentLineInput, this.shell);
 
         this.currentLineInput = "";
@@ -81,10 +89,14 @@ class ProgramSource extends Program {
     this.flush();
   }
   flush() {
-    this.outputShell.text =
-      this.shell.text +
-      "\n>" +
-      this.insert(this.currentLineInput, "|", this.selectionIndex);
+    if (programs[0] == this) {
+      this.outputShell.text =
+        this.shell.text +
+        "\n>" +
+        this.insert(this.currentLineInput, "|", this.selectionIndex);
+    } else {
+      this.outputShell.text = this.shell.text;
+    }
     this.outputShell.flush();
   }
 }

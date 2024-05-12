@@ -1,4 +1,4 @@
-systemVersion = "0.2.0";
+systemVersion = "0.2.1";
 
 fileSystem = new SoyFileSystem();
 
@@ -75,6 +75,7 @@ function executeFile(path, argsRaw, outputShell) {
     return;
   }
   eval(data + "\nprograms.unshift(new ProgramSource)");
+  programs[0].filepath = path;
   programs[0].load(argsRaw, outputShell);
 }
 

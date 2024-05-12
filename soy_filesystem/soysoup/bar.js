@@ -10,11 +10,11 @@ class ProgramSource extends Program {
       setTimeout(function () {
         if (percent == 101) {
           outputShell.println("finished the important task!");
+          self.quit();
           return;
         }
         self.showProgressBar(percent, outputShell);
       }, 40 * percent);
     }
-    this.quit();
   }
 }
