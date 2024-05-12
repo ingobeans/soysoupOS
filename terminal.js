@@ -52,13 +52,20 @@ document.addEventListener("keydown", function (event) {
 });
 
 document.addEventListener("paste", (event) => {
-  clipboardText = event.clipboardData.getData("text");
+  const clipboardText = event.clipboardData.getData("text");
   for (let index = 0; index < clipboardText.length; index++) {
     const character = clipboardText[index];
-    defaultShell.onKeypress(character);
+    // Create a new keydown event
+    const keydownEvent = new KeyboardEvent("keydown", {
+      key: character,
+      keyCode: character.charCodeAt(0),
+      which: character.charCodeAt(0),
+    });
+    document.dispatchEvent(keydownEvent);
   }
-  // make pasting text act as if each character was individually pressed
+  event.preventDefault();
 });
+// make pasting text act as if each character was individually pressed
 
 terminalPath = "soysoup/terminal.soup";
 if (fileSystem.isFile(terminalPath) != true) {

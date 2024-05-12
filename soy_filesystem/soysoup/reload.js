@@ -1,5 +1,5 @@
 class ProgramSource extends Program {
-  load(args, outputShell) {
+  load(args) {
     fileSystem.loadFromString(systemFiles);
     this.quit();
   }

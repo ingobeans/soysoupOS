@@ -1,10 +1,11 @@
 class ProgramSource extends Program {
-  load(args, outputShell) {
+  load(args) {
     if (fileSystem.pathExists(args) == false || !fileSystem.isFile(args)) {
-      outputShell.println("error: path doesn't exist or is not a file");
+      this.outputShell.println("error: path doesn't exist or is not a file");
+      this.quit();
       return;
     }
-    outputShell.println(fileSystem.readFile(args));
+    this.outputShell.println(fileSystem.readFile(args));
     this.quit();
   }
 }

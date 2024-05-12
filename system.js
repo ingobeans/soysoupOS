@@ -51,7 +51,7 @@ class Program {
     }
     console.log("PID " + index + " quit");
   }
-  load(args, outputShell) {}
+  load(args) {}
   update() {}
   onKeypress(key) {}
 }
@@ -75,6 +75,7 @@ function executeFile(path, argsRaw, outputShell) {
     return;
   }
   eval(data + "\nprograms.unshift(new ProgramSource)");
+  programs[0].outputShell = outputShell;
   programs[0].filepath = path;
   programs[0].load(argsRaw, outputShell);
 }

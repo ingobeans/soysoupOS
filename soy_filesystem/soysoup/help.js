@@ -1,5 +1,5 @@
 class ProgramSource extends Program {
-  load(args, outputShell) {
+  load(args) {
     var helpMessage = `cat - read contents of file
 echo - print a string to shell
 exit - close terminal instance
@@ -9,7 +9,7 @@ proc - list or terminate processes
 reload - reset file system
 cls - clears the terminal
 terminal - open new instance of terminal`;
-    outputShell.println(helpMessage);
+    this.outputShell.println(helpMessage);
     this.quit();
   }
 }

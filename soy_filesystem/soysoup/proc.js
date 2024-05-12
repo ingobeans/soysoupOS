@@ -1,8 +1,8 @@
 class ProgramSource extends Program {
-  load(args, outputShell) {
+  load(args) {
     var parts = parseToParts(args);
     if (!args || (parts[0] != "list" && parts[0] != "kill")) {
-      outputShell.println(
+      this.outputShell.println(
         `error: missing or incorrect args. use 'proc list' to list processes or 'proc kill <process ID>' to terminate a process.`
       );
       this.quit();
@@ -18,7 +18,7 @@ class ProgramSource extends Program {
           " - " +
           program.filepath.split("/")[program.filepath.split("/").length - 1];
       }
-      outputShell.println(text);
+      this.outputShell.println(text);
     }
     this.quit();
   }

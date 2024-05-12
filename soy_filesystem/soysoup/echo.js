@@ -1,6 +1,6 @@
 class ProgramSource extends Program {
-  load(args, outputShell) {
-    outputShell.println(args);
+  load(args) {
+    this.outputShell.println(args);
     this.quit();
   }
 }

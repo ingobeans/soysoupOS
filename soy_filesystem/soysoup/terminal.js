@@ -68,9 +68,8 @@ class ProgramSource extends Program {
 
     this.flush();
   }
-  load(args, outputShell) {
+  load(args) {
     var self = this;
-    this.outputShell = outputShell;
     this.shell = new Shell(function (text) {
       console.log(text);
       //self.text = text;

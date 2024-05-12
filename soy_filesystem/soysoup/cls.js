@@ -1,7 +1,7 @@
 class ProgramSource extends Program {
-  load(args, outputShell) {
-    outputShell.text = "";
-    outputShell.flush();
+  load(args) {
+    this.outputShell.text = "";
+    this.outputShell.flush();
     this.quit();
   }
 }
