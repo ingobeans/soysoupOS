@@ -11,7 +11,7 @@ function insert(origString, stringToAdd, indexPosition) {
 }
 
 class CommandlineInput {
-  constructor(outputShell, allowMultiline = true) {
+  constructor(outputShell) {
     this.outputShell = outputShell;
   }
   async prompt(question = ">", allowMultiline = true) {

@@ -1,11 +1,11 @@
-systemVersion = "0.2.4";
+systemVersion = "0.2.6";
 
 fileSystem = new SoyFileSystem();
 
 fileSystem.loadFromString(systemFiles);
 
 function printConsole(string) {
-  console.log(string);
+  //console.log(string);
   printOut(string);
 }
 
@@ -40,7 +40,9 @@ class Shell {
 
 var defaultShell = new Shell(printConsole);
 defaultShell.onKeypress = function (key) {
-  programs[0].onKeypress(key);
+  if (programs.length > 0) {
+    programs[0].onKeypress(key);
+  }
 };
 
 class Program {
@@ -48,6 +50,9 @@ class Program {
     const index = programs.indexOf(this);
     if (index > -1) {
       programs.splice(index, 1);
+    }
+    if (this.exitResolve != undefined) {
+      this.exitResolve();
     }
     this.outputShell.flush();
     console.log("PID " + index + " quit");
@@ -69,7 +74,7 @@ function splitAtLastOccurrence(str, delimiter) {
 
 var programs = [];
 
-function executeFile(path, argsRaw, outputShell) {
+function executeFile(path, argsRaw, outputShell, exitResolve) {
   var data = fileSystem.readFile(path);
   if (data.includes("ProgramSource") == false) {
     outputShell.println("error: the program " + path + " is invalid.");
@@ -78,6 +83,7 @@ function executeFile(path, argsRaw, outputShell) {
   eval(data + "\nprograms.unshift(new ProgramSource)");
   programs[0].outputShell = outputShell;
   programs[0].filepath = path;
+  programs[0].exitResolve = exitResolve;
   programs[0].load(argsRaw, outputShell);
 }
 
@@ -121,9 +127,19 @@ function executeCommand(command, shell = defaultShell) {
     path = "soysoup/" + keyword + ".soup";
   }
   if (fileSystem.isFile(path)) {
-    executeFile(path, command.slice(keyword.length + 1), outputShell);
-    return;
+    var exitResolve = undefined;
+    var promise = new Promise((resolve) => {
+      exitResolve = resolve;
+    });
+    executeFile(
+      path,
+      command.slice(keyword.length + 1),
+      outputShell,
+      exitResolve
+    );
+    return promise;
   }
 
   outputShell.println("error: unknown command '" + keyword + "'");
+  return;
 }
