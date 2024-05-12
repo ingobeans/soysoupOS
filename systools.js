@@ -77,8 +77,8 @@ class CommandlineInput {
           this.useHistory
         ) {
           this.commandHistory.unshift(this.currentLineInput);
-          this.historyIndex = -1;
         }
+        this.historyIndex = -1;
         return;
       }
     }
