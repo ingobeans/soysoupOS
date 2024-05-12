@@ -1,24 +1,12 @@
 systemVersion = "0.2.3";
 
-Number.prototype.clamp = function (min, max) {
-  return Math.min(Math.max(this, min), max);
-};
-
 fileSystem = new SoyFileSystem();
 
 fileSystem.loadFromString(systemFiles);
 
 function printConsole(string) {
-  console.log(string);
+  //console.log(string);
   printOut(string);
-}
-
-function insert(origString, stringToAdd, indexPosition) {
-  return (
-    origString.slice(0, indexPosition) +
-    stringToAdd +
-    origString.slice(indexPosition)
-  );
 }
 
 class Shell {
