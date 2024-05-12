@@ -15,7 +15,7 @@ class CommandlineInput {
     this.outputShell = outputShell;
     this.useHistory = useHistory;
 
-    this.commandHistory = [];
+    this.messageHistory = [];
     this.historyIndex = -1;
   }
   async prompt(question = ">", allowMultiline = true) {
@@ -73,10 +73,10 @@ class CommandlineInput {
         this.outputShell.flush();
         if (
           this.currentLineInput != "" &&
-          this.commandHistory[0] != this.currentLineInput &&
+          this.messageHistory[0] != this.currentLineInput &&
           this.useHistory
         ) {
-          this.commandHistory.unshift(this.currentLineInput);
+          this.messageHistory.unshift(this.currentLineInput);
         }
         this.historyIndex = -1;
         return;
@@ -86,16 +86,16 @@ class CommandlineInput {
     // for history navigation:
     else if (event.key === "ArrowUp" && this.useHistory) {
       event.preventDefault();
-      if (this.historyIndex < this.commandHistory.length - 1) {
+      if (this.historyIndex < this.messageHistory.length - 1) {
         this.historyIndex++;
-        this.currentLineInput = this.commandHistory[this.historyIndex];
+        this.currentLineInput = this.messageHistory[this.historyIndex];
         this.selectionIndex = this.currentLineInput.length;
       }
     } else if (event.key === "ArrowDown" && this.useHistory) {
       event.preventDefault();
       if (this.historyIndex > 0) {
         this.historyIndex--;
-        this.currentLineInput = this.commandHistory[this.historyIndex];
+        this.currentLineInput = this.messageHistory[this.historyIndex];
         this.selectionIndex = this.currentLineInput.length;
       } else if (this.historyIndex === 0) {
         this.historyIndex = -1;
