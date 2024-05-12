@@ -5,5 +5,6 @@ class ProgramSource extends Program {
       return;
     }
     outputShell.println(fileSystem.readFile(args));
+    this.quit();
   }
 }

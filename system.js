@@ -1,4 +1,4 @@
-systemVersion = "0.1.5";
+systemVersion = "0.2.0";
 
 fileSystem = new SoyFileSystem();
 
@@ -14,6 +14,7 @@ class Shell {
     this.outputFunction = outputFunction;
     this.text = "";
   }
+  onKeypress(key) {}
   print(text, flush = true) {
     this.text += text;
 
@@ -38,6 +39,9 @@ class Shell {
 }
 
 var defaultShell = new Shell(printConsole);
+defaultShell.onKeypress = function (key) {
+  programs[0].onKeypress(key);
+};
 
 class Program {
   quit() {
@@ -49,6 +53,7 @@ class Program {
   }
   load(args, outputShell) {}
   update() {}
+  onKeypress(key) {}
 }
 
 function splitAtLastOccurrence(str, delimiter) {
@@ -83,8 +88,8 @@ function parseToParts(command) {
   return parts;
 }
 
-function executeCommand(command) {
-  var outputShell = defaultShell;
+function executeCommand(command, shell = defaultShell) {
+  var outputShell = shell;
 
   if (command.indexOf(">") != -1) {
     var splitted = splitAtLastOccurrence(command, ">");

@@ -6,5 +6,6 @@ ls - list contents of directory
 reload - reset file system
 cls - clears the terminal`;
     outputShell.println(helpMessage);
+    this.quit();
   }
 }

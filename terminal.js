@@ -1,6 +1,4 @@
-const inputElement = document.getElementById("prompt");
 const terminalElement = document.getElementById("terminal");
-const promptSpanElement = document.getElementById("prompt-span");
 const outputElement = document.getElementById("output");
 
 function printOut(text, color = "inherit") {
@@ -38,111 +36,32 @@ function printOutLine(text, color = "inherit") {
   window.scrollTo(0, document.body.scrollHeight);
 }
 
-function setPrefix(prefix) {
-  promptSpanElement.innerText = prefix;
-  promptSpanElement.appendChild(inputElement);
-}
-
 let commandHistory = [];
 let historyIndex = -1;
 
-inputElement.addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
-    let value = inputElement.value;
-    console.log('"' + value + '"');
-    defaultShell.println(">" + value);
-    if (value.endsWith("\\")) {
-      currentInput = currentInput + value.substring(0, value.length - 1) + "\n";
-    } else if (currentInput + value) {
-      executeCommand(currentInput + value);
-      currentInput = "";
-    }
-    inputElement.value = "";
-
-    if (value != "") {
-      commandHistory.unshift(value);
-      historyIndex = -1;
-    }
-  }
-
-  // for history navigation:
-  else if (event.key === "ArrowUp") {
-    event.preventDefault();
-    if (historyIndex < commandHistory.length - 1) {
-      historyIndex++;
-      inputElement.value = commandHistory[historyIndex];
-      inputElement.setSelectionRange(
-        inputElement.value.length,
-        inputElement.value.length
-      );
-    }
-  } else if (event.key === "ArrowDown") {
-    event.preventDefault();
-    if (historyIndex > 0) {
-      historyIndex--;
-      inputElement.value = commandHistory[historyIndex];
-      inputElement.setSelectionRange(
-        inputElement.value.length,
-        inputElement.value.length
-      );
-    } else if (historyIndex === 0) {
-      historyIndex = -1;
-      inputElement.value = "";
-      // show empty input at top of history
-    }
-  }
-
-  // for auto completions
-  else if (event.key === "Tab") {
-    event.preventDefault();
-    var selectionIndex = inputElement.selectionStart;
-    inputElement.value =
-      inputElement.value.slice(0, selectionIndex) +
-      "    " +
-      inputElement.value.slice(selectionIndex);
-
-    inputElement.selectionStart = selectionIndex + 4;
-    inputElement.selectionEnd = selectionIndex + 4;
-    return; // will replace tab indenting with tab completions later on
-    let value =
-      inputElement.value.split(" ")[inputElement.value.split(" ").length - 1]; // auto complete the last word in input only
-    if (value == "") {
-      return;
-    }
-
-    let directoryContents = fileSystem.readDirectory("");
-
-    for (const content of directoryContents) {
-      if (content.startsWith(value)) {
-        inputElement.value =
-          inputElement.value.substring(
-            0,
-            inputElement.value.length - value.length
-          ) + content;
-        break;
-      }
-    }
-  }
-});
-
-function setFocusToPrompt() {
-  inputElement.focus();
-}
-function keyPressed(event) {
+document.addEventListener("keydown", function (event) {
   const selection = window.getSelection().toString().trim();
   // check to stop focus being moved while the user is selecting text
   // without this check, the user can't copy paste text, as the focus is moved from the text selection to input box
 
-  if (!selection && document.activeElement !== inputElement) {
-    setFocusToPrompt();
+  if (selection || event.ctrlKey) {
+    return;
+  } else {
+    defaultShell.onKeypress(event);
   }
+});
+
+document.addEventListener("paste", (event) => {
+  clipboardText = event.clipboardData.getData("text");
+  for (let index = 0; index < clipboardText.length; index++) {
+    const character = clipboardText[index];
+    defaultShell.onKeypress(character);
+  }
+  // make pasting text act as if each character was individually pressed
+});
+
+terminalPath = "soysoup/terminal.soup";
+if (fileSystem.isFile(terminalPath) != true) {
+  defaultShell.println("error: terminal is missing");
 }
-
-document.addEventListener("keydown", keyPressed);
-
-var currentInput = "";
-
-setPrefix(">");
-defaultShell.println(
-  "booted soysoupOS v" + systemVersion + "\ntype 'help' for help"
-);
+executeFile(terminalPath, "", defaultShell);

@@ -5,7 +5,6 @@ class ProgramSource extends Program {
     outputShell.flush();
   }
   load(args, outputShell) {
-    this.showProgressBar(10, outputShell);
     var self = this;
     for (let percent = 0; percent <= 101; percent++) {
       setTimeout(function () {
@@ -16,5 +15,6 @@ class ProgramSource extends Program {
         self.showProgressBar(percent, outputShell);
       }, 40 * percent);
     }
+    this.quit();
   }
 }

@@ -8,5 +8,6 @@ class ProgramSource extends Program {
       return;
     }
     outputShell.println(fileSystem.readDirectory(args).join("\n"));
+    this.quit();
   }
 }
