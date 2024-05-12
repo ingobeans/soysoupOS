@@ -1,3 +1,5 @@
+illeagal_characters = ["\n", ":", "<", ">", '"', "|", "?", "*"];
+
 class SoyFileSystem {
   constructor() {
     this.root = {
@@ -11,7 +13,12 @@ class SoyFileSystem {
     const fileName = segments.pop();
     const directory = this.traverse(segments);
 
-    if (!directory || directory.content[fileName] || !path) {
+    if (
+      !directory ||
+      directory.content[fileName] ||
+      !path ||
+      illeagal_characters.some((v) => path.includes(v))
+    ) {
       console.error("File already exists or invalid path.");
       return;
     }
@@ -29,7 +36,11 @@ class SoyFileSystem {
     const fileName = segments.pop();
     const directory = this.traverse(segments);
 
-    if (!directory || !directory.content[fileName]) {
+    if (
+      !directory ||
+      !directory.content[fileName] ||
+      illeagal_characters.some((v) => path.includes(v))
+    ) {
       return false;
     }
 
@@ -41,7 +52,11 @@ class SoyFileSystem {
     const directoryName = segments.pop();
     const directory = this.traverse(segments);
 
-    if (!directory || directory.content[directoryName]) {
+    if (
+      !directory ||
+      directory.content[directoryName] ||
+      illeagal_characters.some((v) => path.includes(v))
+    ) {
       console.error("Directory already exists or invalid path.");
       return;
     }
@@ -60,7 +75,8 @@ class SoyFileSystem {
     if (
       !directory ||
       !directory.content[fileName] ||
-      directory.content[fileName].type !== "file"
+      directory.content[fileName].type !== "file" ||
+      illeagal_characters.some((v) => path.includes(v))
     ) {
       console.error("File not found or invalid path.");
       return null;
@@ -77,7 +93,8 @@ class SoyFileSystem {
     if (
       !directory ||
       !directory.content[fileName] ||
-      directory.content[fileName].type !== "file"
+      directory.content[fileName].type !== "file" ||
+      illeagal_characters.some((v) => path.includes(v))
     ) {
       console.error("File not found or invalid path.");
       return;
@@ -90,7 +107,11 @@ class SoyFileSystem {
     const segments = this.getPathSegments(path);
     const directory = this.traverse(segments);
 
-    if (!directory || directory.type !== "directory") {
+    if (
+      !directory ||
+      directory.type !== "directory" ||
+      illeagal_characters.some((v) => path.includes(v))
+    ) {
       console.error("Directory not found or invalid path.");
       return null;
     }
@@ -130,7 +151,11 @@ class SoyFileSystem {
     const oldName = segments.pop();
     const directory = this.traverse(segments);
 
-    if (!directory || !directory.content[oldName]) {
+    if (
+      !directory ||
+      !directory.content[oldName] ||
+      illeagal_characters.some((v) => path.includes(v))
+    ) {
       console.error("File or directory not found or invalid path.");
       return;
     }
