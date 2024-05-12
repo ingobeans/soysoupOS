@@ -5,7 +5,7 @@ class ProgramSource extends Program {
       fileSystem.isFile(args) == true
     ) {
       this.outputShell.println(
-        "error: path doesn't exist or is not a directory"
+        error("path doesn't exist or is not a directory")
       );
       this.quit();
       return;

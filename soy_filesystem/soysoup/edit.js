@@ -10,7 +10,7 @@ class ProgramSource extends Program {
   }
   async load(args) {
     if (!args || fileSystem.isValidParentDirectory(args) != true) {
-      this.outputShell.println("error: path doesn't exist");
+      this.outputShell.println(error("path doesn't exist"));
       this.quit();
       return;
     }

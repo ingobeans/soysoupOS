@@ -81,7 +81,7 @@ function executeFile(path, argsRaw, outputShell) {
   });
   var data = fileSystem.readFile(path);
   if (data.includes("ProgramSource") == false) {
-    outputShell.println("error: the program " + path + " is invalid.");
+    outputShell.println(error("the program " + path + " is invalid."));
     return;
   }
   eval(data + "\nprograms.unshift(new ProgramSource)");
@@ -142,6 +142,6 @@ function executeCommand(command, shell = defaultShell) {
     return executeFile(path, command.slice(keyword.length + 1), outputShell);
   }
 
-  outputShell.println("error: unknown command '" + keyword + "'");
+  outputShell.println(error("unknown command '" + keyword + "'"));
   return;
 }

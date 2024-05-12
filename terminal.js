@@ -71,7 +71,7 @@ document.addEventListener("paste", (event) => {
 async function createTerminal() {
   terminalPath = "soysoup/terminal.soup";
   if (fileSystem.isFile(terminalPath) != true) {
-    defaultShell.println("error: terminal is missing");
+    defaultShell.println(error("terminal is missing"));
   }
   await executeFile(terminalPath, "", defaultShell);
 

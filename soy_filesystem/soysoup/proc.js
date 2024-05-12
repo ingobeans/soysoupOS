@@ -7,7 +7,9 @@ class ProgramSource extends Program {
       (parts[0] == "kill" && parts.length == 1)
     ) {
       this.outputShell.println(
-        `error: missing or incorrect args. use 'proc list' to list processes or 'proc kill <process ID>' to terminate a process.`
+        error(
+          `missing or incorrect args. use 'proc list' to list processes or 'proc kill <process ID>' to terminate a process.`
+        )
       );
       // invalid args if args is empty, if the first argument is not list or kill, or if the first argument is kill but there is no argument for process ID
       this.quit();

@@ -1,6 +1,16 @@
+const RESET_COLOR = "\u001b[0m";
+const MUTED_COLOR = "\u001b[38;5;246m";
+const GREEN_COLOR = "\u001b[38;5;10m";
+const BLUE_COLOR = "\u001b[38;5;27m";
+const ERROR_COLOR = "\u001b[38;5;196m";
+
 Number.prototype.clamp = function (min, max) {
   return Math.min(Math.max(this, min), max);
 };
+
+function error(text) {
+  return ERROR_COLOR + "error: " + text + RESET_COLOR;
+}
 
 function insert(origString, stringToAdd, indexPosition) {
   return (
@@ -53,7 +63,12 @@ class CommandlineInput {
     }
     if (this.completeCheck(event)) {
       this.outputShell.text =
-        this.text + "\n" + this.question + this.currentLineInput;
+        this.text +
+        "\n" +
+        MUTED_COLOR +
+        this.question +
+        this.currentLineInput +
+        RESET_COLOR;
       this.promiseResolver(this.currentLineInput);
       this.finished = true;
       this.outputShell.flush();
@@ -126,8 +141,10 @@ class CommandlineInput {
     this.outputShell.text =
       this.text +
       "\n" +
+      MUTED_COLOR +
       this.question +
-      insert(this.currentLineInput, "|", this.selectionIndex);
+      insert(this.currentLineInput, "|", this.selectionIndex) +
+      RESET_COLOR;
 
     this.outputShell.flush();
   }
