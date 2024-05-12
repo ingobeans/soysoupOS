@@ -11,7 +11,7 @@ class SoyFileSystem {
     const fileName = segments.pop();
     const directory = this.traverse(segments);
 
-    if (!directory || directory.content[fileName]) {
+    if (!directory || directory.content[fileName] || !path) {
       console.error("File already exists or invalid path.");
       return;
     }

@@ -1,4 +1,4 @@
-systemVersion = "0.1.4";
+systemVersion = "0.1.5";
 
 fileSystem = new SoyFileSystem();
 
@@ -89,14 +89,16 @@ function executeCommand(command) {
   if (command.indexOf(">") != -1) {
     var splitted = splitAtLastOccurrence(command, ">");
     var outputDestination = splitted[1];
-    command = splitted[0];
-    outputShell = new Shell(function (text) {
-      if (fileSystem.isFile(outputDestination) != true) {
-        fileSystem.createFile(outputDestination, text);
-      } else {
-        fileSystem.writeFile(outputDestination, text);
-      }
-    });
+    if (outputDestination) {
+      command = splitted[0];
+      outputShell = new Shell(function (text) {
+        if (fileSystem.isFile(outputDestination) != true) {
+          fileSystem.createFile(outputDestination, text);
+        } else {
+          fileSystem.writeFile(outputDestination, text);
+        }
+      });
+    }
   }
 
   var args = parseToParts(command);
