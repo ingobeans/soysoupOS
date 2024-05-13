@@ -53,33 +53,43 @@ class CommandlineInput {
     }
     return str.slice(0, index) + str.slice(index + 1);
   }
-  completeCheck(event) {
-    return event.key == "Enter" && !event.shiftKey;
+  onSubmit() {
+    this.outputShell.text =
+      this.text +
+      "\n" +
+      MUTED_COLOR +
+      this.question +
+      this.currentLineInput +
+      RESET_COLOR;
+
+    this.promiseResolver(this.currentLineInput);
+    this.finished = true;
+    this.outputShell.flush();
+    if (
+      this.currentLineInput != "" &&
+      this.messageHistory[0] != this.currentLineInput &&
+      this.useHistory
+    ) {
+      this.messageHistory.unshift(this.currentLineInput);
+    }
+    this.historyIndex = -1;
+  }
+  customKeyEvent(event) {
+    // function gets called in onKeypress
+    // return true to block default event
+    // here custom functionality can be added, such as the enter key submitting the prompt
+
+    if (event.key == "Enter" && !event.shiftKey) {
+      this.onSubmit();
+      return true;
+    }
   }
 
   onKeypress(event) {
     if (this.finished) {
       return;
     }
-    if (this.completeCheck(event)) {
-      this.outputShell.text =
-        this.text +
-        "\n" +
-        MUTED_COLOR +
-        this.question +
-        this.currentLineInput +
-        RESET_COLOR;
-      this.promiseResolver(this.currentLineInput);
-      this.finished = true;
-      this.outputShell.flush();
-      if (
-        this.currentLineInput != "" &&
-        this.messageHistory[0] != this.currentLineInput &&
-        this.useHistory
-      ) {
-        this.messageHistory.unshift(this.currentLineInput);
-      }
-      this.historyIndex = -1;
+    if (this.customKeyEvent(event)) {
       return;
     } else if (event.key.length == 1 && !event.ctrlKey) {
       this.currentLineInput = insert(

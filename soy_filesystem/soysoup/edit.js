@@ -1,6 +1,19 @@
 class MultitextInput extends CommandlineInput {
-  completeCheck(event) {
-    return event.key == "x" && event.ctrlKey;
+  customKeyEvent(event) {
+    // make CTRL + X 'submit' the input, rather than enter
+
+    if (event.key == "x" && event.ctrlKey) {
+      this.onSubmit();
+      return true;
+    }
+  }
+
+  flush() {
+    //overwrite the flush function to also include the message at the bottom
+
+    super.flush();
+    // the normal code can still run, just need to add a print at end of file
+    this.outputShell.println("[Use CTRL+X to save and exit]");
   }
 }
 
