@@ -1,4 +1,4 @@
-systemVersion = "0.2.11";
+systemVersion = "0.2.12";
 
 fileSystem = new SoyFileSystem();
 
@@ -63,6 +63,11 @@ class Program {
     return (
       fileSystem.pathExists(actualPath) && fileSystem.isFile(actualPath) != true
     );
+  }
+  pathExists(path) {
+    var actualPath = getActualPath(path, this.cwd);
+
+    return fileSystem.pathExists(actualPath);
   }
   fileExists(path) {
     var actualPath = getActualPath(path, this.cwd);
@@ -206,7 +211,7 @@ function executeCommand(command, outputShell, cwd) {
 
   var path = getActualPath(fileSystem.normalizePath(keyword), cwd);
 
-  if (fileSystem.readDirectory("soysoup").includes(keyword + ".soup")) {
+  if (fileSystem.isFile("soysoup/" + keyword + ".soup")) {
     path = "soysoup/" + keyword + ".soup";
   }
   if (fileSystem.isFile(path)) {

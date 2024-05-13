@@ -8,7 +8,7 @@ class SoyFileSystem {
     };
   }
   normalizePath(path) {
-    return this.getPathSegments(path).join("/") + "/";
+    return this.getPathSegments(path.trim()).join("/") + "/";
   }
 
   createFile(path, content) {

@@ -29,11 +29,12 @@ class ProgramSource extends Program {
 
     if (text.indexOf(">") != -1) {
       var splitted = splitAtLastOccurrence(text, ">");
+      var self = this;
       var outputDestination = splitted[1];
       if (outputDestination && this.isValidParentDirectory(outputDestination)) {
         text = splitted[0];
         commandOutputShell = new Shell(function (text) {
-          this.writeFile(outputDestination, text);
+          self.writeFile(outputDestination, text);
         });
       }
     }

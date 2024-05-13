@@ -10,8 +10,8 @@ class ProgramSource extends Program {
     var text = "";
 
     this.readDirectory(args).forEach((item) => {
-      var isFile = this.fileExists(path + item);
-      console.log(path + item);
+      var isFile = this.fileExists(args + item);
+      console.log(args + item);
       if (isFile == true) {
         text += GREEN_COLOR + item + "\n";
       } else {
