@@ -15,7 +15,6 @@ class MultitextInput extends CommandlineInput {
       this.flush();
       return true;
     }
-    console.log(event.key);
   }
 
   flush() {
