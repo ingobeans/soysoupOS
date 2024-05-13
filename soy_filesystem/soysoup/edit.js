@@ -1,11 +1,21 @@
 class MultitextInput extends CommandlineInput {
   customKeyEvent(event) {
-    // make CTRL + X 'submit' the input, rather than enter
+    // make CTRL + X 'submit' the input, rather than enter.
+    // also make tab add indent
 
     if (event.key == "x" && event.ctrlKey) {
       this.onSubmit();
       return true;
+      // returning true means blocking the default handling of the key
     }
+
+    if (event.key == "Tab" && !event.ctrlKey) {
+      console.log("tab");
+      this.writeCharacter("  ");
+      this.flush();
+      return true;
+    }
+    console.log(event.key);
   }
 
   flush() {

@@ -84,6 +84,14 @@ class CommandlineInput {
       return true;
     }
   }
+  writeCharacter(character) {
+    this.currentLineInput = insert(
+      this.currentLineInput,
+      character,
+      this.selectionIndex
+    );
+    this.selectionIndex += character.length;
+  }
 
   onKeypress(event) {
     if (this.finished) {
@@ -92,20 +100,10 @@ class CommandlineInput {
     if (this.customKeyEvent(event)) {
       return;
     } else if (event.key.length == 1 && !event.ctrlKey) {
-      this.currentLineInput = insert(
-        this.currentLineInput,
-        event.key,
-        this.selectionIndex
-      );
-      this.selectionIndex += 1;
+      this.writeCharacter(event.key);
     } else if (event.key == "Enter") {
       if (this.allowMultiline) {
-        this.currentLineInput = insert(
-          this.currentLineInput,
-          "\n",
-          this.selectionIndex
-        );
-        this.selectionIndex += 1;
+        this.writeCharacter("\n");
       }
     }
 
