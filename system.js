@@ -102,28 +102,25 @@ function parseToParts(command) {
   return parts;
 }
 
-function executeCommand(command, shell = defaultShell) {
+function executeCommand(command, outputShell, cwd) {
   if (!command) {
     return;
   }
-  var outputShell = shell;
-
   var args = parseToParts(command);
   var keyword = args.shift();
-
-  var path = keyword;
 
   if (!keyword) {
     return;
   }
 
+  var path = fileSystem.normalizePath(keyword);
+
   if (fileSystem.readDirectory("soysoup").includes(keyword + ".soup")) {
     path = "soysoup/" + keyword + ".soup";
   }
-  if (fileSystem.isFile(path)) {
+  if (fileSystem.isFile(cwd + path)) {
     return executeFile(path, command.slice(keyword.length + 1), outputShell);
   }
 
   outputShell.println(error("unknown command '" + keyword + "'"));
-  return;
 }

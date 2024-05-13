@@ -11,7 +11,7 @@ class ProgramSource extends Program {
       return;
     }
     var text = "";
-    var path = fileSystem.getPathSegments(args).join("/") + "/";
+    var path = fileSystem.normalizePath(args);
     fileSystem.readDirectory(args).forEach((item) => {
       var isFile = fileSystem.isFile(path + item);
       console.log(path + item);

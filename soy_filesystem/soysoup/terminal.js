@@ -27,7 +27,7 @@ class ProgramSource extends Program {
       }
     }
 
-    await executeCommand(text, commandOutputShell);
+    await executeCommand(text, commandOutputShell, this.cwd);
     this.startNewPrompt();
   }
   async startNewPrompt() {
@@ -36,6 +36,7 @@ class ProgramSource extends Program {
   }
   load(args) {
     this.prompt = new CommandlineInput(this.outputShell, true);
+    this.cwd = "/";
     this.outputShell.text =
       "booted soysoupOS v" + systemVersion + "\ntype 'help' for help";
 

@@ -7,6 +7,9 @@ class SoyFileSystem {
       content: {},
     };
   }
+  normalizePath(path) {
+    return this.getPathSegments(path).join("/") + "/";
+  }
 
   createFile(path, content) {
     const segments = this.getPathSegments(path);
