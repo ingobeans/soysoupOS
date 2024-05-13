@@ -13,7 +13,7 @@ class MultitextInput extends CommandlineInput {
 
     super.flush();
     // the normal code can still run, just need to add a print at end of file
-    this.outputShell.println("[Use CTRL+X to save and exit]");
+    this.outputShell.println("[use CTRL+X to save and exit]");
   }
 }
 
