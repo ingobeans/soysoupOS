@@ -7,9 +7,11 @@ edit - edit file by path
 exit - close terminal instance
 help - prints this
 ls - list contents of directory
+mkdir - create folder
 proc - list or terminate processes
 pwd - prints working directory
 reload - reset file system
+rm - remove file or folder
 cls - clears the terminal
 terminal - open new instance of terminal`;
     this.outputShell.println(helpMessage);
