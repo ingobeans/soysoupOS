@@ -69,6 +69,20 @@ class SoyFileSystem {
       content: {},
     };
   }
+  deletePath(path) {
+    const segments = this.getPathSegments(path);
+    const fileName = segments.pop();
+    const parentPath = this.getParentDirectory(path);
+    const parentSegments = this.getPathSegments(parentPath);
+    const parentDirectory = this.traverse(parentSegments);
+
+    if (!parentDirectory || !parentDirectory.content[fileName]) {
+      console.error("File or directory not found or invalid path.");
+      return;
+    }
+
+    delete parentDirectory.content[fileName];
+  }
 
   readFile(path) {
     const segments = this.getPathSegments(path);

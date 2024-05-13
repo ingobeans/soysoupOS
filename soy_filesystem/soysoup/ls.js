@@ -1,9 +1,6 @@
 class ProgramSource extends Program {
   load(args) {
-    if (
-      fileSystem.pathExists(args) == false ||
-      fileSystem.isFile(args) == true
-    ) {
+    if (!this.dirExists(args)) {
       this.outputShell.println(
         error("path doesn't exist or is not a directory")
       );
@@ -11,9 +8,9 @@ class ProgramSource extends Program {
       return;
     }
     var text = "";
-    var path = fileSystem.normalizePath(args);
-    fileSystem.readDirectory(args).forEach((item) => {
-      var isFile = fileSystem.isFile(path + item);
+
+    this.readDirectory(args).forEach((item) => {
+      var isFile = this.fileExists(path + item);
       console.log(path + item);
       if (isFile == true) {
         text += GREEN_COLOR + item + "\n";

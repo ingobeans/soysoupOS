@@ -3,8 +3,26 @@ class ProgramSource extends Program {
     this.prompt.onKeypress(event);
   }
   async handleSubmit(text) {
-    if (text == "exit") {
+    var args = parseToParts(text);
+    if (args[0] == "exit") {
       this.quit();
+      return;
+    }
+    if (args[0] == "cd") {
+      var targetPath = fileSystem.normalizePath(
+        getActualPath(args[1], this.cwd)
+      );
+      if (
+        fileSystem.pathExists(targetPath) &&
+        fileSystem.isFile(targetPath) != true
+      ) {
+        this.cwd = targetPath;
+      } else {
+        this.outputShell.println(
+          error("path doesn't exist or is not a directory")
+        );
+      }
+      this.startNewPrompt();
       return;
     }
     var commandOutputShell = this.outputShell;
@@ -12,17 +30,10 @@ class ProgramSource extends Program {
     if (text.indexOf(">") != -1) {
       var splitted = splitAtLastOccurrence(text, ">");
       var outputDestination = splitted[1];
-      if (
-        outputDestination &&
-        fileSystem.isValidParentDirectory(outputDestination)
-      ) {
+      if (outputDestination && this.isValidParentDirectory(outputDestination)) {
         text = splitted[0];
         commandOutputShell = new Shell(function (text) {
-          if (fileSystem.isFile(outputDestination) != true) {
-            fileSystem.createFile(outputDestination, text);
-          } else {
-            fileSystem.writeFile(outputDestination, text);
-          }
+          this.writeFile(outputDestination, text);
         });
       }
     }

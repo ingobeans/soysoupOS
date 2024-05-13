@@ -31,22 +31,22 @@ class ProgramSource extends Program {
     this.prompt.onKeypress(event);
   }
   async load(args) {
-    if (!args || fileSystem.isValidParentDirectory(args) != true) {
+    if (!args || this.isValidParentDirectory(args) != true) {
       this.outputShell.println(error("path doesn't exist"));
       this.quit();
       return;
     }
 
-    if (fileSystem.isFile(args) != true) {
-      fileSystem.createFile(args, "");
-    }
-
     this.prompt = new MultitextInput(this.outputShell);
     this.outputShell.text = "";
-    var contents = fileSystem.readFile(args);
+    var contents = "";
+
+    if (this.fileExists(args) == true) {
+      var contents = this.readFile(args);
+    }
 
     this.prompt.prompt("", true).then((newContents) => {
-      fileSystem.writeFile(args, newContents);
+      this.writeFile(args, newContents);
       this.outputShell.println("saved modified file to " + args);
       this.quit();
     });

@@ -1,4 +1,4 @@
-systemVersion = "0.2.9";
+systemVersion = "0.2.10";
 
 fileSystem = new SoyFileSystem();
 
@@ -57,6 +57,78 @@ class Program {
     this.outputShell.flush();
     console.log("PID " + index + " quit");
   }
+  dirExists(path) {
+    var actualPath = getActualPath(path, this.cwd);
+
+    return (
+      fileSystem.pathExists(actualPath) && fileSystem.isFile(actualPath) != true
+    );
+  }
+  fileExists(path) {
+    var actualPath = getActualPath(path, this.cwd);
+
+    return (
+      fileSystem.pathExists(actualPath) && fileSystem.isFile(actualPath) == true
+    );
+  }
+  isValidParentDirectory(path) {
+    var actualPath = getActualPath(path, this.cwd);
+
+    return fileSystem.isValidParentDirectory(actualPath);
+  }
+
+  readFile(path) {
+    var actualPath = getActualPath(path, this.cwd);
+
+    if (
+      !fileSystem.isValidParentDirectory(actualPath) ||
+      fileSystem.isFile(actualPath) != true
+    ) {
+      console.error("Invalid path.");
+      return;
+    }
+    return fileSystem.readFile(actualPath);
+  }
+
+  writeFile(path, content) {
+    var actualPath = getActualPath(path, this.cwd);
+
+    if (!fileSystem.isValidParentDirectory(actualPath)) {
+      console.error("Invalid path.");
+      return;
+    }
+    if (fileSystem.isFile(actualPath) != true) {
+      fileSystem.createFile(actualPath, content);
+      return;
+    }
+    fileSystem.writeFile(actualPath, content);
+  }
+
+  deleteItem(path) {
+    var actualPath = getActualPath(path, this.cwd);
+    if (
+      !fileSystem.isValidParentDirectory(actualPath) ||
+      !fileSystem.pathExists(actualPath)
+    ) {
+      console.error("Invalid path.");
+      return;
+    }
+    fileSystem.deletePath(actualPath);
+  }
+
+  readDirectory(path) {
+    var actualPath = getActualPath(path, this.cwd);
+
+    if (
+      !fileSystem.pathExists(actualPath) ||
+      fileSystem.isFile(actualPath) == true
+    ) {
+      console.error("Invalid path.");
+      return;
+    }
+    return fileSystem.readDirectory(actualPath);
+  }
+
   load(args) {}
   update() {}
   onKeypress(key) {}
@@ -74,7 +146,7 @@ function splitAtLastOccurrence(str, delimiter) {
 
 var programs = [];
 
-function executeFile(path, argsRaw, outputShell) {
+function executeFile(path, argsRaw, outputShell, cwd) {
   var exitResolve = undefined;
   var promise = new Promise((resolve) => {
     exitResolve = resolve;
@@ -86,6 +158,7 @@ function executeFile(path, argsRaw, outputShell) {
   }
   eval(data + "\nprograms.unshift(new ProgramSource)");
   programs[0].outputShell = outputShell;
+  programs[0].cwd = cwd;
   programs[0].filepath = path;
   programs[0].exitResolve = exitResolve;
   programs[0].load(argsRaw, outputShell);
@@ -102,6 +175,14 @@ function parseToParts(command) {
   return parts;
 }
 
+function getActualPath(text, cwd) {
+  // function to get an absolute path to a path that could either be local or absolute
+  if (text.startsWith("/")) {
+    return fileSystem.normalizePath(text);
+  }
+  return fileSystem.normalizePath(cwd + fileSystem.normalizePath(text));
+}
+
 function executeCommand(command, outputShell, cwd) {
   if (!command) {
     return;
@@ -113,13 +194,18 @@ function executeCommand(command, outputShell, cwd) {
     return;
   }
 
-  var path = fileSystem.normalizePath(keyword);
+  var path = getActualPath(fileSystem.normalizePath(keyword), cwd);
 
   if (fileSystem.readDirectory("soysoup").includes(keyword + ".soup")) {
     path = "soysoup/" + keyword + ".soup";
   }
-  if (fileSystem.isFile(cwd + path)) {
-    return executeFile(path, command.slice(keyword.length + 1), outputShell);
+  if (fileSystem.isFile(path)) {
+    return executeFile(
+      path,
+      command.slice(keyword.length + 1),
+      outputShell,
+      cwd
+    );
   }
 
   outputShell.println(error("unknown command '" + keyword + "'"));

@@ -10,7 +10,7 @@ Programs are executable files, identified by the .soup file extension. Inside th
 
 When the program is launched, the class' `load(args: string)` function will be called. Args is the arguments the program was launched with, in string format.
 
-When the program is launched, it will also have 2 properties asigned, these being `outputShell`, and `filepath`. OutputShell is an object of class shell. Some basic use for the shell is to print. To do this, you can call either `this.outputShell.print(text: string, flush: boolean = true)` or `this.outputShell.println(text: string, flush: boolean = true)`. For more advanced control of the shell, the `this.outputShell.text` property along with the `this.outputShell.flush()` can be utilised.
+When the program is launched, it will also have 3 properties asigned, these being `outputShell`, `filepath` and `cwd`. OutputShell is an object of class shell. Some basic use for the shell is to print. To do this, you can call either `this.outputShell.print(text: string, flush: boolean = true)` or `this.outputShell.println(text: string, flush: boolean = true)`. For more advanced control of the shell, the `this.outputShell.text` property along with the `this.outputShell.flush()` can be utilised.
 
 ```js
 class ProgramSource extends Program {
