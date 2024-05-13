@@ -7,7 +7,27 @@ class ProgramSource extends Program {
       this.quit();
       return;
     }
-    await executeCommand(text, this.outputShell);
+    var commandOutputShell = this.outputShell;
+
+    if (text.indexOf(">") != -1) {
+      var splitted = splitAtLastOccurrence(text, ">");
+      var outputDestination = splitted[1];
+      if (
+        outputDestination &&
+        fileSystem.isValidParentDirectory(outputDestination)
+      ) {
+        text = splitted[0];
+        commandOutputShell = new Shell(function (text) {
+          if (fileSystem.isFile(outputDestination) != true) {
+            fileSystem.createFile(outputDestination, text);
+          } else {
+            fileSystem.writeFile(outputDestination, text);
+          }
+        });
+      }
+    }
+
+    await executeCommand(text, commandOutputShell);
     this.startNewPrompt();
   }
   async startNewPrompt() {
