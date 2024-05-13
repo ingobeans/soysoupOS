@@ -129,6 +129,16 @@ class Program {
     return fileSystem.readDirectory(actualPath);
   }
 
+  createDirectory(path) {
+    var actualPath = getActualPath(path, this.cwd);
+
+    if (!fileSystem.isValidParentDirectory(actualPath)) {
+      console.error("Invalid path.");
+      return;
+    }
+    return fileSystem.createDirectory(actualPath);
+  }
+
   load(args) {}
   update() {}
   onKeypress(key) {}
