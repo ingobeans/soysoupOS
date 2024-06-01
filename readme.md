@@ -26,7 +26,7 @@ The `this.quit()` calling is important, as it will 'close' the program and pass 
 
 If the user presses a key, the event will be sent to the class' `onKeypress(event)` function. If you just want to get user input via the terminal, you can use the `CommandlineInput` class. You can initialise a new object of this class to a variable, and pass the outputShell. You should also have the program's `onKeypress(event)` function forward the keypress to the variable, by in the `onKeypress(event)` calling the variable's `.onKeypress(event)`. Otherwise the prompt wont be able to receive key presses.
 
-When you actually want to prompt the user, you can use the variable's `.prompt(question: string, multiline: number)` function. You can await this function, to retrieve the result (note that the calling function should be async). Example:
+When you actually want to prompt the user, you can use the variable's `.prompt(question: string, multiline: boolean)` function. You can await this function, to retrieve the result (note that the calling function should be async). Example:
 
 ```js
 class ProgramSource extends Program {
