@@ -12,6 +12,10 @@ class ProgramSource extends Program {
     if (event.key == "s") {
       this.y += 1;
     }
+    if (event.key == "q") {
+      this.quit();
+      return;
+    }
     this.x = this.x.clamp(0, 49);
     this.y = this.y.clamp(0, 6);
     this.draw();
@@ -25,7 +29,7 @@ class ProgramSource extends Program {
     var grid = ("-".repeat(50) + "\n").repeat(7);
     var indexPosition = this.y * 51 + this.x;
     grid = grid.slice(0, indexPosition) + "#" + grid.slice(indexPosition + 1);
-    this.outputShell.text = grid + "\n\n[use WASD to move]";
+    this.outputShell.text = grid + "\n\n[use WASD to move, Q to exit]";
     this.outputShell.flush();
   }
 }
