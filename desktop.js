@@ -140,5 +140,5 @@ function drawSprite(x, y, width, height, image) {
 
 window.addEventListener("resize", resizeCanvas);
 
-executeFile("soysoup/console.soup", "", null, "/");
+executeFile("soysoup/programs/console.soup", "", null, "/");
 update();
