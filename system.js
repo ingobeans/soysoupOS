@@ -1,4 +1,4 @@
-systemVersion = "0.2.12";
+systemVersion = "0.3.0";
 
 fileSystem = new SoyFileSystem();
 
@@ -161,6 +161,16 @@ function splitAtLastOccurrence(str, delimiter) {
 
 var programs = [];
 
+function getDrawnPrograms() {
+  var p = [];
+  programs.forEach(function (program) {
+    if (typeof program.window === "object") {
+      p.push(program);
+    }
+  });
+  return p;
+}
+
 function executeFile(path, argsRaw, outputShell, cwd) {
   var exitResolve = undefined;
   var promise = new Promise((resolve) => {
@@ -168,10 +178,20 @@ function executeFile(path, argsRaw, outputShell, cwd) {
   });
   var data = fileSystem.readFile(path);
   if (data.includes("ProgramSource") == false) {
-    outputShell.println(error("the program " + path + " is invalid."));
+    outputShell.println(error("the program " + path + " has no entry point."));
     return;
   }
-  eval(data + "\nprograms.unshift(new ProgramSource)");
+  try {
+    eval(data + "\nprograms.unshift(new ProgramSource)");
+  } catch (e) {
+    if (e) {
+      console.log(e.toString());
+      outputShell.println(
+        error("the program " + path + " couldn't run. error: " + e.toString()),
+      );
+      return;
+    }
+  }
   programs[0].outputShell = outputShell;
   programs[0].cwd = cwd;
   programs[0].filepath = path;
@@ -192,6 +212,9 @@ function parseToParts(command) {
 
 function getActualPath(text, cwd) {
   // function to get an absolute path to a path that could either be local or absolute
+  if (!text) {
+    return fileSystem.normalizePath(cwd);
+  }
   if (text.startsWith("/")) {
     return fileSystem.normalizePath(text);
   }
@@ -219,7 +242,7 @@ function executeCommand(command, outputShell, cwd) {
       path,
       command.slice(keyword.length + 1),
       outputShell,
-      cwd
+      cwd,
     );
   }
 
