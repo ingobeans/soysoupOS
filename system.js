@@ -9,6 +9,16 @@ function printConsole(string) {
   printOut(string);
 }
 
+function handleProgramError(msg){
+  switch(msg){
+    case "ReferenceError: WindowComponent is not defined":
+      return "Program was designed to run in a desktop environment"
+      break;
+    default:
+      return msg;
+  }
+}
+
 class Shell {
   constructor(outputFunction) {
     this.outputFunction = outputFunction;
@@ -187,7 +197,7 @@ function executeFile(path, argsRaw, outputShell, cwd) {
     if (e) {
       console.log(e.toString());
       outputShell.println(
-        error("the program " + path + " couldn't run. error: " + e.toString()),
+        error("the program " + path + " couldn't run.\n" + handleProgramError(e.toString())),
       );
       return;
     }
