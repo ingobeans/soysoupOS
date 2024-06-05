@@ -1,4 +1,4 @@
-systemVersion = "0.3.0";
+systemVersion = "0.3.2";
 
 fileSystem = new SoyFileSystem();
 
@@ -7,6 +7,18 @@ fileSystem.loadFromString(systemFiles);
 function printConsole(string) {
   //console.log(string);
   printOut(string);
+}
+
+function handleProgramError(e){
+  var msg = e.toString()
+  switch(msg){
+    case "ReferenceError: WindowComponent is not defined":
+      return "program was designed to run in a desktop environment";
+    case "ReferenceError: ProgramSource is not defined":
+      return "program has no entry point";
+    default:
+      return msg;
+  }
 }
 
 class Shell {
@@ -177,17 +189,12 @@ function executeFile(path, argsRaw, outputShell, cwd) {
     exitResolve = resolve;
   });
   var data = fileSystem.readFile(path);
-  if (data.includes("ProgramSource") == false) {
-    outputShell.println(error("the program " + path + " has no entry point."));
-    return;
-  }
   try {
     eval(data + "\nprograms.unshift(new ProgramSource)");
   } catch (e) {
     if (e) {
-      console.log(e.toString());
       outputShell.println(
-        error("the program " + path + " couldn't run. error: " + e.toString()),
+        error("the program " + path + " couldn't run.\n" + handleProgramError(e)),
       );
       return;
     }
