@@ -70,8 +70,7 @@ class WindowComponent {
 class ComponentWindowBase extends WindowComponent {
   constructor(window, parent) {
     super(window, parent);
-    this.width = this.window.width;
-    this.height = this.window.height;
+    this.onWindowResize();
   }
   onWindowResize() {
     this.width = this.window.width;
@@ -142,7 +141,7 @@ class ProgramWindow {
   }
   onKeypress(event) {
     if (this.selectedComponent != -1) {
-      this.components[this.selectedComponent].onKeypress();
+      this.components[this.selectedComponent].onKeypress(event);
     }
   }
 }
@@ -164,11 +163,31 @@ function drawRect(x, y, width, height, color) {
   ctx.fillRect(x * scaling, y * scaling, width * scaling, height * scaling);
 }
 
+function removeAnsiCodes(str) {
+  const ansiRegex = /\u001b\[.*?m/g;
+  return str.replace(ansiRegex, "");
+}
+
 function drawText(x, y, text, color) {
+  text = removeAnsiCodes(text);
+  if (text.includes("\n")) {
+    var texts = text.split("\n");
+    texts.forEach(function (text_piece, index) {
+      drawText(x, y + index * (18 * scaling), text_piece, color);
+    });
+    return;
+  }
   ctx.fillStyle = color;
-  var size = math.floor(16 * scaling);
+  var size = Math.floor(16 * scaling);
   ctx.font = size + 'px "IBM Plex Mono", monospace';
   ctx.fillText(text, x * scaling, y * scaling + 16);
+}
+
+function getTextWidth(text, scaling) {
+  var size = Math.floor(16 * scaling);
+  ctx.font = size + 'px "IBM Plex Mono", monospace';
+  var metrics = ctx.measureText(text);
+  return metrics.width;
 }
 
 function drawSprite(x, y, width, height, image) {

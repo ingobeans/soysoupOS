@@ -1,19 +1,33 @@
 class ComponentConsole extends WindowComponent {
   constructor(window, parent) {
     super(window, parent);
-    this.width = this.window.width;
-    this.height = this.window.height;
+    this.onWindowResize();
+    this.shell = new Shell(this.shellOutputFunction);
+    executeFile("soysoup/terminal.soup", "", this.shell, "");
   }
+
+  shellOutputFunction(text) {}
   onWindowResize() {
     this.width = this.window.width;
     this.height = this.window.height;
   }
   draw() {
     this.drawRect(0, 0, this.width, this.height, "#000000");
+    this.drawText(0, 0, this.shell.text, "#ffffff");
     this.drawSubcomponents();
   }
-  onMousedown() {
-    console.log(this.window.selectedComponent);
+  getConsolePrograms() {
+    var consolePrograms = [];
+    for (var i = 0; i < programs.length; i++) {
+      const program = programs[i];
+      if (program.outputShell == this.shell) {
+        consolePrograms.push(program);
+      }
+    }
+    return consolePrograms;
+  }
+  onKeypress(event) {
+    this.getConsolePrograms()[0].onKeypress(event);
   }
 }
 

@@ -9,9 +9,9 @@ function printConsole(string) {
   printOut(string);
 }
 
-function handleProgramError(e){
-  var msg = e.toString()
-  switch(msg){
+function handleProgramError(e) {
+  var msg = e.toString();
+  switch (msg) {
     case "ReferenceError: WindowComponent is not defined":
       return "program was designed to run in a desktop environment";
     case "ReferenceError: ProgramSource is not defined":
@@ -194,7 +194,9 @@ function executeFile(path, argsRaw, outputShell, cwd) {
   } catch (e) {
     if (e) {
       outputShell.println(
-        error("the program " + path + " couldn't run.\n" + handleProgramError(e)),
+        error(
+          "the program " + path + " couldn't run.\n" + handleProgramError(e),
+        ),
       );
       return;
     }
