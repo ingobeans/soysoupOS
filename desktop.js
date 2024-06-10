@@ -1,5 +1,5 @@
 const canvas = document.getElementById("desktop");
-const ctx = canvas.getContext("2d");
+const mainCtx = canvas.getContext("2d");
 
 // colors
 colorBackground = "#9150d0";
@@ -31,32 +31,6 @@ class WindowComponent {
   onWindowResize() {}
   onKeypress(event) {}
   onMousedown(event) {}
-  drawRect(x, y, width, height, color) {
-    drawRect(
-      x + this.window.x + this.x,
-      y + this.window.y + this.y,
-      width,
-      height,
-      color,
-    );
-  }
-  drawText(x, y, text, color) {
-    drawText(
-      x + this.window.x + this.x,
-      y + this.window.y + this.y,
-      text,
-      color,
-    );
-  }
-  drawSprite(x, y, width, height, image) {
-    drawSprite(
-      x + this.window.x + this.x,
-      y + this.window.y + this.y,
-      width,
-      height,
-      image,
-    );
-  }
   drawSubcomponents() {
     this.subcomponents.forEach(function (subcomponent) {
       subcomponent.draw();
@@ -77,8 +51,9 @@ class ComponentWindowBase extends WindowComponent {
     this.height = this.window.height;
   }
   draw() {
-    this.drawRect(0, 0, this.width, this.height, colorBorder);
-    this.drawRect(
+    drawRect(this.window.ctx, 0, 0, this.width, this.height, colorBorder);
+    drawRect(
+      this.window.ctx,
       borderWidth,
       borderWidth,
       this.width - borderWidth * 2,
@@ -89,20 +64,24 @@ class ComponentWindowBase extends WindowComponent {
   }
 }
 
-function getWindowPosition() {
-  return [canvas.width / 2, canvas.height / 2];
+function getWindowPosition(width, height) {
+  return [canvas.width / 2 - width / 2, canvas.height / 2 - height / 2];
 }
 
 class ProgramWindow {
-  constructor(parent) {
+  constructor(parent, width, height) {
     this.parent;
-    this.width = 550;
-    this.height = 300;
-    var pos = getWindowPosition();
+    this.width = width;
+    this.height = height;
+    var pos = getWindowPosition(width, height);
     this.x = pos[0];
     this.y = pos[1];
     this.components = [];
     this.selectedComponent = -1;
+    this.canvas = document.createElement("canvas");
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.ctx = this.canvas.getContext("2d");
 
     var windowBase = new ComponentWindowBase(this, this);
     this.addComponent(windowBase);
@@ -147,9 +126,14 @@ class ProgramWindow {
 }
 
 function draw() {
-  drawRect(0, 0, canvas.width, canvas.height, colorBackground);
+  drawRect(mainCtx, 0, 0, canvas.width, canvas.height, colorBackground);
   getDrawnPrograms().forEach(function (program) {
     program.window.draw();
+    mainCtx.drawImage(
+      program.window.canvas,
+      program.window.x,
+      program.window.y,
+    );
   });
 }
 
@@ -158,7 +142,7 @@ function update() {
   requestAnimationFrame(update);
 }
 
-function drawRect(x, y, width, height, color) {
+function drawRect(ctx, x, y, width, height, color) {
   ctx.fillStyle = color;
   ctx.fillRect(x * scaling, y * scaling, width * scaling, height * scaling);
 }
@@ -168,12 +152,12 @@ function removeAnsiCodes(str) {
   return str.replace(ansiRegex, "");
 }
 
-function drawText(x, y, text, color) {
+function drawText(ctx, x, y, text, color) {
   text = removeAnsiCodes(text);
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {
-      drawText(x, y + index * (18 * scaling), text_piece, color);
+      drawText(ctx, x, y + index * (18 * scaling), text_piece, color);
     });
     return;
   }
@@ -183,14 +167,14 @@ function drawText(x, y, text, color) {
   ctx.fillText(text, x * scaling, y * scaling + 16);
 }
 
-function getTextWidth(text, scaling) {
+function getTextWidth(ctx, text, scaling) {
   var size = Math.floor(16 * scaling);
   ctx.font = size + 'px "IBM Plex Mono", monospace';
   var metrics = ctx.measureText(text);
   return metrics.width;
 }
 
-function drawSprite(x, y, width, height, image) {
+function drawSprite(ctx, x, y, width, height, image) {
   ctx.drawImage(
     image,
     x * scaling,

@@ -12,8 +12,8 @@ class ComponentConsole extends WindowComponent {
     this.height = this.window.height;
   }
   draw() {
-    this.drawRect(0, 0, this.width, this.height, "#000000");
-    this.drawText(0, 0, this.shell.text, "#ffffff");
+    drawRect(this.window.ctx, 0, 0, this.width, this.height, "#000000");
+    drawText(this.window.ctx, 0, 0, this.shell.text, "#ffffff");
     this.drawSubcomponents();
   }
   getConsolePrograms() {
@@ -33,7 +33,7 @@ class ComponentConsole extends WindowComponent {
 
 class WindowSource extends ProgramWindow {
   constructor(parent) {
-    super(parent);
+    super(parent, 550, 300);
     var consoleComponent = new ComponentConsole(this, this);
     this.addComponent(consoleComponent);
   }
