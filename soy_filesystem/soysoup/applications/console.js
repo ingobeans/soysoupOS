@@ -1,7 +1,15 @@
 class ComponentConsole extends WindowComponent {
   constructor(window, parent) {
-    super(window, parent);
-    this.onWindowResize();
+    super(window, parent, window.width, window.height);
+    this.outputText = new ComponentLabel(
+      this.window,
+      this,
+      this.width,
+      this.height,
+      "hh",
+      "#ffffff",
+    );
+    this.subcomponents.push(this.outputText);
     this.shell = new Shell(this.shellOutputFunction);
     executeFile("soysoup/terminal.soup", "", this.shell, "");
   }
@@ -12,9 +20,10 @@ class ComponentConsole extends WindowComponent {
     this.height = this.window.height;
   }
   draw() {
-    drawRect(this.window.ctx, 0, 0, this.width, this.height, "#000000");
-    drawText(this.window.ctx, 0, 0, this.shell.text, "#ffffff");
-    this.drawSubcomponents();
+    drawRect(this.ctx, 0, 0, this.width, this.height, "#000000");
+    this.outputText.text = this.shell.text;
+    //drawText(this.ctx, 0, 0, this.shell.text, "#ffffff");
+    super.draw();
   }
   getConsolePrograms() {
     var consolePrograms = [];

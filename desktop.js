@@ -18,33 +18,54 @@ function resizeCanvas() {
 resizeCanvas();
 
 class WindowComponent {
-  constructor(window, parent) {
+  constructor(window, parent, width, height) {
     this.parent = parent;
     this.window = window;
     this.x = 0;
     this.y = 0;
-    this.width = 10;
-    this.height = 10;
+    this.width = width;
+    this.height = height;
     this.subcomponents = [];
     this.clickable = true;
+    this.canvas = document.createElement("canvas");
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.ctx = this.canvas.getContext("2d");
+  }
+  clear() {
+    this.ctx.save();
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.restore();
   }
   onWindowResize() {}
   onKeypress(event) {}
   onMousedown(event) {}
-  drawSubcomponents() {
-    this.subcomponents.forEach(function (subcomponent) {
+  draw() {
+    for (var i = 0; i < this.subcomponents.length; i++) {
+      const subcomponent = this.subcomponents[i];
+      subcomponent.clear();
       subcomponent.draw();
-    });
+      this.ctx.drawImage(subcomponent.canvas, subcomponent.x, subcomponent.y);
+    }
+  }
+}
+
+class ComponentLabel extends WindowComponent {
+  constructor(window, parent, width, height, text, color) {
+    super(window, parent, width, height);
+    this.text = text;
+    this.color = color;
   }
   draw() {
-    this.drawSubcomponents();
+    drawText(this.ctx, this.x, this.y, this.text, this.color);
+    super.draw();
   }
 }
 
 class ComponentWindowBase extends WindowComponent {
   constructor(window, parent) {
-    super(window, parent);
-    this.onWindowResize();
+    super(window, parent, window.width, window.height);
   }
   onWindowResize() {
     this.width = this.window.width;
@@ -60,7 +81,7 @@ class ComponentWindowBase extends WindowComponent {
       this.height - borderWidth * 2,
       colorWindowBackground,
     );
-    this.drawSubcomponents();
+    super.draw();
   }
 }
 
@@ -89,10 +110,18 @@ class ProgramWindow {
   addComponent(component) {
     this.components.push(component);
   }
+  clear() {
+    this.ctx.save();
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.restore();
+  }
   draw() {
-    this.components.forEach(function (component) {
+    for (var i = 0; i < this.components.length; i++) {
+      const component = this.components[i];
       component.draw();
-    });
+      this.ctx.drawImage(component.canvas, component.x, component.y);
+    }
   }
   onMousedown(event) {
     var mouseX = event.clientX - this.x;
@@ -128,6 +157,7 @@ class ProgramWindow {
 function draw() {
   drawRect(mainCtx, 0, 0, canvas.width, canvas.height, colorBackground);
   getDrawnPrograms().forEach(function (program) {
+    program.window.clear();
     program.window.draw();
     mainCtx.drawImage(
       program.window.canvas,
@@ -222,6 +252,5 @@ document.addEventListener("keydown", function (event) {
 });
 
 window.addEventListener("resize", resizeCanvas);
-
 executeFile("soysoup/applications/console.soup", "", null, "/");
 update();
