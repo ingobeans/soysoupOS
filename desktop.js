@@ -16,6 +16,21 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
+function getComponentAbsoluteCoordinates(component) {
+  x = component.window.x;
+  y = component.window.y;
+
+  var currentComponent = component;
+  while (true) {
+    if (currentComponent.parent == component.window) {
+      return [x, y];
+    }
+    x += currentComponent.x;
+    y += currentComponent.y;
+    currentComponent = currentComponent.parent;
+  }
+}
+
 class Component {
   constructor(window, parent, width, height) {
     this.parent = parent;
@@ -30,6 +45,7 @@ class Component {
     this.canvas.width = width;
     this.canvas.height = height;
     this.ctx = this.canvas.getContext("2d");
+    this.selectedSubcomponent = -1;
   }
   clear() {
     this.ctx.save();
@@ -39,8 +55,41 @@ class Component {
   }
   onWindowResize() {}
   onKeypress(event) {}
-  onWheel(event) {}
-  onMousedown(event) {}
+  onWheel(event) {
+    var hovered = this.getHoveredSubcomponent(event);
+    if (hovered) {
+      hovered.onWheel(event);
+    }
+  }
+  onMousedown(event) {
+    var hovered = this.getHoveredSubcomponent(event);
+    if (hovered) {
+      this.selectedSubcomponent = this.subcomponents.indexOf(hovered);
+    }
+  }
+  getHoveredSubcomponent(event) {
+    var mouseX = event.clientX - this.x;
+    var mouseY = event.clientY - this.y;
+
+    for (let i = this.subcomponents.length - 1; i >= 0; i--) {
+      const component = this.subcomponents[i];
+      var componentCoords = getComponentAbsoluteCoordinates(component);
+      if (component.clickable) {
+        if (
+          mouseX > componentCoords[0] &&
+          mouseX < componentCoords[0] + component.width
+        ) {
+          if (
+            mouseY > componentCoords[1] &&
+            mouseY < componentCoords[1] + component.height
+          ) {
+            return component;
+          }
+        }
+      }
+    }
+    return false;
+  }
   draw() {
     for (var i = 0; i < this.subcomponents.length; i++) {
       const subcomponent = this.subcomponents[i];
@@ -66,6 +115,9 @@ class ComponentScrollBox extends Component {
   constructor(window, parent, width, height) {
     super(window, parent, width, height);
     this.scrollAmount = 0;
+  }
+  onWheel(event) {
+    this.scrollAmount -= Math.trunc(event.deltaY / 18 / 2) * 18;
   }
   draw() {
     for (var i = 0; i < this.subcomponents.length; i++) {
