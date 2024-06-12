@@ -17,23 +17,24 @@ class ComponentConsole extends Component {
     );
     this.scrollBox.subcomponents.push(this.outputText);
     this.subcomponents.push(this.scrollBox);
-    this.shell = new Shell(this.shellOutputFunction);
+    this.shell = new Shell(this.shellOutputFunction.bind(this));
     executeFile("soysoup/terminal.soup", "", this.shell, "");
   }
 
-  shellOutputFunction(text) {}
+  shellOutputFunction(text) {
+    var newText = text;
+    if (newText.startsWith("\n")) {
+      newText = newText.slice(1);
+    }
+    this.outputText.text = newText;
+    this.scrollBox.scrollAmount = (-newText.split("\n").length + 16) * 18;
+  }
   onWindowResize() {
     this.width = this.window.width;
     this.height = this.window.height;
   }
   draw() {
     drawRect(this.ctx, 0, 0, this.width, this.height, "#000000");
-    var text = this.shell.text;
-    if (text.startsWith("\n")) {
-      text = text.slice(1);
-    }
-    this.outputText.text = text;
-    //drawText(this.ctx, 0, 0, this.shell.text, "#ffffff");
     super.draw();
   }
   getConsolePrograms() {
