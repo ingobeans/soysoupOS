@@ -9,7 +9,14 @@ class ComponentConsole extends Component {
       "hello world",
       "#ffffff",
     );
-    this.subcomponents.push(this.outputText);
+    this.scrollBox = new ComponentScrollBox(
+      this.window,
+      this,
+      this.width,
+      this.height,
+    );
+    this.scrollBox.subcomponents.push(this.outputText);
+    this.subcomponents.push(this.scrollBox);
     this.shell = new Shell(this.shellOutputFunction);
     executeFile("soysoup/terminal.soup", "", this.shell, "");
   }
@@ -21,7 +28,11 @@ class ComponentConsole extends Component {
   }
   draw() {
     drawRect(this.ctx, 0, 0, this.width, this.height, "#000000");
-    this.outputText.text = this.shell.text;
+    var text = this.shell.text;
+    if (text.startsWith("\n")) {
+      text = text.slice(1);
+    }
+    this.outputText.text = text;
     //drawText(this.ctx, 0, 0, this.shell.text, "#ffffff");
     super.draw();
   }

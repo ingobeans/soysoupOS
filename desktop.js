@@ -7,7 +7,6 @@ colorWindowBackground = "#909090";
 colorBorder = "#454545";
 
 // other
-scaling = 1;
 borderWidth = 2;
 
 function resizeCanvas() {
@@ -40,6 +39,7 @@ class Component {
   }
   onWindowResize() {}
   onKeypress(event) {}
+  onWheel(event) {}
   onMousedown(event) {}
   draw() {
     for (var i = 0; i < this.subcomponents.length; i++) {
@@ -47,6 +47,39 @@ class Component {
       subcomponent.clear();
       subcomponent.draw();
       this.ctx.drawImage(subcomponent.canvas, subcomponent.x, subcomponent.y);
+    }
+  }
+}
+
+class ComponentRect extends Component {
+  constructor(window, parent, width, height, color) {
+    super(window, parent, width, height);
+    this.color = color;
+  }
+  draw() {
+    drawRect(this.ctx, 0, 0, this.width, this.height, this.color);
+    super.draw();
+  }
+}
+
+class ComponentScrollBox extends Component {
+  constructor(window, parent, width, height) {
+    super(window, parent, width, height);
+    this.scrollAmount = 0;
+  }
+  draw() {
+    for (var i = 0; i < this.subcomponents.length; i++) {
+      const subcomponent = this.subcomponents[i];
+      var oldHeight = subcomponent.ctx.canvas.height;
+      subcomponent.ctx.canvas.height -= this.scrollAmount;
+      subcomponent.clear();
+      subcomponent.draw();
+      this.ctx.drawImage(
+        subcomponent.canvas,
+        subcomponent.x,
+        subcomponent.y + this.scrollAmount,
+      );
+      subcomponent.ctx.canvas.height = oldHeight;
     }
   }
 }
@@ -152,6 +185,11 @@ class ProgramWindow {
       this.components[this.selectedComponent].onKeypress(event);
     }
   }
+  onWheel(event) {
+    if (this.selectedComponent != -1) {
+      this.components[this.selectedComponent].onWheel(event);
+    }
+  }
 }
 
 function draw() {
@@ -174,7 +212,13 @@ function update() {
 
 function drawRect(ctx, x, y, width, height, color) {
   ctx.fillStyle = color;
-  ctx.fillRect(x * scaling, y * scaling, width * scaling, height * scaling);
+  ctx.fillRect(
+    x,
+    y,
+
+    width,
+    height,
+  );
 }
 
 function removeAnsiCodes(str) {
@@ -187,31 +231,25 @@ function drawText(ctx, x, y, text, color) {
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {
-      drawText(ctx, x, y + index * (18 * scaling), text_piece, color);
+      drawText(ctx, x, y + index * 18, text_piece, color);
     });
     return;
   }
   ctx.fillStyle = color;
-  var size = Math.floor(16 * scaling);
+  var size = Math.floor(16);
   ctx.font = size + 'px "IBM Plex Mono", monospace';
-  ctx.fillText(text, x * scaling, y * scaling + 16);
+  ctx.fillText(text, x, y + 16);
 }
 
-function getTextWidth(ctx, text, scaling) {
-  var size = Math.floor(16 * scaling);
+function getTextWidth(ctx, text) {
+  var size = Math.floor(16);
   ctx.font = size + 'px "IBM Plex Mono", monospace';
   var metrics = ctx.measureText(text);
   return metrics.width;
 }
 
 function drawSprite(ctx, x, y, width, height, image) {
-  ctx.drawImage(
-    image,
-    x * scaling,
-    y * scaling,
-    width * scaling,
-    height * scaling,
-  );
+  ctx.drawImage(image, x, y, width, height);
 }
 
 function onMousedown(event) {
@@ -234,9 +272,7 @@ function onMousedown(event) {
   }
 }
 
-document.addEventListener("mousedown", onMousedown);
-
-document.addEventListener("keydown", function (event) {
+function onKeydown(event) {
   if (
     (event.key.length == 2 || event.key.length == 3) &&
     event.key.startsWith("F")
@@ -249,7 +285,15 @@ document.addEventListener("keydown", function (event) {
     return;
   }
   event.preventDefault();
-});
+}
+
+function onWheel(event) {
+  getDrawnPrograms()[0].window.onWheel(event);
+}
+
+document.addEventListener("mousedown", onMousedown);
+document.addEventListener("keydown", onKeydown);
+document.addEventListener("wheel", onWheel);
 
 window.addEventListener("resize", resizeCanvas);
 executeFile(
