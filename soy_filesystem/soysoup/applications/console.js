@@ -1,4 +1,4 @@
-class ComponentConsole extends WindowComponent {
+class ComponentConsole extends Component {
   constructor(window, parent) {
     super(window, parent, window.width, window.height);
     this.outputText = new ComponentLabel(
@@ -6,7 +6,7 @@ class ComponentConsole extends WindowComponent {
       this,
       this.width,
       this.height,
-      "hh",
+      "hello world",
       "#ffffff",
     );
     this.subcomponents.push(this.outputText);

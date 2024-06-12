@@ -17,7 +17,7 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-class WindowComponent {
+class Component {
   constructor(window, parent, width, height) {
     this.parent = parent;
     this.window = window;
@@ -51,7 +51,7 @@ class WindowComponent {
   }
 }
 
-class ComponentLabel extends WindowComponent {
+class ComponentLabel extends Component {
   constructor(window, parent, width, height, text, color) {
     super(window, parent, width, height);
     this.text = text;
@@ -63,7 +63,7 @@ class ComponentLabel extends WindowComponent {
   }
 }
 
-class ComponentWindowBase extends WindowComponent {
+class ComponentWindowBase extends Component {
   constructor(window, parent) {
     super(window, parent, window.width, window.height);
   }
@@ -252,5 +252,12 @@ document.addEventListener("keydown", function (event) {
 });
 
 window.addEventListener("resize", resizeCanvas);
-executeFile("soysoup/applications/console.soup", "", null, "/");
+executeFile(
+  "soysoup/applications/console.soup",
+  "",
+  new Shell(function (msg) {
+    alert(msg);
+  }),
+  "/",
+);
 update();
