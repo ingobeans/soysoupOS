@@ -8,6 +8,7 @@ colorBorder = "#454545";
 
 // other
 borderWidth = 2;
+selectedProgram = false;
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -218,21 +219,25 @@ class ProgramWindow {
       this.ctx.drawImage(component.canvas, component.x, component.y);
     }
   }
-  onMousedown(event) {
-    var mouseX = event.clientX - this.x;
-    var mouseY = event.clientY - this.y;
-
+  getHoveredSubcomponent(mouseX, mouseY) {
     for (let i = this.components.length - 1; i >= 0; i--) {
       const component = this.components[i];
       if (component.clickable) {
         if (mouseX > component.x && mouseX < component.x + component.width) {
           if (mouseY > component.y && mouseY < component.y + component.height) {
-            this.selectedComponent = this.components.indexOf(component);
-            component.onMousedown(event);
-            break;
+            return component;
           }
         }
       }
+    }
+  }
+  onMousedown(event) {
+    var mouseX = event.clientX - this.x;
+    var mouseY = event.clientY - this.y;
+    var hovered = this.getHoveredSubcomponent(mouseX, mouseY);
+    if (hovered) {
+      this.selectedComponent = this.components.indexOf(hovered);
+      hovered.onMousedown(event);
     }
   }
   resize(width, height) {
@@ -248,8 +253,11 @@ class ProgramWindow {
     }
   }
   onWheel(event) {
-    if (this.selectedComponent != -1) {
-      this.components[this.selectedComponent].onWheel(event);
+    var mouseX = event.clientX - this.x;
+    var mouseY = event.clientY - this.y;
+    var hovered = this.getHoveredSubcomponent(mouseX, mouseY);
+    if (hovered) {
+      hovered.onWheel(event);
     }
   }
 }
@@ -283,11 +291,6 @@ function drawRect(ctx, x, y, width, height, color) {
   );
 }
 
-function removeAnsiCodes(str) {
-  const ansiRegex = /\u001b\[.*?m/g;
-  return str.replace(ansiRegex, "");
-}
-
 function drawText(ctx, x, y, text, color) {
   text = removeAnsiCodes(text);
   if (text.includes("\n")) {
@@ -314,10 +317,7 @@ function drawSprite(ctx, x, y, width, height, image) {
   ctx.drawImage(image, x, y, width, height);
 }
 
-function onMousedown(event) {
-  var selectedProgram = null;
-  var mouseX = event.clientX;
-  var mouseY = event.clientY;
+function getHoveredProgram(mouseX, mouseY) {
   for (const program of getDrawnPrograms()) {
     if (
       mouseX > program.window.x &&
@@ -327,10 +327,21 @@ function onMousedown(event) {
         mouseY > program.window.y &&
         mouseY < program.window.y + program.window.height
       ) {
-        program.window.onMousedown(event);
-        break;
+        return program;
       }
     }
+  }
+}
+
+function onMousedown(event) {
+  var mouseX = event.clientX;
+  var mouseY = event.clientY;
+  var hoveredProgram = getHoveredProgram(mouseX, mouseY);
+  if (hoveredProgram) {
+    hoveredProgram.window.onMousedown(event);
+    selectedProgram = true;
+  } else {
+    selectedProgram = false;
   }
 }
 
@@ -341,7 +352,9 @@ function onKeydown(event) {
   ) {
     return;
   }
-  getDrawnPrograms()[0].window.onKeypress(event);
+  if (selectedProgram) {
+    getDrawnPrograms()[0].window.onKeypress(event);
+  }
 
   if (event.ctrlKey && (event.key == "c" || event.key == "v")) {
     return;
@@ -350,7 +363,10 @@ function onKeydown(event) {
 }
 
 function onWheel(event) {
-  getDrawnPrograms()[0].window.onWheel(event);
+  var hoveredProgram = getHoveredProgram(event.clientX, event.clientY);
+  if (hoveredProgram) {
+    hoveredProgram.window.onWheel(event);
+  }
 }
 
 document.addEventListener("mousedown", onMousedown);

@@ -34,7 +34,7 @@ class ProgramSource extends Program {
       if (outputDestination && this.isValidParentDirectory(outputDestination)) {
         text = splitted[0];
         commandOutputShell = new Shell(function (text) {
-          self.writeFile(outputDestination, text);
+          self.writeFile(outputDestination, removeAnsiCodes(text));
         });
       }
     }

@@ -11,6 +11,10 @@ Number.prototype.clamp = function (min, max) {
 function error(text) {
   return ERROR_COLOR + "error: " + text + RESET_COLOR;
 }
+function removeAnsiCodes(str) {
+  const ansiRegex = /\u001b\[.*?m/g;
+  return str.replace(ansiRegex, "");
+}
 
 function insert(origString, stringToAdd, indexPosition) {
   return (
