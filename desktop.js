@@ -292,12 +292,34 @@ function drawRect(ctx, x, y, width, height, color) {
 }
 
 function drawText(ctx, x, y, text, color) {
-  text = removeAnsiCodes(text);
+  text = text; //removeAnsiCodes(text);
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {
       drawText(ctx, x, y + index * 18, text_piece, color);
     });
+    return;
+  }
+  if (text.includes("\u001b[")) {
+    ansi_up.append_buffer(text);
+    let offset = 0;
+    while (true) {
+      var packet = ansi_up.get_next_packet();
+      if (packet.kind == 0) break;
+      if (packet.kind == 0) continue;
+      if (packet.kind == 1) {
+        drawText(
+          ctx,
+          x + offset,
+          y,
+          packet.text,
+          ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : color
+        );
+        offset += getTextWidth(ctx, packet.text);
+      } else if (packet.kind == 5) {
+        ansi_up.process_ansi(packet);
+      }
+    }
     return;
   }
   ctx.fillStyle = color;

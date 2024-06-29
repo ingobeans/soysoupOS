@@ -1,8 +1,6 @@
 const terminalElement = document.getElementById("terminal");
 const outputElement = document.getElementById("output");
 
-const ansi_up = new AnsiUp();
-
 function printOut(text, color = "inherit") {
   outputElement.innerHTML = "";
 

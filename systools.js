@@ -1,3 +1,5 @@
+const ansi_up = new AnsiUp();
+
 const RESET_COLOR = "\u001b[0m";
 const MUTED_COLOR = "\u001b[38;5;246m";
 const GREEN_COLOR = "\u001b[38;5;10m";
@@ -23,6 +25,10 @@ function ansiToRgb(str) {
   }
   ansi_up.process_ansi({ text: "38;2;100;200;11" });
   return ansi_up.fg.rgb;
+}
+
+function rgbToString(rgb) {
+  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
 }
 
 function insert(origString, stringToAdd, indexPosition) {
