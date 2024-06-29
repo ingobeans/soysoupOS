@@ -414,6 +414,7 @@ class ConsoleWindow extends ProgramWindow {
     super(parent, 550, 300);
     var consoleComponent = new ComponentConsole(this, this);
     this.addComponent(consoleComponent);
+    this.selectedComponent = 1;
   }
 }
 
@@ -482,4 +483,5 @@ document.addEventListener("wheel", onWheel);
 
 window.addEventListener("resize", resizeCanvas);
 launchProgram("soysoup/terminal.soup", "", "");
+selectedProgram = true;
 update();
