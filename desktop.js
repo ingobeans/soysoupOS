@@ -291,11 +291,6 @@ function drawRect(ctx, x, y, width, height, color) {
   );
 }
 
-function removeAnsiCodes(str) {
-  const ansiRegex = /\u001b\[.*?m/g;
-  return str.replace(ansiRegex, "");
-}
-
 function drawText(ctx, x, y, text, color) {
   text = removeAnsiCodes(text);
   if (text.includes("\n")) {
