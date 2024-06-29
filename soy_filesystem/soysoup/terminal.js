@@ -49,8 +49,9 @@ class ProgramSource extends Program {
   load(args) {
     this.prompt = new CommandlineInput(this.outputShell, true);
     this.cwd = "/";
-    this.outputShell.text =
-      "booted soysoupOS v" + systemVersion + "\ntype 'help' for help";
+    this.outputShell.println(
+      `soysoupOS v${systemVersion}\ntype 'help' for help`
+    );
 
     this.startNewPrompt();
   }
