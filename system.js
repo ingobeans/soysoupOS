@@ -1,4 +1,4 @@
-systemVersion = "0.3.2";
+systemVersion = "0.3.3";
 
 fileSystem = new SoyFileSystem();
 
@@ -183,14 +183,12 @@ function getDrawnPrograms() {
   return p;
 }
 
-function executeFile(path, argsRaw, outputShell, cwd) {
-  var exitResolve = undefined;
-  var promise = new Promise((resolve) => {
-    exitResolve = resolve;
-  });
+var newProgramInstance = null;
+
+function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {
   var data = fileSystem.readFile(path);
   try {
-    eval(data + "\nprograms.unshift(new ProgramSource)");
+    eval(data + "\nnewProgramInstance = new ProgramSource");
   } catch (e) {
     if (e) {
       outputShell.println(
@@ -201,11 +199,28 @@ function executeFile(path, argsRaw, outputShell, cwd) {
       return;
     }
   }
-  programs[0].outputShell = outputShell;
-  programs[0].cwd = cwd;
-  programs[0].filepath = path;
-  programs[0].exitResolve = exitResolve;
-  programs[0].load(argsRaw, outputShell);
+  newProgramInstance.outputShell = outputShell;
+  newProgramInstance.cwd = cwd;
+  newProgramInstance.filepath = path;
+  newProgramInstance.exitResolve = exitResolve;
+  return newProgramInstance;
+}
+
+function executeFile(path, argsRaw, outputShell, cwd) {
+  var exitResolve = undefined;
+  var promise = new Promise((resolve) => {
+    exitResolve = resolve;
+  });
+  let instance = createProgramInstance(
+    path,
+    argsRaw,
+    outputShell,
+    cwd,
+    exitResolve
+  );
+  programs.unshift(instance);
+  instance.load(argsRaw, outputShell);
+
   return promise;
 }
 

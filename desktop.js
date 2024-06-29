@@ -186,7 +186,7 @@ function getWindowPosition(width, height) {
 
 class ProgramWindow {
   constructor(parent, width, height) {
-    this.parent;
+    this.parent = parent;
     this.width = width;
     this.height = height;
     var pos = getWindowPosition(width, height);
@@ -355,6 +355,69 @@ function getHoveredProgram(mouseX, mouseY) {
   }
 }
 
+class ComponentConsole extends Component {
+  constructor(window, parent) {
+    super(window, parent, window.width, window.height);
+    this.scrollBox = new ComponentScrollBox(
+      this.window,
+      this,
+      this.width,
+      this.height
+    );
+    this.outputText = new ComponentLabel(
+      this.window,
+      this,
+      this.width,
+      this.height,
+      "",
+      "#ffffff"
+    );
+    this.scrollBox.subcomponents.push(this.outputText);
+    this.subcomponents.push(this.scrollBox);
+    this.shell = window.parent.outputShell;
+    this.shell.outputFunction = this.shellOutputFunction.bind(this);
+  }
+
+  shellOutputFunction(text) {
+    var newText = text;
+    if (newText.startsWith("\n")) {
+      newText = newText.slice(1);
+    }
+    this.outputText.text = newText;
+    this.scrollBox.scrollAmount = (-newText.split("\n").length + 16) * 18;
+  }
+  onWindowResize() {
+    this.width = this.window.width;
+    this.height = this.window.height;
+  }
+  draw() {
+    drawRect(this.ctx, 0, 0, this.width, this.height, "#000000");
+    super.draw();
+  }
+  getConsolePrograms() {
+    var consolePrograms = [];
+    for (var i = 0; i < programs.length; i++) {
+      const program = programs[i];
+      if (program.outputShell == this.shell) {
+        consolePrograms.push(program);
+      }
+    }
+    return consolePrograms;
+  }
+  onKeypress(event) {
+    this.getConsolePrograms()[0].onKeypress(event);
+  }
+}
+
+// this window is added to terminal programs to give them a console window
+class ConsoleWindow extends ProgramWindow {
+  constructor(parent) {
+    super(parent, 550, 300);
+    var consoleComponent = new ComponentConsole(this, this);
+    this.addComponent(consoleComponent);
+  }
+}
+
 function onMousedown(event) {
   var mouseX = event.clientX;
   var mouseY = event.clientY;
@@ -391,17 +454,33 @@ function onWheel(event) {
   }
 }
 
+function launchProgram(path, argsRaw, cwd) {
+  var exitResolve = undefined;
+  var promise = new Promise((resolve) => {
+    exitResolve = resolve;
+  });
+  let newShell = new Shell(() => {});
+  let instance = createProgramInstance(
+    path,
+    argsRaw,
+    newShell,
+    cwd,
+    exitResolve
+  );
+  if (instance.window === undefined) {
+    instance.window = new ConsoleWindow(instance, newShell);
+    instance.shell = newShell;
+  }
+  programs.unshift(instance);
+  instance.load(argsRaw, newShell);
+
+  return promise;
+}
+
 document.addEventListener("mousedown", onMousedown);
 document.addEventListener("keydown", onKeydown);
 document.addEventListener("wheel", onWheel);
 
 window.addEventListener("resize", resizeCanvas);
-executeFile(
-  "soysoup/applications/console.soup",
-  "",
-  new Shell(function (msg) {
-    alert(msg);
-  }),
-  "/"
-);
+launchProgram("soysoup/terminal.soup", "", "");
 update();
