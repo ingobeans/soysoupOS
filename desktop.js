@@ -22,11 +22,17 @@ function getComponentAbsoluteCoordinates(component) {
 
   var currentComponent = component;
   while (true) {
-    if (currentComponent.parent == component.window) {
-      return [x, y];
+    if (
+      currentComponent.scrollAmount != undefined &&
+      currentComponent != component
+    ) {
+      y += currentComponent.scrollAmount;
     }
     x += currentComponent.x;
     y += currentComponent.y;
+    if (currentComponent.parent == component.window) {
+      return [x, y];
+    }
     currentComponent = currentComponent.parent;
   }
 }
@@ -65,6 +71,7 @@ class Component {
     var hovered = this.getHoveredSubcomponent(event);
     if (hovered) {
       this.selectedSubcomponent = this.subcomponents.indexOf(hovered);
+      hovered.onMousedown(event);
     }
   }
   getHoveredSubcomponent(event) {
@@ -117,19 +124,21 @@ class ComponentScrollBox extends Component {
     this.scrollAmount = 0;
   }
   onWheel(event) {
+    console.log("scroll");
     this.scrollAmount -= Math.trunc(event.deltaY / 18 / 2) * 18;
   }
   draw() {
     for (var i = 0; i < this.subcomponents.length; i++) {
       const subcomponent = this.subcomponents[i];
       var oldHeight = subcomponent.ctx.canvas.height;
-      subcomponent.ctx.canvas.height -= this.scrollAmount;
+      var newHeight = this.height - this.scrollAmount;
+      subcomponent.ctx.canvas.height = newHeight;
       subcomponent.clear();
       subcomponent.draw();
       this.ctx.drawImage(
         subcomponent.canvas,
         subcomponent.x,
-        subcomponent.y + this.scrollAmount,
+        subcomponent.y + this.scrollAmount
       );
       subcomponent.ctx.canvas.height = oldHeight;
     }
@@ -164,7 +173,7 @@ class ComponentWindowBase extends Component {
       borderWidth,
       this.width - borderWidth * 2,
       this.height - borderWidth * 2,
-      colorWindowBackground,
+      colorWindowBackground
     );
     super.draw();
   }
@@ -204,6 +213,7 @@ class ProgramWindow {
   draw() {
     for (var i = 0; i < this.components.length; i++) {
       const component = this.components[i];
+      component.clear();
       component.draw();
       this.ctx.drawImage(component.canvas, component.x, component.y);
     }
@@ -252,7 +262,7 @@ function draw() {
     mainCtx.drawImage(
       program.window.canvas,
       program.window.x,
-      program.window.y,
+      program.window.y
     );
   });
 }
@@ -269,7 +279,7 @@ function drawRect(ctx, x, y, width, height, color) {
     y,
 
     width,
-    height,
+    height
   );
 }
 
@@ -354,6 +364,6 @@ executeFile(
   new Shell(function (msg) {
     alert(msg);
   }),
-  "/",
+  "/"
 );
 update();

@@ -1,19 +1,19 @@
 class ComponentConsole extends Component {
   constructor(window, parent) {
     super(window, parent, window.width, window.height);
+    this.scrollBox = new ComponentScrollBox(
+      this.window,
+      this,
+      this.width,
+      this.height
+    );
     this.outputText = new ComponentLabel(
       this.window,
       this,
       this.width,
       this.height,
       "hello world",
-      "#ffffff",
-    );
-    this.scrollBox = new ComponentScrollBox(
-      this.window,
-      this,
-      this.width,
-      this.height,
+      "#ffffff"
     );
     this.scrollBox.subcomponents.push(this.outputText);
     this.subcomponents.push(this.scrollBox);

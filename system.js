@@ -195,8 +195,8 @@ function executeFile(path, argsRaw, outputShell, cwd) {
     if (e) {
       outputShell.println(
         error(
-          "the program " + path + " couldn't run.\n" + handleProgramError(e),
-        ),
+          "the program " + path + " couldn't run.\n" + handleProgramError(e)
+        )
       );
       return;
     }
@@ -251,7 +251,7 @@ function executeCommand(command, outputShell, cwd) {
       path,
       command.slice(keyword.length + 1),
       outputShell,
-      cwd,
+      cwd
     );
   }
 
