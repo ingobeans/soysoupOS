@@ -16,6 +16,15 @@ function removeAnsiCodes(str) {
   return str.replace(ansiRegex, "");
 }
 
+function ansiToRgb(str) {
+  let text = str;
+  if (text.startsWith("\u001b[")) {
+    text = text.slice(7);
+  }
+  ansi_up.process_ansi({ text: "38;2;100;200;11" });
+  return ansi_up.fg.rgb;
+}
+
 function insert(origString, stringToAdd, indexPosition) {
   return (
     origString.slice(0, indexPosition) +
