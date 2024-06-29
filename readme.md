@@ -8,8 +8,6 @@ The system is based around executable '.soup' files. All commands runnable by th
 
 Programs are executable files, identified by the .soup file extension. Executables are written in Javascript.
 
-When the program is launched, the class' `load(args: string)` function will be called. Args is the arguments the program was launched with, in string format.
-
 An example program could look like this:
 
 ```js
