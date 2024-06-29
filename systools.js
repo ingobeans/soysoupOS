@@ -21,9 +21,9 @@ function removeAnsiCodes(str) {
 function ansiToRgb(str) {
   let text = str;
   if (text.startsWith("\u001b[")) {
-    text = text.slice(7);
+    text = text.slice(2);
   }
-  ansi_up.process_ansi({ text: "38;2;100;200;11" });
+  ansi_up.process_ansi({ text: text });
   return ansi_up.fg.rgb;
 }
 
