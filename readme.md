@@ -1,14 +1,12 @@
 # soysoupOS
 
-soysoupOS is widely regarded by me as the operating system of the future. It is terminal based.
+soysoupOS is widely regarded by me as the operating system of the future.
 
 The system is based around executable '.soup' files. All commands runnable by the terminal is in fact, executable files. The terminal itself, is also an executable file.
 
 ## Making a program for soysoupOS
 
 Programs are executable files, identified by the .soup file extension. Executables are written in Javascript.
-
-When the program is launched, the class' `load(args: string)` function will be called. Args is the arguments the program was launched with, in string format.
 
 An example program could look like this:
 
@@ -24,33 +22,36 @@ class ProgramSource extends Program {
 
 First we define the `ProgramSource` class. This is the 'entry point' for the program, without it, the program won't run. It should extend from `Program`.
 
-The load function is called when the program first is launched, it receives the `args` argument which contains the launch parameters as a string. When the program is launched, it has the properties of `outputShell`, `cwd` and `filePath` assigned. The outputShell can be used to write to the terminal, as we do in this example.
+The load method is called when the program first is launched, it receives the `args` argument which contains the launch parameters as a string. When the program is launched, it has the properties of `outputShell`, `cwd` and `filePath` assigned. The outputShell can be used to write to the terminal, as we do in this example.
 
-Finally, we call `this.quit()`. This will 'close' the program and pass control back to the terminal. It **won't** break code execution, so don't use it instead of return, in those scenarios, first call quit(), then return.
+Finally, we call `this.quit()`. This will 'close' the program and pass control back to the terminal. It **won't** break code execution, so don't use it instead of return, in those scenarios, first call `quit()`, then return.
 
-If the user presses a key, the event will be sent to the class' `onKeypress(event)` function. If you just want to get user input via the terminal, you can use the `CommandlineInput` class. You can initialise a new object of this class to a variable, and pass the outputShell. You should also have the program's `onKeypress(event)` function forward the keypress to the variable, by in the `onKeypress(event)` calling the variable's `.onKeypress(event)`. Otherwise the prompt wont be able to receive key presses.
-
-When you actually want to prompt the user, you can use the variable's `.prompt(question: string, multiline: boolean)` function. You can await this function, to retrieve the result (note that the calling function should be async). Example:
+If we want to create a program which gets input from the user, we can use a `CommandLineInput`, which is a tool that allows basic prompting of the user.
 
 ```js
 class ProgramSource extends Program {
-  onKeypress(event) {
-    this.prompt.onKeypress(event);
-  }
   async load(args) {
-    this.prompt = new CommandlineInput(this.outputShell);
+    this.myPrompt = new CommandlineInput(this.outputShell);
 
-    var name = await this.prompt.prompt("What is your name?: ", false);
-    var age = await this.prompt.prompt("How old are you: ", false);
+    var name = await this.myPrompt.prompt("What is your name?: ", false);
+    var age = await this.myPrompt.prompt("How old are you: ", false);
 
     this.outputShell.println(`Howdy ${name}, aged ${age}`);
 
     this.quit();
   }
+  onKeypress(event) {
+    this.myPrompt.onKeypress(event);
+  }
 }
 ```
 
-Note that the load function is async, to allow awaiting the prompt. Also note the onKeypress, forwarding the key events to the prompt.
+First of all, the `load` method is async, this is so we can await the prompt to finish.
+Secondly we define `this.myPrompt` of `CommandLineInput`. It requires the shell, so we pass it the `outputShell`.
+We then prompt the user two questions, with the `prompt` method of `myPrompt`. It requires parameters `question`, and `allowMultiline`.
+Then we just print the results and quit the program.
+
+Though, for the prompt to work, we need to pass it keypress events. When a key is pressed, the event is sent to the currently running program's `onKeypress` method. In this method we need to forward the event to the prompt, for it to register, which is exactly what we do in the example.
 
 ## Running / installing the program
 
