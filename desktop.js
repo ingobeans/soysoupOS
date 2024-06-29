@@ -292,7 +292,6 @@ function drawRect(ctx, x, y, width, height, color) {
 }
 
 function drawText(ctx, x, y, text, color) {
-  text = text; //removeAnsiCodes(text);
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {
