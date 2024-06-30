@@ -181,7 +181,21 @@ class ComponentWindowBase extends Component {
 }
 
 function getWindowPosition(width, height) {
-  return [canvas.width / 2 - width / 2, canvas.height / 2 - height / 2];
+  let x = Math.trunc(canvas.width / 2 - width / 2);
+  let y = Math.trunc(canvas.height / 2 - height / 2);
+  while (true) {
+    let wasMoved = false;
+    for (let program of getDrawnPrograms()) {
+      if (program.window.x == x && program.window.y == y) {
+        x += 20;
+        y += 20;
+        wasMoved = true;
+      }
+    }
+    if (!wasMoved) {
+      return [x, y];
+    }
+  }
 }
 
 class ProgramWindow {
@@ -263,7 +277,9 @@ class ProgramWindow {
 
 function draw() {
   drawRect(mainCtx, 0, 0, canvas.width, canvas.height, colorBackground);
-  getDrawnPrograms().forEach(function (program) {
+  let drawPrograms = getDrawnPrograms();
+  for (let i = drawPrograms.length - 1; i >= 0; i--) {
+    let program = drawPrograms[i];
     program.window.clear();
     program.window.draw();
     mainCtx.drawImage(
@@ -271,7 +287,7 @@ function draw() {
       program.window.x,
       program.window.y
     );
-  });
+  }
 }
 
 function update() {
@@ -417,15 +433,26 @@ class ConsoleWindow extends ProgramWindow {
   }
 }
 
+function makeSelectedProgram(program) {
+  let index = programs.indexOf(program);
+  if (program == null || index == -1) {
+    selectedProgram = false;
+    return;
+  }
+  selectedProgram = true;
+  programs.splice(index, 1);
+  programs.unshift(program);
+}
+
 function onMousedown(event) {
   mouseX = event.clientX;
   mouseY = event.clientY;
   var hoveredProgram = getHoveredProgram(mouseX, mouseY);
   if (hoveredProgram) {
     hoveredProgram.window.onMousedown(event);
-    selectedProgram = true;
+    makeSelectedProgram(hoveredProgram);
   } else {
-    selectedProgram = false;
+    makeSelectedProgram(null);
   }
 }
 
@@ -454,7 +481,6 @@ function onWheel(event) {
     hoveredProgram.window.onWheel(event);
   }
 }
-
 function launchProgram(path, argsRaw, cwd) {
   var exitResolve = undefined;
   var promise = new Promise((resolve) => {
@@ -469,6 +495,7 @@ function launchProgram(path, argsRaw, cwd) {
     exitResolve
   );
   if (instance.window === undefined) {
+    console.log(`${path} needs window`);
     instance.window = new ConsoleWindow(instance, newShell);
     instance.shell = newShell;
   }
@@ -484,5 +511,8 @@ document.addEventListener("wheel", onWheel);
 
 window.addEventListener("resize", resizeCanvas);
 launchProgram("soysoup/applications/test.soup", "", "");
+launchProgram("soysoup/applications/test.soup", "", "");
+launchProgram("soysoup/applications/test.soup", "", "");
+launchProgram("soysoup/terminal.soup", "", "");
 selectedProgram = true;
 update();

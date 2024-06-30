@@ -188,14 +188,13 @@ var newProgramInstance = null;
 function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {
   var data = fileSystem.readFile(path);
   try {
-    eval(data + "\nnewProgramInstance = new ProgramSource");
+    eval(data + "\nnewProgramInstance = new ProgramSource()");
   } catch (e) {
     if (e) {
-      outputShell.println(
-        error(
-          "the program " + path + " couldn't run.\n" + handleProgramError(e)
-        )
-      );
+      let msg =
+        "the program " + path + " couldn't run.\n" + handleProgramError(e);
+      console.error(msg);
+      outputShell.println(error(msg));
       return;
     }
   }

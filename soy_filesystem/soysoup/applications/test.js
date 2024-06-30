@@ -42,7 +42,9 @@ class WindowSource extends ProgramWindow {
 }
 
 class ProgramSource extends Program {
-  load(args) {
+  constructor() {
+    super();
     this.window = new WindowSource(this);
   }
+  load(args) {}
 }
