@@ -22,6 +22,7 @@ class ComponentTestRect extends Component {
   }
   onMousedown(event) {
     this.anim = 255;
+    console.log("clicked");
     super.onMousedown(event);
   }
 }

@@ -10,6 +10,9 @@ colorBorder = "#454545";
 borderWidth = 2;
 selectedProgram = false;
 
+mouseX = 0;
+mouseY = 0;
+
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -76,9 +79,6 @@ class Component {
     }
   }
   getHoveredSubcomponent(event) {
-    var mouseX = event.clientX - this.x;
-    var mouseY = event.clientY - this.y;
-
     for (let i = this.subcomponents.length - 1; i >= 0; i--) {
       const component = this.subcomponents[i];
       var componentCoords = getComponentAbsoluteCoordinates(component);
@@ -219,12 +219,15 @@ class ProgramWindow {
       this.ctx.drawImage(component.canvas, component.x, component.y);
     }
   }
-  getHoveredSubcomponent(mouseX, mouseY) {
+  getHoveredSubcomponent(x, y) {
     for (let i = this.components.length - 1; i >= 0; i--) {
       const component = this.components[i];
       if (component.clickable) {
-        if (mouseX > component.x && mouseX < component.x + component.width) {
-          if (mouseY > component.y && mouseY < component.y + component.height) {
+        let componentCoords = getComponentAbsoluteCoordinates(component);
+        let componentX = componentCoords[0];
+        let componentY = componentCoords[1];
+        if (x > componentX && x < componentX + component.width) {
+          if (y > componentY && y < componentY + component.height) {
             return component;
           }
         }
@@ -232,8 +235,6 @@ class ProgramWindow {
     }
   }
   onMousedown(event) {
-    var mouseX = event.clientX - this.x;
-    var mouseY = event.clientY - this.y;
     var hovered = this.getHoveredSubcomponent(mouseX, mouseY);
     if (hovered) {
       this.selectedComponent = this.components.indexOf(hovered);
@@ -253,8 +254,6 @@ class ProgramWindow {
     }
   }
   onWheel(event) {
-    var mouseX = event.clientX - this.x;
-    var mouseY = event.clientY - this.y;
     var hovered = this.getHoveredSubcomponent(mouseX, mouseY);
     if (hovered) {
       hovered.onWheel(event);
@@ -419,8 +418,8 @@ class ConsoleWindow extends ProgramWindow {
 }
 
 function onMousedown(event) {
-  var mouseX = event.clientX;
-  var mouseY = event.clientY;
+  mouseX = event.clientX;
+  mouseY = event.clientY;
   var hoveredProgram = getHoveredProgram(mouseX, mouseY);
   if (hoveredProgram) {
     hoveredProgram.window.onMousedown(event);
@@ -448,6 +447,8 @@ function onKeydown(event) {
 }
 
 function onWheel(event) {
+  mouseX = event.clientX;
+  mouseY = event.clientY;
   var hoveredProgram = getHoveredProgram(event.clientX, event.clientY);
   if (hoveredProgram) {
     hoveredProgram.window.onWheel(event);
@@ -482,6 +483,6 @@ document.addEventListener("keydown", onKeydown);
 document.addEventListener("wheel", onWheel);
 
 window.addEventListener("resize", resizeCanvas);
-launchProgram("soysoup/terminal.soup", "", "");
+launchProgram("soysoup/applications/test.soup", "", "");
 selectedProgram = true;
 update();
