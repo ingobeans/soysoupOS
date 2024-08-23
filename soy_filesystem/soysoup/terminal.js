@@ -81,7 +81,7 @@ class ProgramSource extends Program {
       if (runInBackground == false) {
         this.focusedProcess = process["instance"];
         await process["promise"];
-        removeItem(this.processes, process["instance"]);
+        this.processes = removeItem(this.processes, process["instance"]);
 
         // only restore focuse IF this command is still the last active program
         if (this.focusedProcess == process["instance"]) {
@@ -91,7 +91,7 @@ class ProgramSource extends Program {
       } else {
         process["promise"].then(
           function () {
-            removeItem(this.processes, process["instance"]);
+            this.processes = removeItem(this.processes, process["instance"]);
           }.bind(this)
         );
         this.startNewPrompt();

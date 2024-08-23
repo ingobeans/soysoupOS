@@ -27,8 +27,14 @@ class ProgramSource extends Program {
       }
       this.outputShell.println(text);
     } else if (parts[0] == "kill") {
-      programs.splice(Number(parts[1]), 1);
-      this.outputShell.println("killed process with ID " + parts[1]);
+      let program = getProgram(parts[1]);
+      if (program !== undefined) {
+        program.quit();
+        programs = removeItem(programs, program);
+        this.outputShell.println("killed process with ID " + parts[1]);
+      } else {
+        this.outputShell.println(error("no process with ID " + parts[1]));
+      }
     }
     this.quit();
   }

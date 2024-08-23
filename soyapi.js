@@ -184,7 +184,7 @@ function getDrawnPrograms() {
 var newProgramInstance = null;
 
 function getProgram(pid) {
-  for (program in programs) {
+  for (let program of programs) {
     if (program.pid == pid) {
       return program;
     }
