@@ -124,6 +124,7 @@ class CommandlineInput {
     if (index < 0 || index >= str.length) {
       return str;
     }
+    this.selectionIndex -= 1;
     return str.slice(0, index) + str.slice(index + 1);
   }
   onSubmit() {
@@ -212,7 +213,6 @@ class CommandlineInput {
           this.currentLineInput,
           this.selectionIndex
         );
-        this.selectionIndex -= 1;
       }
     }
 
