@@ -8,6 +8,23 @@ class SoyFileSystem {
       content: {},
     };
   }
+  resolveBackSteps(path) {
+    const segments = this.getPathSegments(path);
+    const resolvedSegments = [];
+
+    for (const segment of segments) {
+      if (segment === "..") {
+        if (resolvedSegments.length > 0) {
+          resolvedSegments.pop(); // Move up one directory
+        }
+      } else if (segment !== ".") {
+        // Ignore current directory references
+        resolvedSegments.push(segment);
+      }
+    }
+
+    return this.normalizePath(resolvedSegments.join("/"));
+  }
   normalizePath(path) {
     return this.getPathSegments(path.trim()).join("/") + "/";
   }

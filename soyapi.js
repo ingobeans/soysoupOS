@@ -238,13 +238,18 @@ function parseToParts(command) {
 
 function getActualPath(text, cwd) {
   // function to get an absolute path to a path that could either be local or absolute
+  let path = "";
   if (!text) {
     return fileSystem.normalizePath(cwd);
   }
+  text = fileSystem.normalizePath(text);
   if (text.startsWith("/")) {
-    return fileSystem.normalizePath(text);
+    path = text;
+  } else {
+    path = fileSystem.normalizePath(cwd + text);
   }
-  return fileSystem.normalizePath(cwd + fileSystem.normalizePath(text));
+  path = fileSystem.resolveBackSteps(path);
+  return path;
 }
 
 function executeCommand(command, outputShell, cwd) {
