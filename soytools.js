@@ -17,7 +17,45 @@ function removeItem(arr, value) {
   }
   return arr;
 }
-
+function getTextWidth(ctx, text) {
+  ctx.font = '16px "IBM Plex Mono", monospace';
+  var metrics = ctx.measureText(text);
+  return metrics.width;
+}
+function drawAnsiText(ctx, x, y, text, color) {
+  if (text.includes("\n")) {
+    var texts = text.split("\n");
+    texts.forEach(function (text_piece, index) {
+      drawAnsiText(ctx, x, y + index * 18, text_piece, color);
+    });
+    return;
+  }
+  if (text.includes("\u001b[")) {
+    ansi_up.append_buffer(text);
+    let offset = 0;
+    while (true) {
+      var packet = ansi_up.get_next_packet();
+      if (packet.kind == 0) break;
+      if (packet.kind == 0) continue;
+      if (packet.kind == 1) {
+        drawAnsiText(
+          ctx,
+          x + offset,
+          y,
+          packet.text,
+          ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : color
+        );
+        offset += getTextWidth(ctx, packet.text);
+      } else if (packet.kind == 5) {
+        ansi_up.process_ansi(packet);
+      }
+    }
+    return;
+  }
+  screenCtx.font = '16px "IBM Plex Mono", monospace';
+  screenCtx.fillStyle = color;
+  ctx.fillText(text, x, y + 16);
+}
 function error(text) {
   return ERROR_COLOR + "error: " + text + RESET_COLOR;
 }
@@ -120,7 +158,6 @@ class CommandlineInput {
     );
     this.selectionIndex += character.length;
   }
-
   onKeypress(event) {
     if (this.finished) {
       return;

@@ -34,14 +34,12 @@ class TerminalGraphicsHandler extends GraphicsHandler {
     return Math.floor(canvas.height / 16);
   }
   draw() {
-    screenCtx.fillStyle = "#000";
-    screenCtx.fillRect(0, 0, canvas.width, canvas.height);
-    screenCtx.font = '16px "IBM Plex Mono", monospace';
-    screenCtx.fillStyle = "#fff";
-    let lines = removeAnsiCodes(defaultShell.text).split("\n");
+    let lines = defaultShell.text.split("\n");
     let maxLines = this.calcMaxLines() - 1;
     let skipUntil = null;
     let lineIndex = 0;
+    screenCtx.fillStyle = "#000";
+    screenCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     if (lines.length >= maxLines) {
       skipUntil = lines.length - maxLines;
@@ -50,7 +48,7 @@ class TerminalGraphicsHandler extends GraphicsHandler {
       if (!(skipUntil !== null && i < skipUntil)) {
         lineIndex += 1;
         const line = lines[i];
-        screenCtx.fillText(line, 0, 0 + lineIndex * 16);
+        drawAnsiText(screenCtx, 0, 0 + lineIndex * 16, line, "#fff");
       }
     }
   }

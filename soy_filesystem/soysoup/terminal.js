@@ -11,8 +11,20 @@ class ProgramSource extends Program {
     if (args[0] == "exit") {
       this.quit();
       return;
-    }
-    if (args[0] == "cd") {
+    } else if (args[0] == "jobs") {
+      var text = "";
+      for (let index = 0; index < this.processes.length; index++) {
+        const program = this.processes[index];
+        text +=
+          "\n" +
+          program.pid +
+          " - " +
+          program.filepath.split("/")[program.filepath.split("/").length - 1];
+      }
+      this.outputShell.println(text);
+      this.startNewPrompt();
+      return;
+    } else if (args[0] == "cd") {
       let targetPath = fileSystem.normalizePath(
         getActualPath(args[1], this.cwd)
       );
@@ -42,18 +54,35 @@ class ProgramSource extends Program {
         };
       }
     }
+    let runInBackground = false;
 
+    if (text[text.length - 1] == "&") {
+      text = text.slice(0, -1);
+      runInBackground = true;
+      newShell = new Shell(() => {});
+    }
     let process = executeCommand(text, newShell, this.cwd);
     if (process != undefined) {
       let oldFocus = this.focusedProcess;
       this.processes.push(process["instance"]);
-      this.focusedProcess = process["instance"];
-      await process["promise"];
-      removeItem(this.processes, process["instance"]);
+      if (runInBackground == false) {
+        this.focusedProcess = process["instance"];
+        await process["promise"];
+        removeItem(this.processes, process["instance"]);
 
-      // only restore focuse IF this command is still the last active program
-      if (this.focusedProcess == process["instance"]) {
-        this.focusedProcess = oldFocus;
+        // only restore focuse IF this command is still the last active program
+        if (
+          this.focusedProcess == process["instance"] &&
+          runInBackground == false
+        ) {
+          this.focusedProcess = oldFocus;
+        }
+      } else {
+        process["promise"].then(
+          function () {
+            removeItem(this.processes, process["instance"]);
+          }.bind(this)
+        );
       }
     }
     this.startNewPrompt();
