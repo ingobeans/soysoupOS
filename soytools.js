@@ -214,6 +214,16 @@ class CommandlineInput {
           this.selectionIndex
         );
       }
+    } else if (event.key == "Delete") {
+      if (this.currentLineInput) {
+        if (this.selectionIndex < this.currentLineInput.length) {
+          this.selectionIndex += 1;
+          this.currentLineInput = this.removeCharacter(
+            this.currentLineInput,
+            this.selectionIndex
+          );
+        }
+      }
     }
 
     this.flush();
