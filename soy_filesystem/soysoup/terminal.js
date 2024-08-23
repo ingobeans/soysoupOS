@@ -1,15 +1,19 @@
 class ProgramSource extends Program {
   onKeypress(event) {
-    this.prompt.onKeypress(event);
+    if (this.focusedProcess == undefined) {
+      this.prompt.onKeypress(event);
+    } else {
+      this.focusedProcess.onKeypress(event);
+    }
   }
   async handleSubmit(text) {
-    var args = parseToParts(text);
+    let args = parseToParts(text);
     if (args[0] == "exit") {
       this.quit();
       return;
     }
     if (args[0] == "cd") {
-      var targetPath = fileSystem.normalizePath(
+      let targetPath = fileSystem.normalizePath(
         getActualPath(args[1], this.cwd)
       );
       if (
@@ -25,28 +29,46 @@ class ProgramSource extends Program {
       this.startNewPrompt();
       return;
     }
-    var commandOutputShell = this.outputShell;
+    let newShell = new Shell(function () {}.bind(this.outputShell));
+    newShell.setText = this.outputShell.setText.bind(this.outputShell);
+    newShell.print = this.outputShell.print.bind(this.outputShell);
+    newShell.println = this.outputShell.println.bind(this.outputShell);
+    newShell.flush = this.outputShell.flush.bind(this.outputShell);
 
     if (text.indexOf(">") != -1) {
-      var splitted = splitAtLastOccurrence(text, ">");
-      var self = this;
-      var outputDestination = splitted[1];
+      let splitted = splitAtLastOccurrence(text, ">");
+      let self = this;
+      let outputDestination = splitted[1];
       if (outputDestination && this.isValidParentDirectory(outputDestination)) {
         text = splitted[0];
-        commandOutputShell = new Shell(function (text) {
+        newShell.outputFunction = function (text) {
           self.writeFile(outputDestination, removeAnsiCodes(text));
-        });
+        };
       }
     }
 
-    await executeCommand(text, commandOutputShell, this.cwd);
+    let process = executeCommand(text, newShell, this.cwd);
+    if (process != undefined) {
+      let oldFocus = this.focusedProcess;
+      this.processes.push(process["instance"]);
+      this.focusedProcess = process["instance"];
+      await process["promise"];
+      removeItem(this.processes, process["instance"]);
+
+      // only restore focuse IF this command is still the last active program
+      if (this.focusedProcess == process["instance"]) {
+        this.focusedProcess = oldFocus;
+      }
+    }
     this.startNewPrompt();
   }
   async startNewPrompt() {
-    var result = await this.prompt.prompt(">", true);
+    let result = await this.prompt.prompt(">", true);
     this.handleSubmit(result);
   }
   load(args) {
+    this.processes = [];
+    this.focusedProcess = undefined;
     this.prompt = new CommandlineInput(this.outputShell, true);
     this.cwd = "/";
     this.outputShell.println(

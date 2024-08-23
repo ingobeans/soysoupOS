@@ -10,6 +10,14 @@ Number.prototype.clamp = function (min, max) {
   return Math.min(Math.max(this, min), max);
 };
 
+function removeItem(arr, value) {
+  var index = arr.indexOf(value);
+  if (index > -1) {
+    arr.splice(index, 1);
+  }
+  return arr;
+}
+
 function error(text) {
   return ERROR_COLOR + "error: " + text + RESET_COLOR;
 }
@@ -73,13 +81,14 @@ class CommandlineInput {
     return str.slice(0, index) + str.slice(index + 1);
   }
   onSubmit() {
-    this.outputShell.text =
+    this.outputShell.setText(
       this.text +
-      "\n" +
-      MUTED_COLOR +
-      this.question +
-      this.currentLineInput +
-      RESET_COLOR;
+        "\n" +
+        MUTED_COLOR +
+        this.question +
+        this.currentLineInput +
+        RESET_COLOR
+    );
 
     this.promiseResolver(this.currentLineInput);
     this.finished = true;
@@ -165,13 +174,14 @@ class CommandlineInput {
     this.flush();
   }
   flush() {
-    this.outputShell.text =
+    this.outputShell.setText(
       this.text +
-      "\n" +
-      MUTED_COLOR +
-      this.question +
-      insert(this.currentLineInput, "|", this.selectionIndex) +
-      RESET_COLOR;
+        "\n" +
+        MUTED_COLOR +
+        this.question +
+        insert(this.currentLineInput, "|", this.selectionIndex) +
+        RESET_COLOR
+    );
 
     this.outputShell.flush();
   }

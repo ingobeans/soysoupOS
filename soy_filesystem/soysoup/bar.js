@@ -1,7 +1,8 @@
 class ProgramSource extends Program {
   showProgressBar(percent) {
-    this.outputShell.text =
-      "[" + "#".repeat(percent) + "-".repeat(100 - percent) + "]";
+    this.outputShell.setText(
+      "[" + "#".repeat(percent) + "-".repeat(100 - percent) + "]"
+    );
     this.outputShell.flush();
   }
   load(args) {

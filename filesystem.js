@@ -1,4 +1,5 @@
-illeagal_characters = ["\n", ":", "<", ">", '"', "|", "?", "*"];
+illegal_file_characters = ["\n", ":", "<", ">", '"', "|", "?", "*", "\\"];
+illegal_dir_characters = ["\n", ":", "<", ">", '"', "|", "?", "*", "\\", "."];
 
 class SoyFileSystem {
   constructor() {
@@ -20,7 +21,8 @@ class SoyFileSystem {
       !directory ||
       directory.content[fileName] ||
       !path ||
-      illeagal_characters.some((v) => path.includes(v))
+      illegal_file_characters.some((v) => path.includes(v)) ||
+      !fileName.includes(".")
     ) {
       console.error("File already exists or invalid path.");
       return;
@@ -42,7 +44,7 @@ class SoyFileSystem {
     if (
       !directory ||
       !directory.content[fileName] ||
-      illeagal_characters.some((v) => path.includes(v))
+      illegal_file_characters.some((v) => path.includes(v))
     ) {
       return false;
     }
@@ -58,7 +60,7 @@ class SoyFileSystem {
     if (
       !directory ||
       directory.content[directoryName] ||
-      illeagal_characters.some((v) => path.includes(v))
+      illegal_dir_characters.some((v) => path.includes(v))
     ) {
       console.error("Directory already exists or invalid path.");
       return;
@@ -93,7 +95,7 @@ class SoyFileSystem {
       !directory ||
       !directory.content[fileName] ||
       directory.content[fileName].type !== "file" ||
-      illeagal_characters.some((v) => path.includes(v))
+      illegal_file_characters.some((v) => path.includes(v))
     ) {
       console.error("File not found or invalid path.");
       return null;
@@ -118,7 +120,7 @@ class SoyFileSystem {
       !directory ||
       !directory.content[fileName] ||
       directory.content[fileName].type !== "file" ||
-      illeagal_characters.some((v) => path.includes(v))
+      illegal_file_characters.some((v) => path.includes(v))
     ) {
       console.error("File not found or invalid path.");
       return;
@@ -134,7 +136,7 @@ class SoyFileSystem {
     if (
       !directory ||
       directory.type !== "directory" ||
-      illeagal_characters.some((v) => path.includes(v))
+      illegal_dir_characters.some((v) => path.includes(v))
     ) {
       console.error("Directory not found or invalid path.");
       return null;
@@ -178,13 +180,20 @@ class SoyFileSystem {
     if (
       !directory ||
       !directory.content[oldName] ||
-      illeagal_characters.some((v) => path.includes(v))
+      illegal_file_characters.some((v) => path.includes(v))
     ) {
       console.error("File or directory not found or invalid path.");
       return;
     }
 
     const isDirectory = directory.content[oldName].type === "directory";
+    if (isDirectory && illegal_dir_characters.some((v) => path.includes(v))) {
+      console.error("Invalid directory name");
+      return;
+    } else if (!isDirectory && !newName.includes(".")) {
+      console.error("Missing file extension");
+      return;
+    }
 
     if (directory.content[newName]) {
       console.error("A file or directory with the new name already exists.");

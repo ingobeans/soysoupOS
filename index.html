@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>soysoupOS command line</title>
-    <link rel="stylesheet" href="./commandline-style.css" />
+    <title>soysoupOS</title>
+    <link rel="stylesheet" href="./style.css" />
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,13 +16,11 @@
     <script src="https://cdn.jsdelivr.net/npm/ansi_up@4.0.4/ansi_up.js"></script>
   </head>
   <body>
-    <div id="terminal">
-      <div id="output"></div>
-    </div>
+    <canvas id="screen"></canvas>
     <script src="programs.js"></script>
     <script src="filesystem.js"></script>
-    <script src="system.js"></script>
-    <script src="systools.js"></script>
-    <script src="commandline-frontend.js"></script>
+    <script src="soyapi.js"></script>
+    <script src="soytools.js"></script>
+    <script src="runtime.js"></script>
   </body>
 </html>

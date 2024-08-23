@@ -21,7 +21,7 @@ class ProgramSource extends Program {
         const program = programs[index];
         text +=
           "\n\t" +
-          index +
+          program.pid +
           " - " +
           program.filepath.split("/")[program.filepath.split("/").length - 1];
       }

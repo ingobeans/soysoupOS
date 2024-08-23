@@ -1,13 +1,8 @@
-systemVersion = "0.3.3";
+systemVersion = "0.4.0";
 
 fileSystem = new SoyFileSystem();
 
 fileSystem.loadFromString(systemFiles);
-
-function printConsole(string) {
-  //console.log(string);
-  printOut(string);
-}
 
 function handleProgramError(e) {
   var msg = e.toString();
@@ -34,6 +29,9 @@ class Shell {
       this.flush();
     }
   }
+  setText(text) {
+    this.text = text;
+  }
   println(text, flush = true) {
     if (this.text == "") {
       this.text += text;
@@ -50,13 +48,6 @@ class Shell {
   }
 }
 
-var defaultShell = new Shell(printConsole);
-defaultShell.onKeypress = function (key) {
-  if (programs.length > 0) {
-    programs[0].onKeypress(key);
-  }
-};
-
 class Program {
   quit() {
     const index = programs.indexOf(this);
@@ -67,7 +58,7 @@ class Program {
       this.exitResolve();
     }
     this.outputShell.flush();
-    console.log("PID " + index + " quit");
+    console.log("PID " + this.pid + " quit");
   }
   dirExists(path) {
     var actualPath = getActualPath(path, this.cwd);
@@ -185,6 +176,18 @@ function getDrawnPrograms() {
 
 var newProgramInstance = null;
 
+function getProgram(pid) {
+  for (program in programs) {
+    if (program.pid == pid) {
+      return program;
+    }
+  }
+}
+
+function generateNewProcessId() {
+  return Math.floor(Math.random() * 9999);
+}
+
 function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {
   var data = fileSystem.readFile(path);
   try {
@@ -202,6 +205,7 @@ function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {
   newProgramInstance.cwd = cwd;
   newProgramInstance.filepath = path;
   newProgramInstance.exitResolve = exitResolve;
+  newProgramInstance.pid = generateNewProcessId();
   return newProgramInstance;
 }
 
@@ -220,7 +224,7 @@ function executeFile(path, argsRaw, outputShell, cwd) {
   programs.unshift(instance);
   instance.load(argsRaw, outputShell);
 
-  return promise;
+  return { promise: promise, pid: instance.pid, instance: instance };
 }
 
 function parseToParts(command) {
