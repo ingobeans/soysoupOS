@@ -29,11 +29,7 @@ class ProgramSource extends Program {
       this.startNewPrompt();
       return;
     }
-    let newShell = new Shell(function () {}.bind(this.outputShell));
-    newShell.setText = this.outputShell.setText.bind(this.outputShell);
-    newShell.print = this.outputShell.print.bind(this.outputShell);
-    newShell.println = this.outputShell.println.bind(this.outputShell);
-    newShell.flush = this.outputShell.flush.bind(this.outputShell);
+    let newShell = this.outputShell;
 
     if (text.indexOf(">") != -1) {
       let splitted = splitAtLastOccurrence(text, ">");

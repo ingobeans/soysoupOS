@@ -26,23 +26,41 @@ function printOutLine(text) {}
 let commandHistory = [];
 let historyIndex = -1;
 
-function terminalGraphics() {
-  screenCtx.fillStyle = "#000";
-  screenCtx.fillRect(0, 0, canvas.width, canvas.height);
-  screenCtx.font = '16px "IBM Plex Mono", monospace';
-  screenCtx.fillStyle = "#fff";
-  let i = 0;
-  for (line of removeAnsiCodes(defaultShell.text).split("\n")) {
-    screenCtx.fillText(line, 10, 20 + i * 16);
-    i += 1;
+class GraphicsHandler {
+  draw() {}
+}
+class TerminalGraphicsHandler extends GraphicsHandler {
+  calcMaxLines() {
+    return Math.floor(canvas.height / 16);
+  }
+  draw() {
+    screenCtx.fillStyle = "#000";
+    screenCtx.fillRect(0, 0, canvas.width, canvas.height);
+    screenCtx.font = '16px "IBM Plex Mono", monospace';
+    screenCtx.fillStyle = "#fff";
+    let lines = removeAnsiCodes(defaultShell.text).split("\n");
+    let maxLines = this.calcMaxLines() - 1;
+    let skipUntil = null;
+    let lineIndex = 0;
+
+    if (lines.length >= maxLines) {
+      skipUntil = lines.length - maxLines;
+    }
+    for (let i = 0; i < lines.length; i++) {
+      if (!(skipUntil !== null && i < skipUntil)) {
+        lineIndex += 1;
+        const line = lines[i];
+        screenCtx.fillText(line, 0, 0 + lineIndex * 16);
+      }
+    }
   }
 }
 
-let graphicsHandler = terminalGraphics;
+let graphicsHandler = new TerminalGraphicsHandler();
 
 function draw() {
   if (graphicsHandler) {
-    graphicsHandler();
+    graphicsHandler.draw();
   }
 }
 

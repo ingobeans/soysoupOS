@@ -23,7 +23,7 @@ class Shell {
   }
   onKeypress(key) {}
   print(text, flush = true) {
-    this.text += text;
+    this.setText(this.text + text);
 
     if (flush) {
       this.flush();
@@ -34,9 +34,9 @@ class Shell {
   }
   println(text, flush = true) {
     if (this.text == "") {
-      this.text += text;
+      this.setText(this.text + text);
     } else {
-      this.text += "\n" + text;
+      this.setText(this.text + "\n" + text);
     }
 
     if (flush) {
