@@ -92,6 +92,8 @@ class ProgramSource extends Program {
         );
         this.startNewPrompt();
       }
+    } else {
+      this.startNewPrompt();
     }
   }
   async startNewPrompt() {
