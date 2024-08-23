@@ -76,9 +76,6 @@ document.addEventListener("keydown", function (event) {
   }
   defaultShell.onKeypress(event);
 
-  if (event.ctrlKey && (event.key == "c" || event.key == "v")) {
-    return;
-  }
   event.preventDefault();
 });
 

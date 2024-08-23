@@ -11,6 +11,12 @@ class ProgramSource extends Program {
         this.focusedProcess = undefined;
         this.startNewPrompt();
         return;
+      } else if (event.key == "c" && event.ctrlKey) {
+        this.focusedProcess.quit();
+        this.focusedProcess.outputShell = new Shell(() => {});
+        this.focusedProcess = undefined;
+        this.startNewPrompt();
+        return;
       }
       this.focusedProcess.onKeypress(event);
     }
