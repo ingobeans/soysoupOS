@@ -83,7 +83,10 @@ class Program {
 
     return fileSystem.isValidParentDirectory(actualPath);
   }
-
+  isValidFilePath(path) {
+    var actualPath = getActualPath(path, this.cwd);
+    return fileSystem.isValidFilePath(actualPath);
+  }
   readFile(path) {
     var actualPath = getActualPath(path, this.cwd);
 

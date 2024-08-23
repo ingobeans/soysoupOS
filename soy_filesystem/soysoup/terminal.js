@@ -56,7 +56,11 @@ class ProgramSource extends Program {
       let splitted = splitAtLastOccurrence(text, ">");
       let self = this;
       let outputDestination = splitted[1];
-      if (outputDestination && this.isValidParentDirectory(outputDestination)) {
+      if (
+        outputDestination &&
+        this.isValidFilePath(outputDestination) &&
+        this.isValidParentDirectory(outputDestination) == true
+      ) {
         text = splitted[0];
         newShell = new Shell(function (text) {
           self.writeFile(outputDestination, removeAnsiCodes(text));

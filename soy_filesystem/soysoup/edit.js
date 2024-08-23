@@ -31,7 +31,11 @@ class ProgramSource extends Program {
     this.prompt.onKeypress(event);
   }
   async load(args) {
-    if (!args || this.isValidParentDirectory(args) != true) {
+    if (
+      !args ||
+      this.isValidParentDirectory(args) != true ||
+      !this.isValidFilePath(args)
+    ) {
       this.outputShell.println(error("path doesn't exist"));
       this.quit();
       return;

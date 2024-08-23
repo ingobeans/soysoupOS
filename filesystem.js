@@ -38,8 +38,7 @@ class SoyFileSystem {
       !directory ||
       directory.content[fileName] ||
       !path ||
-      illegal_file_characters.some((v) => path.includes(v)) ||
-      !fileName.includes(".")
+      !this.isValidFileName(fileName)
     ) {
       console.error("File already exists or invalid path.");
       return;
@@ -102,7 +101,27 @@ class SoyFileSystem {
 
     delete parentDirectory.content[fileName];
   }
+  isValidFileName(filename) {
+    return (
+      !illegal_file_characters.some((v) => filename.includes(v)) &&
+      /\..+/.test(filename)
+    );
+  }
+  isValidFilePath(path) {
+    const segments = this.getPathSegments(path);
+    const fileName = segments.pop();
+    const directory = this.traverse(segments);
 
+    if (
+      !directory ||
+      (directory.content[fileName] &&
+        directory.content[fileName].type === "directory") ||
+      !this.isValidFileName(fileName)
+    ) {
+      return false;
+    }
+    return true;
+  }
   readFile(path) {
     const segments = this.getPathSegments(path);
     const fileName = segments.pop();
@@ -111,8 +130,7 @@ class SoyFileSystem {
     if (
       !directory ||
       !directory.content[fileName] ||
-      directory.content[fileName].type !== "file" ||
-      illegal_file_characters.some((v) => path.includes(v))
+      directory.content[fileName].type !== "file"
     ) {
       console.error("File not found or invalid path.");
       return null;
@@ -125,9 +143,25 @@ class SoyFileSystem {
     const segments = this.getPathSegments(parentPath);
     const parentDirectory = this.traverse(segments);
 
-    return parentDirectory !== null && parentDirectory.type === "directory";
+    return (
+      parentDirectory !== null &&
+      parentDirectory !== undefined &&
+      parentDirectory.type === "directory"
+    );
   }
+  traverse(segments) {
+    let current = this.root;
 
+    for (const segment of segments) {
+      if (current.type !== "directory" || !current.content[segment]) {
+        return null;
+      }
+
+      current = current.content[segment];
+    }
+
+    return current;
+  }
   writeFile(path, content) {
     const segments = this.getPathSegments(path);
     const fileName = segments.pop();
@@ -136,8 +170,7 @@ class SoyFileSystem {
     if (
       !directory ||
       !directory.content[fileName] ||
-      directory.content[fileName].type !== "file" ||
-      illegal_file_characters.some((v) => path.includes(v))
+      directory.content[fileName].type !== "file"
     ) {
       console.error("File not found or invalid path.");
       return;
@@ -189,61 +222,37 @@ class SoyFileSystem {
     }
     return newPath;
   }
-  rename(oldPath, newName) {
-    const segments = this.getPathSegments(oldPath);
-    const oldName = segments.pop();
-    const directory = this.traverse(segments);
+  moveFile(sourcePath, destinationPath) {
+    const sourceSegments = this.getPathSegments(sourcePath);
+    const sourceFileName = sourceSegments.pop();
+    const sourceDirectory = this.traverse(sourceSegments);
 
     if (
-      !directory ||
-      !directory.content[oldName] ||
-      illegal_file_characters.some((v) => path.includes(v))
+      !sourceDirectory ||
+      !sourceDirectory.content[sourceFileName] ||
+      sourceDirectory.content[sourceFileName].type !== "file"
     ) {
-      console.error("File or directory not found or invalid path.");
+      console.error("Source file not found or invalid path.");
       return;
     }
 
-    const isDirectory = directory.content[oldName].type === "directory";
-    if (isDirectory && illegal_dir_characters.some((v) => path.includes(v))) {
-      console.error("Invalid directory name");
+    const destSegments = this.getPathSegments(destinationPath);
+    const destFileName = destSegments.pop();
+    const destDirectory = this.traverse(destSegments);
+
+    if (
+      !destDirectory ||
+      destDirectory.content[destFileName] ||
+      !this.isValidFileName(destFileName)
+    ) {
+      console.error("Destination path is invalid or file already exists.");
       return;
-    } else if (!isDirectory && !newName.includes(".")) {
-      console.error("Missing file extension");
-      return;
     }
 
-    if (directory.content[newName]) {
-      console.error("A file or directory with the new name already exists.");
-      return;
-    }
+    destDirectory.content[destFileName] =
+      sourceDirectory.content[sourceFileName];
 
-    directory.content[newName] = directory.content[oldName];
-    delete directory.content[oldName];
-
-    if (isDirectory) {
-      const parentPath = this.getParentDirectory(oldPath);
-      const parentSegments = this.getPathSegments(parentPath);
-      const parentDirectory = this.traverse(parentSegments);
-
-      if (parentDirectory) {
-        parentDirectory.content[newName] = directory.content[newName];
-        delete parentDirectory.content[oldName];
-      }
-    }
-  }
-
-  traverse(segments) {
-    let current = this.root;
-
-    for (const segment of segments) {
-      if (current.type !== "directory" || !current.content[segment]) {
-        return null;
-      }
-
-      current = current.content[segment];
-    }
-
-    return current;
+    delete sourceDirectory.content[sourceFileName];
   }
 
   getPathSegments(path) {
