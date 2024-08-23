@@ -78,6 +78,11 @@ class Program {
       fileSystem.pathExists(actualPath) && fileSystem.isFile(actualPath) == true
     );
   }
+  renameFile(source, dest) {
+    var actualSource = getActualPath(source, this.cwd);
+    var actualDest = getActualPath(dest, this.cwd);
+    fileSystem.moveFile(actualSource, actualDest);
+  }
   isValidParentDirectory(path) {
     var actualPath = getActualPath(path, this.cwd);
 
@@ -245,10 +250,11 @@ function getActualPath(text, cwd) {
   if (!text) {
     return fileSystem.normalizePath(cwd);
   }
-  text = fileSystem.normalizePath(text);
   if (text.startsWith("/")) {
+    text = fileSystem.normalizePath(text);
     path = text;
   } else {
+    text = fileSystem.normalizePath(text);
     path = fileSystem.normalizePath(cwd + text);
   }
   path = fileSystem.resolveBackSteps(path);
