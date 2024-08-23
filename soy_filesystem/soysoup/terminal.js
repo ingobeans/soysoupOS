@@ -3,6 +3,15 @@ class ProgramSource extends Program {
     if (this.focusedProcess == undefined) {
       this.prompt.onKeypress(event);
     } else {
+      if (event.key == "z" && event.ctrlKey) {
+        this.focusedProcess.outputShell = new Shell(() => {});
+        this.outputShell.println(
+          "dropped focus from PID " + this.focusedProcess.pid
+        );
+        this.focusedProcess = undefined;
+        this.startNewPrompt();
+        return;
+      }
       this.focusedProcess.onKeypress(event);
     }
   }
@@ -71,11 +80,9 @@ class ProgramSource extends Program {
         removeItem(this.processes, process["instance"]);
 
         // only restore focuse IF this command is still the last active program
-        if (
-          this.focusedProcess == process["instance"] &&
-          runInBackground == false
-        ) {
+        if (this.focusedProcess == process["instance"]) {
           this.focusedProcess = oldFocus;
+          this.startNewPrompt();
         }
       } else {
         process["promise"].then(
@@ -83,9 +90,9 @@ class ProgramSource extends Program {
             removeItem(this.processes, process["instance"]);
           }.bind(this)
         );
+        this.startNewPrompt();
       }
     }
-    this.startNewPrompt();
   }
   async startNewPrompt() {
     let result = await this.prompt.prompt(">", true);
