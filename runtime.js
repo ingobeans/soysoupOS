@@ -31,7 +31,7 @@ class GraphicsHandler {
 }
 class TerminalGraphicsHandler extends GraphicsHandler {
   calcMaxLines() {
-    return Math.floor(canvas.height / 16);
+    return Math.floor(canvas.height / fontSize);
   }
   draw() {
     let lines = defaultShell.text.split("\n");
@@ -48,7 +48,7 @@ class TerminalGraphicsHandler extends GraphicsHandler {
       if (!(skipUntil !== null && i < skipUntil)) {
         lineIndex += 1;
         const line = lines[i];
-        drawAnsiText(screenCtx, 0, 0 + lineIndex * 16, line, "#fff");
+        drawAnsiText(screenCtx, 0, 0 + lineIndex * fontSize, line, "#fff");
       }
     }
   }

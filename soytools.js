@@ -10,6 +10,14 @@ Number.prototype.clamp = function (min, max) {
   return Math.min(Math.max(this, min), max);
 };
 
+function updateFont() {
+  font = window.getComputedStyle(document.body).font;
+  fontSize = parseFloat(window.getComputedStyle(document.body).fontSize);
+}
+let font = undefined;
+let fontSize = undefined;
+updateFont();
+
 function removeItem(arr, value) {
   var index = arr.indexOf(value);
   if (index > -1) {
@@ -18,7 +26,7 @@ function removeItem(arr, value) {
   return arr;
 }
 function getTextWidth(ctx, text) {
-  ctx.font = '16px "IBM Plex Mono", monospace';
+  ctx.font = font;
   var metrics = ctx.measureText(text);
   return metrics.width;
 }
@@ -52,9 +60,9 @@ function drawAnsiText(ctx, x, y, text, color) {
     }
     return;
   }
-  screenCtx.font = '16px "IBM Plex Mono", monospace';
+  screenCtx.font = font;
   screenCtx.fillStyle = color;
-  ctx.fillText(text, x, y + 16);
+  ctx.fillText(text, x, y);
 }
 function error(text) {
   return ERROR_COLOR + "error: " + text + RESET_COLOR;
