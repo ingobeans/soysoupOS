@@ -207,6 +207,54 @@ class CommandlineInput {
         this.currentLineInput.length,
         this.selectionIndex + 1
       );
+    } else if (event.key == "Home") {
+      const currentLineStart = this.currentLineInput.lastIndexOf(
+        "\n",
+        this.selectionIndex - 1
+      );
+      this.selectionIndex = currentLineStart + 1;
+    } else if (event.key == "End") {
+      const currentLineEnd = this.currentLineInput.indexOf(
+        "\n",
+        this.selectionIndex
+      );
+      this.selectionIndex =
+        currentLineEnd === -1 ? this.currentLineInput.length : currentLineEnd;
+    } else if (event.key == "ArrowUp") {
+      const currentLineStart = this.currentLineInput.lastIndexOf(
+        "\n",
+        this.selectionIndex - 1
+      );
+      if (currentLineStart > 0) {
+        const previousLineEnd = currentLineStart;
+        const previousLineStart =
+          this.currentLineInput.lastIndexOf("\n", previousLineEnd - 1) + 1;
+        const cursorPosInLine = this.selectionIndex - currentLineStart - 1;
+        this.selectionIndex = Math.min(
+          previousLineStart + cursorPosInLine,
+          previousLineEnd
+        );
+      }
+    } else if (event.key == "ArrowDown") {
+      const currentLineEnd = this.currentLineInput.indexOf(
+        "\n",
+        this.selectionIndex
+      );
+      if (currentLineEnd !== -1) {
+        const nextLineStart = currentLineEnd + 1;
+        const nextLineEnd = this.currentLineInput.indexOf("\n", nextLineStart);
+        const cursorPosInLine =
+          this.selectionIndex -
+          (this.currentLineInput.lastIndexOf("\n", this.selectionIndex - 1) +
+            1);
+        this.selectionIndex =
+          nextLineEnd === -1
+            ? Math.min(
+                nextLineStart + cursorPosInLine,
+                this.currentLineInput.length
+              )
+            : Math.min(nextLineStart + cursorPosInLine, nextLineEnd);
+      }
     } else if (event.key == "Backspace") {
       if (this.currentLineInput) {
         this.currentLineInput = this.removeCharacter(
