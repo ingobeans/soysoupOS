@@ -62,7 +62,6 @@ class Program {
   }
   dirExists(path) {
     var actualPath = getActualPath(path, this.cwd);
-
     return (
       fileSystem.pathExists(actualPath) && fileSystem.isFile(actualPath) != true
     );

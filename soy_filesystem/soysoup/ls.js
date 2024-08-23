@@ -1,6 +1,6 @@
 class ProgramSource extends Program {
   load(args) {
-    let path = getActualPath(args, this.cwd);
+    let path = fileSystem.normalizePath(args);
     if (!this.dirExists(path)) {
       this.outputShell.println(
         error("path doesn't exist or is not a directory")
