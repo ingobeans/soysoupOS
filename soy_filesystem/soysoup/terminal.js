@@ -58,9 +58,9 @@ class ProgramSource extends Program {
       let outputDestination = splitted[1];
       if (outputDestination && this.isValidParentDirectory(outputDestination)) {
         text = splitted[0];
-        newShell.outputFunction = function (text) {
+        newShell = new Shell(function (text) {
           self.writeFile(outputDestination, removeAnsiCodes(text));
-        };
+        });
       }
     }
     let runInBackground = false;
