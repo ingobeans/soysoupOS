@@ -18,12 +18,15 @@ let font = undefined;
 let fontSize = undefined;
 updateFont();
 
-function removeItem(arr, value) {
-  var index = arr.indexOf(value);
-  if (index > -1) {
-    arr.splice(index, 1);
-  }
-  return arr;
+function drawRect(ctx, x, y, width, height, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(
+    x,
+    y,
+
+    width,
+    height
+  );
 }
 function getTextWidth(ctx, text) {
   ctx.font = font;
@@ -34,7 +37,7 @@ function drawAnsiText(ctx, x, y, text, color) {
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {
-      drawAnsiText(ctx, x, y + index * 18, text_piece, color);
+      drawAnsiText(ctx, x, y + index * fontSize, text_piece, color);
     });
     return;
   }
@@ -60,9 +63,26 @@ function drawAnsiText(ctx, x, y, text, color) {
     }
     return;
   }
-  screenCtx.font = font;
-  screenCtx.fillStyle = color;
+  ctx.font = font;
+  ctx.fillStyle = color;
   ctx.fillText(text, x, y);
+}
+
+function getDrawnPrograms() {
+  var p = [];
+  programs.forEach(function (program) {
+    if (typeof program.window === "object") {
+      p.push(program);
+    }
+  });
+  return p;
+}
+function removeItem(arr, value) {
+  var index = arr.indexOf(value);
+  if (index > -1) {
+    arr.splice(index, 1);
+  }
+  return arr;
 }
 function error(text) {
   return ERROR_COLOR + "error: " + text + RESET_COLOR;

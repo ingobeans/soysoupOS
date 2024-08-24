@@ -1,4 +1,4 @@
-systemVersion = "0.4.0";
+systemVersion = "0.4.1";
 
 fileSystem = new SoyFileSystem();
 
@@ -171,16 +171,6 @@ function splitAtLastOccurrence(str, delimiter) {
 
 var programs = [];
 
-function getDrawnPrograms() {
-  var p = [];
-  programs.forEach(function (program) {
-    if (typeof program.window === "object") {
-      p.push(program);
-    }
-  });
-  return p;
-}
-
 var newProgramInstance = null;
 
 function getProgram(pid) {
@@ -191,8 +181,20 @@ function getProgram(pid) {
   }
 }
 
-function generateNewProcessId() {
-  return Math.floor(Math.random() * 9999);
+function generateNewProcessId(requestedPID) {
+  if (requestedPID !== undefined) {
+    if (getProgram(requestedPID) === undefined) {
+      return requestedPID;
+    }
+    console.error("PID " + requestedPID + " already in use");
+    return undefined;
+  }
+  while (true) {
+    let p = Math.floor(Math.random() * 9999);
+    if (getProgram(p) === undefined) {
+      return p;
+    }
+  }
 }
 
 function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {

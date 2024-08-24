@@ -27,9 +27,13 @@ let commandHistory = [];
 let historyIndex = -1;
 
 class GraphicsHandler {
+  onKeypress() {}
   draw() {}
 }
 class TerminalGraphicsHandler extends GraphicsHandler {
+  onKeypress(key) {
+    terminalProcess.onKeypress(key);
+  }
   calcMaxLines() {
     return Math.floor(canvas.height / fontSize);
   }
@@ -37,18 +41,21 @@ class TerminalGraphicsHandler extends GraphicsHandler {
     let lines = defaultShell.text.split("\n");
     let maxLines = this.calcMaxLines() - 1;
     let skipUntil = null;
-    let lineIndex = 0;
-    screenCtx.fillStyle = "#000";
-    screenCtx.fillRect(0, 0, canvas.width, canvas.height);
+    drawRect(screenCtx, 0, 0, canvas.width, canvas.height, "#000");
 
     if (lines.length >= maxLines) {
       skipUntil = lines.length - maxLines;
     }
     for (let i = 0; i < lines.length; i++) {
       if (!(skipUntil !== null && i < skipUntil)) {
-        lineIndex += 1;
         const line = lines[i];
-        drawAnsiText(screenCtx, 0, 0 + lineIndex * fontSize, line, "#fff");
+        drawAnsiText(
+          screenCtx,
+          0,
+          fontSize * (i - skipUntil + 1),
+          line,
+          "#fff"
+        );
       }
     }
   }
@@ -86,7 +93,7 @@ let terminalProcess = undefined;
 
 var defaultShell = new Shell(printOut);
 defaultShell.onKeypress = function (key) {
-  terminalProcess.onKeypress(key);
+  graphicsHandler.onKeypress(key);
 };
 
 async function createTerminal() {
