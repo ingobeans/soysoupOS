@@ -20,7 +20,14 @@ class ConsoleHostWindow {
     for (let i = 0; i < lines.length; i++) {
       if (!(skipUntil !== null && i < skipUntil)) {
         let line = lines[i];
-        drawAnsiText(this.ctx, 0, fontSize * (i - skipUntil + 1), line, "#fff");
+        drawAnsiText(
+          this.ctx,
+          0,
+          fontSize * (i - skipUntil + 1),
+          line,
+          "#fff",
+          "#000"
+        );
       }
     }
   }

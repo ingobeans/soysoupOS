@@ -20,24 +20,18 @@ updateFont();
 
 function drawRect(ctx, x, y, width, height, color) {
   ctx.fillStyle = color;
-  ctx.fillRect(
-    x,
-    y,
-
-    width,
-    height
-  );
+  ctx.fillRect(x, y, width, height);
 }
 function getTextWidth(ctx, text) {
   ctx.font = font;
   var metrics = ctx.measureText(text);
   return metrics.width;
 }
-function drawAnsiText(ctx, x, y, text, color) {
+function drawAnsiText(ctx, x, y, text, color, bgcolor) {
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {
-      drawAnsiText(ctx, x, y + index * fontSize, text_piece, color);
+      drawAnsiText(ctx, x, y + index * fontSize, text_piece, color, bgcolor);
     });
     return;
   }
@@ -54,7 +48,8 @@ function drawAnsiText(ctx, x, y, text, color) {
           x + offset,
           y,
           packet.text,
-          ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : color
+          ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : color,
+          ansi_up.bg != null ? rgbToString(ansi_up.bg.rgb) : bgcolor
         );
         offset += getTextWidth(ctx, packet.text);
       } else if (packet.kind == 5) {
@@ -64,6 +59,7 @@ function drawAnsiText(ctx, x, y, text, color) {
     return;
   }
   ctx.font = font;
+  drawRect(ctx, x, y - 13, getTextWidth(ctx, text), fontSize, bgcolor);
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
 }
@@ -297,12 +293,29 @@ class CommandlineInput {
     this.flush();
   }
   flush() {
+    // insert ansi codes to make selection
+    let beforeSelection = this.currentLineInput.slice(0, this.selectionIndex);
+    let charAtSelection = this.currentLineInput.charAt(this.selectionIndex);
+    if (
+      charAtSelection == "" ||
+      charAtSelection == "\n" ||
+      charAtSelection == "\t"
+    ) {
+      charAtSelection = " " + charAtSelection;
+    }
+    let afterSelection = this.currentLineInput.slice(this.selectionIndex + 1);
+    let displayText =
+      beforeSelection +
+      `\u001b[48;5;7m${charAtSelection}\u001b[49m` +
+      afterSelection;
+
     this.outputShell.setText(
       this.text +
         "\n" +
         MUTED_COLOR +
         this.question +
-        insert(this.currentLineInput, "|", this.selectionIndex) +
+        displayText +
+        //insert(this.currentLineInput, "|", this.selectionIndex) +
         RESET_COLOR
     );
 

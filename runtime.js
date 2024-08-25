@@ -54,7 +54,8 @@ class TerminalGraphicsHandler extends GraphicsHandler {
           0,
           fontSize * (i - skipUntil + 1),
           line,
-          "#fff"
+          "#fff",
+          "#000"
         );
       }
     }
