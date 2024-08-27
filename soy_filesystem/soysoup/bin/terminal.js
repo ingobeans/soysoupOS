@@ -107,14 +107,23 @@ class ProgramSource extends Program {
     }
   }
   async startNewPrompt() {
+    if (this.singleCommand === true) {
+      this.quit();
+      return;
+    }
     let result = await this.prompt.prompt(">", true);
     this.handleSubmit(result);
   }
   load(args) {
     this.processes = [];
     this.focusedProcess = undefined;
+    this.singleCommand = args != "";
+    if (args != "") {
+      this.handleSubmit(args);
+      return;
+    }
     this.prompt = new CommandlineInput(this.outputShell, true);
-    this.cwd = "/";
+
     this.outputShell.println(
       `soysoupOS v${systemVersion}\ntype 'help' for help`
     );

@@ -1,4 +1,4 @@
-systemVersion = "0.4.1";
+systemVersion = "0.4.2";
 
 fileSystem = new SoyFileSystem();
 
@@ -218,7 +218,27 @@ function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {
   return newProgramInstance;
 }
 
+function replacePlaceholders(text, argsRaw) {
+  let args = argsRaw.split(" ");
+
+  return text
+    .replace(/\$(\d+)/g, (match, number) => {
+      let index = parseInt(number, 10) - 1;
+      return index < args.length ? args[index] : "";
+    })
+    .replace(/\$@/g, argsRaw);
+}
+
 function executeFile(path, argsRaw, outputShell, cwd) {
+  let fileType = path.split("/")[path.split("/").length - 1].split(".")[1];
+  if (fileType == "soy") {
+    let contents = fileSystem.readFile(path);
+    contents = replacePlaceholders(contents, argsRaw);
+    for (let line of contents.split("\n")) {
+      executeFile("soysoup/bin/terminal.soup", line, defaultShell, "");
+    }
+    return;
+  }
   var exitResolve = undefined;
   var promise = new Promise((resolve) => {
     exitResolve = resolve;

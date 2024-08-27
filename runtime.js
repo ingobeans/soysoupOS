@@ -32,7 +32,7 @@ class GraphicsHandler {
 }
 class TerminalGraphicsHandler extends GraphicsHandler {
   onKeypress(key) {
-    terminalProcess.onKeypress(key);
+    serviceManager.serviceInstances["tty"].terminal.onKeypress(key);
   }
   calcMaxLines() {
     return Math.floor(canvas.height / fontSize);
@@ -118,6 +118,8 @@ async function createTerminal() {
   defaultShell.println("powered off soysoupOS");
 }
 
-executeFile("soysoup/bin/servicemanager.soup", "", null, "");
-createTerminal();
+//executeFile("soysoup/bin/servicemanager.soup", "", null, "");
+//createTerminal();
+executeFile("soysoup/boot.soy", "", defaultShell, "");
+
 update();

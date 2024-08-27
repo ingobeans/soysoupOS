@@ -6,6 +6,29 @@ function setServiceManager(instance) {
 }
 
 class ProgramSource extends Program {
+  startService(name, shell) {
+    if (this.services.includes(name)) {
+      if (this.serviceInstances[name] === undefined) {
+        this.serviceInstances[name] = executeFile(
+          `soysoup/services/${name}.soup`,
+          "",
+          shell,
+          ""
+        )["instance"];
+      }
+    }
+  }
+  stopService(name) {
+    if (this.serviceInstances[name] !== undefined) {
+      this.serviceInstances[name].quit();
+    }
+  }
+  refreshServiceList() {
+    this.services = [];
+    for (let service of this.readDirectory("/soysoup/services")) {
+      this.services.push(service.split(".")[0]);
+    }
+  }
   load(args) {
     if (typeof serviceManagerPID === "undefined") {
       setServiceManager(this);
@@ -14,5 +37,7 @@ class ProgramSource extends Program {
       return;
     }
     this.services = [];
+    this.serviceInstances = {};
+    this.refreshServiceList();
   }
 }
