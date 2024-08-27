@@ -107,7 +107,7 @@ defaultShell.onKeypress = function (key) {
 };
 
 async function createTerminal() {
-  terminalPath = "soysoup/terminal.soup";
+  terminalPath = "soysoup/bin/terminal.soup";
   if (fileSystem.isFile(terminalPath) != true) {
     defaultShell.println(error("terminal is missing"));
   }
@@ -118,6 +118,6 @@ async function createTerminal() {
   defaultShell.println("powered off soysoupOS");
 }
 
-executeFile("soysoup/servicemanager.soup", "", null, "");
+executeFile("soysoup/bin/servicemanager.soup", "", null, "");
 createTerminal();
 update();

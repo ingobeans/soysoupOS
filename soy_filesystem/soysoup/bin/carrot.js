@@ -152,6 +152,6 @@ class ProgramSource extends Program {
   load(args) {
     this.programs = [];
     setGraphicsHandler(new CarrotGraphicsHandler());
-    launchApplication("soysoup/terminal.soup", "", "");
+    launchApplication("soysoup/bin/terminal.soup", "", "");
   }
 }

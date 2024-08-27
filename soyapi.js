@@ -276,8 +276,8 @@ function executeCommand(command, outputShell, cwd) {
 
   var path = getActualPath(fileSystem.normalizePath(keyword), cwd);
 
-  if (fileSystem.isFile("soysoup/" + keyword + ".soup")) {
-    path = "soysoup/" + keyword + ".soup";
+  if (fileSystem.isFile("soysoup/bin/" + keyword + ".soup")) {
+    path = "soysoup/bin/" + keyword + ".soup";
   }
   if (fileSystem.isFile(path)) {
     return executeFile(
