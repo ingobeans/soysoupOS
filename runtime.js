@@ -118,5 +118,6 @@ async function createTerminal() {
   defaultShell.println("powered off soysoupOS");
 }
 
+executeFile("soysoup/servicemanager.soup", "", null, "");
 createTerminal();
 update();
