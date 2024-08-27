@@ -62,7 +62,9 @@ class TerminalGraphicsHandler extends GraphicsHandler {
   }
 }
 
-let graphicsHandler = new TerminalGraphicsHandler();
+let lastGraphicsHandler = undefined;
+let defaultGraphicsHandler = new TerminalGraphicsHandler();
+let graphicsHandler = defaultGraphicsHandler;
 
 function draw() {
   if (graphicsHandler) {
@@ -78,8 +80,15 @@ function update() {
 document.addEventListener("keydown", function (event) {
   if (
     (event.key.length == 2 || event.key.length == 3) &&
-    event.key.startsWith("F")
+    event.key.startsWith("F") &&
+    !["F1"].includes(event.key)
   ) {
+    return;
+  }
+  if (event.key == "F1") {
+    if (lastGraphicsHandler !== undefined) {
+      setGraphicsHandler(lastGraphicsHandler);
+    }
     return;
   }
   defaultShell.onKeypress(event);

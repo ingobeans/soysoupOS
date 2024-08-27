@@ -27,6 +27,19 @@ function getTextWidth(ctx, text) {
   var metrics = ctx.measureText(text);
   return metrics.width;
 }
+function setGraphicsHandler(newGraphicsHandler) {
+  if (newGraphicsHandler === undefined) {
+    [lastGraphicsHandler, graphicsHandler] = [
+      undefined,
+      defaultGraphicsHandler,
+    ];
+  } else {
+    [lastGraphicsHandler, graphicsHandler] = [
+      graphicsHandler,
+      newGraphicsHandler,
+    ];
+  }
+}
 function drawAnsiText(ctx, x, y, text, color, bgcolor) {
   bgcolor = bgcolor || "rgba(0,0,0,0)";
   if (text.includes("\n")) {

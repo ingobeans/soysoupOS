@@ -146,12 +146,12 @@ class CarrotGraphicsHandler extends GraphicsHandler {
 
 class ProgramSource extends Program {
   quit() {
-    graphicsHandler = this.oldGraphicsHandler;
+    setGraphicsHandler();
     super.quit();
   }
   load(args) {
-    this.oldGraphicsHandler = graphicsHandler;
-    graphicsHandler = new CarrotGraphicsHandler();
+    this.programs = [];
+    setGraphicsHandler(new CarrotGraphicsHandler());
     launchApplication("soysoup/terminal.soup", "", "");
   }
 }
