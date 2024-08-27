@@ -1,4 +1,4 @@
-systemVersion = "0.4.2";
+systemVersion = "0.4.3";
 
 fileSystem = new SoyFileSystem();
 
@@ -230,8 +230,10 @@ function replacePlaceholders(text, argsRaw) {
 }
 
 function executeFile(path, argsRaw, outputShell, cwd) {
-  let fileType = path.split("/")[path.split("/").length - 1].split(".")[1];
-  if (fileType == "soy") {
+  let segments = fileSystem.getPathSegments(path);
+  let filetype = segments[segments.length - 1].split(".")[1];
+
+  if (filetype == "soy") {
     let contents = fileSystem.readFile(path);
     contents = replacePlaceholders(contents, argsRaw);
     for (let line of contents.split("\n")) {
@@ -250,10 +252,12 @@ function executeFile(path, argsRaw, outputShell, cwd) {
     cwd,
     exitResolve
   );
-  programs.unshift(instance);
-  instance.load(argsRaw, outputShell);
+  if (instance !== undefined) {
+    programs.unshift(instance);
+    instance.load(argsRaw, outputShell);
 
-  return { promise: promise, pid: instance.pid, instance: instance };
+    return { promise: promise, pid: instance.pid, instance: instance };
+  }
 }
 
 function parseToParts(command) {
@@ -298,6 +302,8 @@ function executeCommand(command, outputShell, cwd) {
 
   if (fileSystem.isFile("soysoup/bin/" + keyword + ".soup")) {
     path = "soysoup/bin/" + keyword + ".soup";
+  } else if (fileSystem.isFile("soysoup/bin/" + keyword + ".soy")) {
+    path = "soysoup/bin/" + keyword + ".soy";
   }
   if (fileSystem.isFile(path)) {
     return executeFile(
