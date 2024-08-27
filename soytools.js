@@ -28,6 +28,7 @@ function getTextWidth(ctx, text) {
   return metrics.width;
 }
 function drawAnsiText(ctx, x, y, text, color, bgcolor) {
+  bgcolor = bgcolor || "rgba(0,0,0,0)";
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {

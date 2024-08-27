@@ -1,3 +1,8 @@
+let windowBorderWidth = 2;
+let topbarHeight = 30;
+let windowBackgroundColor = "#fff";
+let windowTitleTextColor = "#000";
+
 function getNewWindowPosition(width, height) {
   let step = 25;
   let offsetX = 0;
@@ -23,6 +28,10 @@ function getNewWindowPosition(width, height) {
 }
 
 class ConsoleHostWindow {
+  load() {
+    let pathSegments = this.parent.filepath.split("/");
+    this.title = pathSegments[pathSegments.length - 1].split(".")[0];
+  }
   calcMaxLines() {
     return Math.floor(this.canvas.height / fontSize);
   }
@@ -78,7 +87,18 @@ function setUpWindow(window, parent) {
   );
   window.parent = parent;
   window.ctx = window.canvas.getContext("2d");
+  window.load();
   window.setUp = true;
+}
+
+function drawTopbar(ctx, window) {
+  drawAnsiText(
+    ctx,
+    windowBorderWidth,
+    windowBorderWidth + fontSize,
+    window.title,
+    windowTitleTextColor
+  );
 }
 
 class CarrotGraphicsHandler extends GraphicsHandler {
@@ -94,11 +114,31 @@ class CarrotGraphicsHandler extends GraphicsHandler {
       if (program.window.setUp !== true) {
         setUpWindow(program.window, program);
       }
+      let windowBack = document.createElement("canvas");
+      let windowBackCtx = windowBack.getContext("2d");
+      windowBack.width = program.window.canvas.width + windowBorderWidth * 2;
+      windowBack.height =
+        program.window.canvas.height + windowBorderWidth * 2 + topbarHeight;
+
+      drawRect(
+        windowBackCtx,
+        0,
+        0,
+        windowBack.width,
+        windowBack.height,
+        windowBackgroundColor
+      );
+      drawTopbar(windowBackCtx, program.window);
       program.window.draw();
-      screenCtx.drawImage(
+      windowBackCtx.drawImage(
         program.window.ctx.canvas,
-        program.window.x,
-        program.window.y
+        windowBorderWidth,
+        windowBorderWidth + topbarHeight
+      );
+      screenCtx.drawImage(
+        windowBack,
+        program.window.x - windowBorderWidth,
+        program.window.y - windowBorderWidth
       );
     }
   }
