@@ -19,8 +19,10 @@ class ProgramSource extends Program {
     }
   }
   stopService(name) {
-    if (this.serviceInstances[name] !== undefined) {
-      this.serviceInstances[name].quit();
+    let instance = this.serviceInstances[name];
+    if (instance !== undefined) {
+      this.serviceInstances[name] = undefined;
+      instance.quit();
     }
   }
   refreshServiceList() {
