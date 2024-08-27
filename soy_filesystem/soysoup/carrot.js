@@ -21,6 +21,53 @@ function getNewWindowPosition(width, height) {
     }
   }
 }
+
+class ConsoleHostWindow {
+  calcMaxLines() {
+    return Math.floor(this.canvas.height / fontSize);
+  }
+  draw() {
+    drawRect(
+      this.ctx,
+      0,
+      0,
+      this.ctx.canvas.width,
+      this.ctx.canvas.height,
+      "#000"
+    );
+    let lines = this.parent.outputShell.text.split("\n");
+    let maxLines = this.calcMaxLines() - 1;
+    let skipUntil = null;
+    if (lines.length >= maxLines) {
+      skipUntil = lines.length - maxLines;
+    }
+    for (let i = 0; i < lines.length; i++) {
+      if (!(skipUntil !== null && i < skipUntil)) {
+        let line = lines[i];
+        drawAnsiText(
+          this.ctx,
+          0,
+          fontSize * (i - skipUntil + 1),
+          line,
+          "#fff",
+          "#000"
+        );
+      }
+    }
+  }
+}
+
+function launchApplication(path, argsRaw, cwd) {
+  // launches a program with a window & fresh shell
+  let shell = new Shell(() => {});
+  let process = executeFile(path, argsRaw, shell, cwd);
+  if (process["instance"].window == undefined) {
+    process["instance"].window = new ConsoleHostWindow();
+  }
+  setUpWindow(process["instance"].window, process["instance"]);
+  return process;
+}
+
 function setUpWindow(window, parent) {
   window.canvas = document.createElement("canvas");
   window.canvas.width = 850;
@@ -65,10 +112,6 @@ class ProgramSource extends Program {
   load(args) {
     this.oldGraphicsHandler = graphicsHandler;
     graphicsHandler = new CarrotGraphicsHandler();
-    let process = executeFile(
-      "soysoup/carrot/consolehost.soup",
-      "",
-      this.outputShell
-    );
+    launchApplication("soysoup/terminal.soup", "", "");
   }
 }
