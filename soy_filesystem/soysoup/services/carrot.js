@@ -1,7 +1,9 @@
 let windowBorderWidth = 2;
 let topbarHeight = 30;
 let windowBackgroundColor = "#fff";
+windowBorderColor = "#7c7dd9";
 let windowTitleTextColor = "#000";
+let backgroundColor = "#a0a1f0";
 
 function getNewWindowPosition(width, height) {
   let step = 25;
@@ -26,7 +28,15 @@ function getNewWindowPosition(width, height) {
     }
   }
 }
-
+function getDrawnPrograms() {
+  var p = [];
+  programs.forEach(function (program) {
+    if (typeof program.window === "object") {
+      p.push(program);
+    }
+  });
+  return p;
+}
 class ConsoleHostWindow {
   load() {
     let pathSegments = this.parent.filepath.split("/");
@@ -66,17 +76,6 @@ class ConsoleHostWindow {
   }
 }
 
-function launchApplication(path, argsRaw, cwd) {
-  // launches a program with a window & fresh shell
-  let shell = new Shell(() => {});
-  let process = executeFile(path, argsRaw, shell, cwd);
-  if (process["instance"].window == undefined) {
-    process["instance"].window = new ConsoleHostWindow();
-  }
-  setUpWindow(process["instance"].window, process["instance"]);
-  return process;
-}
-
 function setUpWindow(window, parent) {
   window.canvas = document.createElement("canvas");
   window.canvas.width = 850;
@@ -91,16 +90,6 @@ function setUpWindow(window, parent) {
   window.setUp = true;
 }
 
-function drawTopbar(ctx, window) {
-  drawAnsiText(
-    ctx,
-    windowBorderWidth,
-    windowBorderWidth + fontSize,
-    window.title,
-    windowTitleTextColor
-  );
-}
-
 class CarrotGraphicsHandler extends GraphicsHandler {
   onKeypress(key) {
     let drawPrograms = getDrawnPrograms();
@@ -108,9 +97,20 @@ class CarrotGraphicsHandler extends GraphicsHandler {
       drawPrograms[0].onKeypress(key);
     }
   }
+  drawTopbar(ctx, window) {
+    drawAnsiText(
+      ctx,
+      windowBorderWidth,
+      windowBorderWidth + fontSize,
+      window.title,
+      windowTitleTextColor
+    );
+  }
   draw() {
-    drawRect(screenCtx, 0, 0, canvas.width, canvas.height, "#a0a1f0");
-    for (let program of getDrawnPrograms()) {
+    drawRect(screenCtx, 0, 0, canvas.width, canvas.height, backgroundColor);
+    let programs = getDrawnPrograms();
+    for (let i = programs.length - 1; i >= 0; i--) {
+      const program = programs[i];
       if (program.window.setUp !== true) {
         setUpWindow(program.window, program);
       }
@@ -128,7 +128,18 @@ class CarrotGraphicsHandler extends GraphicsHandler {
         windowBack.height,
         windowBackgroundColor
       );
-      drawTopbar(windowBackCtx, program.window);
+      if (i == 0) {
+        drawRect(
+          windowBackCtx,
+          windowBorderWidth / 2,
+          windowBorderWidth / 2,
+          windowBack.width - windowBorderWidth,
+          windowBack.height - windowBorderWidth,
+          windowBorderColor,
+          windowBorderWidth
+        );
+      }
+      this.drawTopbar(windowBackCtx, program.window);
       program.window.draw();
       windowBackCtx.drawImage(
         program.window.ctx.canvas,
@@ -145,6 +156,16 @@ class CarrotGraphicsHandler extends GraphicsHandler {
 }
 
 class ProgramSource extends Program {
+  launchApplication(path, argsRaw, cwd) {
+    // launches a program with a window & fresh shell
+    let shell = new Shell(() => {});
+    let process = executeFile(path, argsRaw, shell, cwd);
+    if (process["instance"].window == undefined) {
+      process["instance"].window = new ConsoleHostWindow();
+    }
+    setUpWindow(process["instance"].window, process["instance"]);
+    return process;
+  }
   quit() {
     setGraphicsHandler();
     super.quit();
@@ -152,6 +173,6 @@ class ProgramSource extends Program {
   load(args) {
     this.programs = [];
     setGraphicsHandler(new CarrotGraphicsHandler());
-    launchApplication("soysoup/bin/terminal.soup", "", "");
+    this.launchApplication("soysoup/bin/terminal.soup", "", "");
   }
 }

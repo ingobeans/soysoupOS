@@ -18,9 +18,16 @@ let font = undefined;
 let fontSize = undefined;
 updateFont();
 
-function drawRect(ctx, x, y, width, height, color) {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, width, height);
+function drawRect(ctx, x, y, width, height, color, lineWidth) {
+  if (lineWidth === undefined) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, height);
+  } else {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.rect(x, y, width, height);
+    ctx.stroke();
+  }
 }
 function getTextWidth(ctx, text) {
   ctx.font = font;
@@ -76,16 +83,6 @@ function drawAnsiText(ctx, x, y, text, color, bgcolor) {
   drawRect(ctx, x, y - 13, getTextWidth(ctx, text), fontSize, bgcolor);
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
-}
-
-function getDrawnPrograms() {
-  var p = [];
-  programs.forEach(function (program) {
-    if (typeof program.window === "object") {
-      p.push(program);
-    }
-  });
-  return p;
 }
 function removeItem(arr, value) {
   var index = arr.indexOf(value);
