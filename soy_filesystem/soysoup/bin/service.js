@@ -1,8 +1,17 @@
 class ProgramSource extends Program {
   load(args) {
     var parts = parseToParts(args);
-    if (parts.length < 1) {
-      this.outputShell.println(error("incorrect arguments"));
+    if (
+      !args ||
+      (parts[0] != "list" && parts[0] != "start" && parts[0] != "stop") ||
+      (parts[0] == "start" && parts.length == 1) ||
+      (parts[0] == "stop" && parts.length == 1)
+    ) {
+      this.outputShell.println(
+        error(
+          `missing or incorrect args. use 'services list' to list running services or 'service start/stop <service name>' to start/stop a service`
+        )
+      );
       this.quit();
       return;
     }
@@ -19,18 +28,8 @@ class ProgramSource extends Program {
       this.outputShell.println("services running: " + servicesText);
       this.quit();
     } else if (parts[0] == "start") {
-      if (parts.length < 2) {
-        this.outputShell.println(error("incorrect arguments"));
-        this.quit();
-        return;
-      }
       serviceManager.startService(parts[1], this.outputShell);
     } else if (parts[0] == "stop") {
-      if (parts.length < 2) {
-        this.outputShell.println(error("incorrect arguments"));
-        this.quit();
-        return;
-      }
       serviceManager.stopService(parts[1]);
     }
     this.quit();

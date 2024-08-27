@@ -21,7 +21,7 @@ class ProgramSource extends Program {
   stopService(name) {
     let instance = this.serviceInstances[name];
     if (instance !== undefined) {
-      this.serviceInstances[name] = undefined;
+      delete this.serviceInstances[name];
       instance.quit();
     }
   }
