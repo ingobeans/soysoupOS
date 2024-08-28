@@ -56,10 +56,7 @@ class CarrotGraphicsHandler extends GraphicsHandler {
     }
   }
   onMousedown(event) {
-    let w = this.parent.getProgramAt();
-    if (w !== undefined) {
-      w.onMousedown(event);
-    }
+    this.parent.onMousedown(event);
   }
   drawTopbar(ctx, window) {
     drawAnsiText(
@@ -131,6 +128,26 @@ class ProgramSource extends Program {
     window.ctx = window.canvas.getContext("2d");
     window.load();
     window.setUp = true;
+  }
+  onMousedown(event) {
+    let p = this.getProgramAt(event.clientX, event.clientY);
+    if (p !== undefined) {
+      console.log(p.filepath);
+      this.programs = moveElement(this.programs, p, 0);
+      p.onMousedown(event);
+    }
+  }
+  getProgramAt(x, y) {
+    for (let program of this.programs) {
+      if (
+        x >= program.window.x &&
+        x < program.window.x + program.window.canvas.width &&
+        y >= program.window.y &&
+        y < program.window.y + program.window.canvas.height + topbarHeight
+      ) {
+        return program;
+      }
+    }
   }
   getNewWindowPosition(width, height) {
     let step = 25;

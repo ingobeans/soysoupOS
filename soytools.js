@@ -91,6 +91,17 @@ function removeItem(arr, value) {
   }
   return arr;
 }
+function moveElement(array, element, newIndex) {
+  const currentIndex = array.indexOf(element);
+  if (currentIndex === -1) {
+    return array;
+  }
+
+  const [removedElement] = array.splice(currentIndex, 1);
+  array.splice(newIndex, 0, removedElement);
+
+  return array;
+}
 function error(text) {
   return ERROR_COLOR + "error: " + text + RESET_COLOR;
 }
