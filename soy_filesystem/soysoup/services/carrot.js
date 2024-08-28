@@ -185,6 +185,9 @@ class ProgramSource extends Program {
   }
   quit() {
     setGraphicsHandler();
+    for (let program of this.programs) {
+      program.quit();
+    }
     super.quit();
   }
   load(args) {
