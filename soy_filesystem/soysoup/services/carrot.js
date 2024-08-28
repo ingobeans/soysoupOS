@@ -28,15 +28,6 @@ function getNewWindowPosition(width, height) {
     }
   }
 }
-function getDrawnPrograms() {
-  var p = [];
-  programs.forEach(function (program) {
-    if (typeof program.window === "object") {
-      p.push(program);
-    }
-  });
-  return p;
-}
 class ConsoleHostWindow {
   load() {
     let pathSegments = this.parent.filepath.split("/");
