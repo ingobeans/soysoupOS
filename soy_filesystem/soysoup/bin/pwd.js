@@ -1,6 +1,6 @@
 class ProgramSource extends Program {
   load(args) {
-    this.outputShell.println(this.cwd);
+    this.outputShell.println(fileSystem.normalizePath(this.cwd));
     this.quit();
   }
 }
