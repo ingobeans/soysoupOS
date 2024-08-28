@@ -91,6 +91,10 @@ function setUpWindow(window, parent) {
 }
 
 class CarrotGraphicsHandler extends GraphicsHandler {
+  constructor(parent) {
+    super();
+    this.parent = parent;
+  }
   onKeypress(key) {
     let drawPrograms = getDrawnPrograms();
     if (drawPrograms.length > 0) {
@@ -108,9 +112,8 @@ class CarrotGraphicsHandler extends GraphicsHandler {
   }
   draw() {
     drawRect(screenCtx, 0, 0, canvas.width, canvas.height, backgroundColor);
-    let programs = getDrawnPrograms();
-    for (let i = programs.length - 1; i >= 0; i--) {
-      const program = programs[i];
+    for (let i = this.parent.programs.length - 1; i >= 0; i--) {
+      const program = this.parent.programs[i];
       if (program.window.setUp !== true) {
         setUpWindow(program.window, program);
       }
@@ -164,6 +167,7 @@ class ProgramSource extends Program {
       process["instance"].window = new ConsoleHostWindow();
     }
     setUpWindow(process["instance"].window, process["instance"]);
+    this.programs.unshift(process["instance"]);
     return process;
   }
   quit() {
@@ -172,7 +176,7 @@ class ProgramSource extends Program {
   }
   load(args) {
     this.programs = [];
-    setGraphicsHandler(new CarrotGraphicsHandler());
+    setGraphicsHandler(new CarrotGraphicsHandler(this));
     this.launchApplication("soysoup/bin/terminal.soup", "", "");
   }
 }
