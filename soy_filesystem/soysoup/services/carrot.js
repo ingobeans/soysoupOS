@@ -5,29 +5,6 @@ windowBorderColor = "#7c7dd9";
 let windowTitleTextColor = "#000";
 let backgroundColor = "#a0a1f0";
 
-function getNewWindowPosition(width, height) {
-  let step = 25;
-  let offsetX = 0;
-  let offsetY = 0;
-  while (true) {
-    let p = [
-      Math.floor((canvas.width - width) / 2) + offsetX,
-      Math.floor((canvas.height - height) / 2) + offsetY,
-    ];
-    let match = false;
-    for (let program of getDrawnPrograms()) {
-      if (program.window.x == p[0] && program.window.y == p[1]) {
-        match = true;
-      }
-    }
-    if (!match) {
-      return p;
-    } else {
-      offsetX += step;
-      offsetY += step;
-    }
-  }
-}
 class ConsoleHostWindow {
   load() {
     let pathSegments = this.parent.filepath.split("/");
@@ -67,29 +44,21 @@ class ConsoleHostWindow {
   }
 }
 
-function setUpWindow(window, parent) {
-  window.canvas = document.createElement("canvas");
-  window.canvas.width = 850;
-  window.canvas.height = 450;
-  [window.x, window.y] = getNewWindowPosition(
-    window.canvas.width,
-    window.canvas.height
-  );
-  window.parent = parent;
-  window.ctx = window.canvas.getContext("2d");
-  window.load();
-  window.setUp = true;
-}
-
 class CarrotGraphicsHandler extends GraphicsHandler {
   constructor(parent) {
     super();
     this.parent = parent;
   }
   onKeypress(key) {
-    let drawPrograms = getDrawnPrograms();
+    let drawPrograms = this.parent.programs;
     if (drawPrograms.length > 0) {
       drawPrograms[0].onKeypress(key);
+    }
+  }
+  onMousedown(event) {
+    let w = this.parent.getProgramAt();
+    if (w !== undefined) {
+      w.onMousedown(event);
     }
   }
   drawTopbar(ctx, window) {
@@ -106,7 +75,7 @@ class CarrotGraphicsHandler extends GraphicsHandler {
     for (let i = this.parent.programs.length - 1; i >= 0; i--) {
       const program = this.parent.programs[i];
       if (program.window.setUp !== true) {
-        setUpWindow(program.window, program);
+        this.parent.setUpWindow(program.window, program);
       }
       let windowBack = document.createElement("canvas");
       let windowBackCtx = windowBack.getContext("2d");
@@ -150,6 +119,42 @@ class CarrotGraphicsHandler extends GraphicsHandler {
 }
 
 class ProgramSource extends Program {
+  setUpWindow(window, parent) {
+    window.canvas = document.createElement("canvas");
+    window.canvas.width = 850;
+    window.canvas.height = 450;
+    [window.x, window.y] = this.getNewWindowPosition(
+      window.canvas.width,
+      window.canvas.height
+    );
+    window.parent = parent;
+    window.ctx = window.canvas.getContext("2d");
+    window.load();
+    window.setUp = true;
+  }
+  getNewWindowPosition(width, height) {
+    let step = 25;
+    let offsetX = 0;
+    let offsetY = 0;
+    while (true) {
+      let p = [
+        Math.floor((canvas.width - width) / 2) + offsetX,
+        Math.floor((canvas.height - height) / 2) + offsetY,
+      ];
+      let match = false;
+      for (let program of this.programs) {
+        if (program.window.x == p[0] && program.window.y == p[1]) {
+          match = true;
+        }
+      }
+      if (!match) {
+        return p;
+      } else {
+        offsetX += step;
+        offsetY += step;
+      }
+    }
+  }
   launchApplication(path, argsRaw, cwd) {
     // launches a program with a window & fresh shell
     let shell = new Shell(() => {});
@@ -157,7 +162,7 @@ class ProgramSource extends Program {
     if (process["instance"].window == undefined) {
       process["instance"].window = new ConsoleHostWindow();
     }
-    setUpWindow(process["instance"].window, process["instance"]);
+    this.setUpWindow(process["instance"].window, process["instance"]);
     this.programs.unshift(process["instance"]);
     return process;
   }

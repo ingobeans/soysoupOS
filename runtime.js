@@ -27,7 +27,8 @@ let commandHistory = [];
 let historyIndex = -1;
 
 class GraphicsHandler {
-  onKeypress() {}
+  onMousedown(event) {}
+  onKeypress(event) {}
   draw() {}
 }
 class TerminalGraphicsHandler extends GraphicsHandler {
@@ -91,7 +92,12 @@ document.addEventListener("keydown", function (event) {
     }
     return;
   }
-  defaultShell.onKeypress(event);
+  graphicsHandler.onKeypress(event);
+
+  event.preventDefault();
+});
+document.addEventListener("mousedown", function (event) {
+  graphicsHandler.onMousedown(event);
 
   event.preventDefault();
 });
@@ -102,9 +108,6 @@ resizeCanvas();
 let terminalProcess = undefined;
 
 var defaultShell = new Shell(printOut);
-defaultShell.onKeypress = function (key) {
-  graphicsHandler.onKeypress(key);
-};
 
 async function createTerminal() {
   terminalPath = "soysoup/bin/terminal.soup";

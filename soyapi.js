@@ -157,6 +157,7 @@ class Program {
   load(args) {}
   update() {}
   onKeypress(key) {}
+  onMousedown(event) {}
 }
 
 function splitAtLastOccurrence(str, delimiter) {
