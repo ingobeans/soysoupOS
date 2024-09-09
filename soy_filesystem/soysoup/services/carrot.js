@@ -181,6 +181,11 @@ class ProgramSource extends Program {
     }
     this.setUpWindow(process["instance"].window, process["instance"]);
     this.programs.unshift(process["instance"]);
+    process["promise"].then(
+      function () {
+        removeItem(this.programs, process["instance"]);
+      }.bind(this)
+    );
     return process;
   }
   quit() {
