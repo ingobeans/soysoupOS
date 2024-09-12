@@ -9,6 +9,7 @@ class ProgramSource extends Program {
   startService(name, shell) {
     if (this.services.includes(name)) {
       if (this.serviceInstances[name] === undefined) {
+        this.serviceInstances[name] = 1;
         this.serviceInstances[name] = executeFile(
           `soysoup/services/${name}.soup`,
           "",

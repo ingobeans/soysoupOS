@@ -1,0 +1,26 @@
+class DesktopWindow {
+  load() {
+    this.title = "desktop";
+    this.color = "#cc8706";
+    this.fullscreen = true;
+  }
+  draw() {
+    drawRect(
+      this.ctx,
+      0,
+      0,
+      this.ctx.canvas.width,
+      this.ctx.canvas.height,
+      this.color
+    );
+  }
+  onFocus() {
+    return false;
+  }
+}
+
+class ProgramSource extends Program {
+  load(args) {
+    this.window = new DesktopWindow();
+  }
+}

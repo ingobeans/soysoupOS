@@ -1,9 +1,8 @@
 let windowBorderWidth = 2;
 let topbarHeight = 30;
 let windowBackgroundColor = "#fff";
-windowBorderColor = "#7c7dd9";
+windowBorderColor = "#544323";
 let windowTitleTextColor = "#000";
-let backgroundColor = "#a0a1f0";
 
 class ConsoleHostWindow {
   load() {
@@ -68,11 +67,21 @@ class CarrotGraphicsHandler extends GraphicsHandler {
     );
   }
   draw() {
-    drawRect(screenCtx, 0, 0, canvas.width, canvas.height, backgroundColor);
     for (let i = this.parent.programs.length - 1; i >= 0; i--) {
       const program = this.parent.programs[i];
       if (program.window.setUp !== true) {
         this.parent.setUpWindow(program.window, program);
+      }
+      if (program.window.fullscreen === true) {
+        let oldWidth = program.window.canvas.width;
+        let oldHeight = program.window.canvas.height;
+        program.window.canvas.width = screenCtx.canvas.width;
+        program.window.canvas.height = screenCtx.canvas.height;
+        program.window.draw();
+        screenCtx.drawImage(program.window.canvas, 0, 0);
+        program.window.canvas.width = oldWidth;
+        program.window.canvas.height = oldHeight;
+        continue;
       }
       let windowBack = document.createElement("canvas");
       let windowBackCtx = windowBack.getContext("2d");
@@ -118,8 +127,8 @@ class CarrotGraphicsHandler extends GraphicsHandler {
 class ProgramSource extends Program {
   setUpWindow(window, parent) {
     window.canvas = document.createElement("canvas");
-    window.canvas.width = 850;
-    window.canvas.height = 450;
+    window.canvas.width = window.width || 850;
+    window.canvas.height = window.height || 450;
     [window.x, window.y] = this.getNewWindowPosition(
       window.canvas.width,
       window.canvas.height
@@ -133,12 +142,18 @@ class ProgramSource extends Program {
     let p = this.getProgramAt(event.clientX, event.clientY);
     if (p !== undefined) {
       console.log(p.filepath);
-      this.programs = moveElement(this.programs, p, 0);
       p.onMousedown(event);
+      let r = p.window.onFocus !== undefined ? p.window.onFocus() : true;
+      if (r !== false) {
+        this.programs = moveElement(this.programs, p, 0);
+      }
     }
   }
   getProgramAt(x, y) {
     for (let program of this.programs) {
+      if (program.window.fullscreen === true) {
+        return program;
+      }
       if (
         x >= program.window.x &&
         x < program.window.x + program.window.canvas.width &&
@@ -198,6 +213,7 @@ class ProgramSource extends Program {
   load(args) {
     this.programs = [];
     setGraphicsHandler(new CarrotGraphicsHandler(this));
+    this.launchApplication("soysoup/applications/desktop.soup", "", "");
     this.launchApplication("soysoup/bin/terminal.soup", "", "");
   }
 }
