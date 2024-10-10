@@ -21,20 +21,15 @@ class ProgramSource extends Program {
       serviceManager.stopService(parts[0]);
     } else {
       let service = serviceManager.serviceInstances[parts[0]];
-      let functionName = parts[1];
       if (service == undefined) {
         this.outputShell.println(error(`service ${parts[0]} is not running`));
         this.quit();
         return;
       }
-      if (functionName == undefined) {
-        this.outputShell.println(error(`no function specified`));
-        this.quit();
-        return;
-      }
-      let serviceArgs = args.substring(parts[0].length + parts[1].length + 2);
+      let serviceArgs = args.substring(parts[0].length + 1);
       try {
-        eval(`service.${functionName}(${serviceArgs})`);
+        console.log(`service.${serviceArgs};`);
+        eval(`service.${serviceArgs};`);
       } catch (err) {
         this.outputShell.println(error(err.toString()));
         this.quit();
