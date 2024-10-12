@@ -89,6 +89,9 @@ class SoyFileSystem {
   }
   deletePath(path) {
     const segments = this.getPathSegments(path);
+    if (segments.length == 0) {
+      this.root.content = {};
+    }
     const fileName = segments.pop();
     const parentPath = this.getParentDirectory(path);
     const parentSegments = this.getPathSegments(parentPath);
