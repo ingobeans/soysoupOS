@@ -1,5 +1,5 @@
 # soysoupOS
-
+![image](https://github.com/user-attachments/assets/05a70bb9-92f2-4045-8c74-f6cc2d05c1e0)
 soysoupOS is widely regarded by me as the operating system of the future.
 
 The system is based around executable '.soup' files. All commands runnable by the terminal is in fact, executable files. The terminal itself, is also an executable file.
@@ -57,14 +57,13 @@ Though, for the prompt to work, we need to pass it keypress events. When a key i
 
 After the code is written, you can get the program to the website in two ways.
 
-### Option A (temporary):
+### Option A:
 
-To temporarily write the program to a file, you can `echo` the program in the terminal, and pipe the output to a file. You can then enter the path to the file to run it.
+To temporarily write the program to a file, you can use `edit [filename]` in the terminal. You can then enter the path to the file to run it.
 
-Example: `echo class ProgramSource extends Program {load(args) {this.outputShell.println("hi world!");this.quit();}}>my_program.soup`
+### Option B (bundled install):
 
-### Option B (permanent install):
-
-If you download the source, you will find the soy_filesystem folder. This folder contains the base file system. Any file or directory created will exist when running soysoup, as long as you run `filesystem_bundler.py` (in the project root), to compile the filesystem to be included.
+If you want to include a program in the default filesystem, this is the right option.
+Download the source and navigate to the soy_filesystem folder. This folder contains the base file system. Any file or directory created will exist in their relative paths when running soysoup, as long as you run `filesystem_bundler.py` (in the project root), to compile the filesystem to be included.
 
 You can write your programs in the soy_filesystem, with either the .soup extension, or .js, which gets converted to .soup when the filesystem is compiled.
