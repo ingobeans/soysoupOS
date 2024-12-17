@@ -1,10 +1,33 @@
 class ProgramSource extends Program {
   onKeypress(event) {
+    if (event.key == "v" && event.ctrlKey) {
+      navigator.clipboard.readText()
+        .then(text => {
+          console.log('Pasted content: ', text);
+          let charReplacements = {
+            "\n": "Enter",
+            " ": "Space",
+          }
+          for (let char of text) {
+            if (charReplacements[char] !== undefined) {
+              char = charReplacements[char]
+            }
+            let mockEvent = {
+              key: char,
+              ctrlKey: false,
+              shiftKey: false,
+            }
+            this.onKeypress(mockEvent)
+          }
+        })
+
+      return;
+    }
     if (this.focusedProcess == undefined) {
       this.prompt.onKeypress(event);
     } else {
       if (event.key == "z" && event.ctrlKey) {
-        this.focusedProcess.outputShell = new Shell(() => {});
+        this.focusedProcess.outputShell = new Shell(() => { });
         this.outputShell.println(
           "dropped focus from PID " + this.focusedProcess.pid
         );
@@ -13,7 +36,7 @@ class ProgramSource extends Program {
         return;
       } else if (event.key == "c" && event.ctrlKey) {
         this.focusedProcess.quit();
-        this.focusedProcess.outputShell = new Shell(() => {});
+        this.focusedProcess.outputShell = new Shell(() => { });
         this.focusedProcess = undefined;
         this.startNewPrompt();
         return;
@@ -78,7 +101,7 @@ class ProgramSource extends Program {
     if (text[text.length - 1] == "&") {
       text = text.slice(0, -1);
       runInBackground = true;
-      newShell = new Shell(() => {});
+      newShell = new Shell(() => { });
     }
     let process = executeCommand(text, newShell, this.cwd);
     if (process != undefined) {

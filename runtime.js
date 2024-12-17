@@ -21,15 +21,15 @@ function printOut(text, color = "inherit") {
   });
 }
 
-function printOutLine(text) {}
+function printOutLine(text) { }
 
 let commandHistory = [];
 let historyIndex = -1;
 
 class GraphicsHandler {
-  onMousedown(event) {}
-  onKeypress(event) {}
-  draw() {}
+  onMousedown(event) { }
+  onKeypress(event) { }
+  draw() { }
 }
 class TerminalGraphicsHandler extends GraphicsHandler {
   onKeypress(key) {

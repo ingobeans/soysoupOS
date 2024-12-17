@@ -155,7 +155,7 @@ class CommandlineInput {
     });
   }
 
-  handleSubmit(text) {}
+  handleSubmit(text) { }
 
   removeCharacter(str, index) {
     index -= 1;
@@ -168,11 +168,11 @@ class CommandlineInput {
   onSubmit() {
     this.outputShell.setText(
       this.text +
-        "\n" +
-        MUTED_COLOR +
-        this.question +
-        this.currentLineInput +
-        RESET_COLOR
+      "\n" +
+      MUTED_COLOR +
+      this.question +
+      this.currentLineInput +
+      RESET_COLOR
     );
 
     this.promiseResolver(this.currentLineInput);
@@ -288,9 +288,9 @@ class CommandlineInput {
         this.selectionIndex =
           nextLineEnd === -1
             ? Math.min(
-                nextLineStart + cursorPosInLine,
-                this.currentLineInput.length
-              )
+              nextLineStart + cursorPosInLine,
+              this.currentLineInput.length
+            )
             : Math.min(nextLineStart + cursorPosInLine, nextLineEnd);
       }
     } else if (event.key == "Backspace") {
@@ -333,12 +333,12 @@ class CommandlineInput {
 
     this.outputShell.setText(
       this.text +
-        "\n" +
-        MUTED_COLOR +
-        this.question +
-        displayText +
-        //insert(this.currentLineInput, "|", this.selectionIndex) +
-        RESET_COLOR
+      "\n" +
+      MUTED_COLOR +
+      this.question +
+      displayText +
+      //insert(this.currentLineInput, "|", this.selectionIndex) +
+      RESET_COLOR
     );
 
     this.outputShell.flush();
