@@ -5,8 +5,7 @@ class ProgramSource extends Program {
         .then(text => {
           console.log('Pasted content: ', text);
           let charReplacements = {
-            "\n": "Enter",
-            " ": "Space",
+            "\n": "Enter"
           }
           for (let char of text) {
             if (charReplacements[char] !== undefined) {
