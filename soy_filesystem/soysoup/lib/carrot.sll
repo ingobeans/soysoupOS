@@ -1,0 +1,17 @@
+class SLLSource {
+  Window = class {
+    constructor(parent) {
+      this.canvas = document.createElement("canvas");
+      this.canvas.width = this.width || 850;
+      this.canvas.height = this.height || 450;
+      [this.x, this.y] = serviceManager.serviceInstances["carrot"].getNewWindowPosition(
+        this.canvas.width,
+        this.canvas.height
+      );
+      this.parent = parent;
+      this.ctx = this.canvas.getContext("2d");
+      this.load();
+      this.setUp = true;
+    }
+  }
+}

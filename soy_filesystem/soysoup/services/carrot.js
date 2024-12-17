@@ -4,7 +4,8 @@ let windowBackgroundColor = "#fff";
 windowBorderColor = "#544323";
 let windowTitleTextColor = "#000";
 
-class ConsoleHostWindow {
+let carrot_ssl = ImportSLL("carrot.sll");
+class ConsoleHostWindow extends carrot_ssl.Window {
   load() {
     let pathSegments = this.parent.filepath.split("/");
     this.title = pathSegments[pathSegments.length - 1].split(".")[0];
@@ -69,9 +70,6 @@ class CarrotGraphicsHandler extends GraphicsHandler {
   draw() {
     for (let i = this.parent.programs.length - 1; i >= 0; i--) {
       const program = this.parent.programs[i];
-      if (program.window.setUp !== true) {
-        this.parent.setUpWindow(program.window, program);
-      }
       if (program.window.fullscreen === true) {
         let oldWidth = program.window.canvas.width;
         let oldHeight = program.window.canvas.height;
@@ -125,19 +123,6 @@ class CarrotGraphicsHandler extends GraphicsHandler {
 }
 
 class ProgramSource extends Program {
-  setUpWindow(window, parent) {
-    window.canvas = document.createElement("canvas");
-    window.canvas.width = window.width || 850;
-    window.canvas.height = window.height || 450;
-    [window.x, window.y] = this.getNewWindowPosition(
-      window.canvas.width,
-      window.canvas.height
-    );
-    window.parent = parent;
-    window.ctx = window.canvas.getContext("2d");
-    window.load();
-    window.setUp = true;
-  }
   onMousedown(event) {
     let p = this.getProgramAt(event.clientX, event.clientY);
     if (p !== undefined) {
@@ -189,12 +174,11 @@ class ProgramSource extends Program {
   }
   launchApplication(path, argsRaw, cwd) {
     // launches a program with a window & fresh shell
-    let shell = new Shell(() => {});
+    let shell = new Shell(() => { });
     let process = executeFile(path, argsRaw, shell, cwd);
     if (process["instance"].window == undefined) {
-      process["instance"].window = new ConsoleHostWindow();
+      process["instance"].window = new ConsoleHostWindow(process["instance"]);
     }
-    this.setUpWindow(process["instance"].window, process["instance"]);
     this.programs.unshift(process["instance"]);
     process["promise"].then(
       function () {
@@ -213,7 +197,5 @@ class ProgramSource extends Program {
   load(args) {
     this.programs = [];
     setGraphicsHandler(new CarrotGraphicsHandler(this));
-    this.launchApplication("soysoup/applications/desktop.soup", "", "");
-    this.launchApplication("soysoup/bin/terminal.soup", "", "");
   }
 }

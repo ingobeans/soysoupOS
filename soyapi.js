@@ -1,4 +1,4 @@
-systemVersion = "0.4.3";
+systemVersion = "0.5.0";
 
 fileSystem = new SoyFileSystem();
 
@@ -21,7 +21,7 @@ class Shell {
     this.outputFunction = outputFunction;
     this.text = "";
   }
-  onKeypress(key) {}
+  onKeypress(key) { }
   print(text, flush = true) {
     this.setText(this.text + text);
 
@@ -154,10 +154,19 @@ class Program {
     return fileSystem.createDirectory(actualPath);
   }
 
-  load(args) {}
-  update() {}
-  onKeypress(key) {}
-  onMousedown(event) {}
+  load(args) { }
+  update() { }
+  onKeypress(key) { }
+  onMousedown(event) { }
+}
+
+function ImportSLL(filename) {
+  let path = fileSystem.normalizePath(filename);
+  let global_lib_path = fileSystem.normalizePath("soysoup/lib/" + filename);
+  if (fileSystem.isFile(global_lib_path)) {
+    path = global_lib_path;
+  }
+  return eval(fileSystem.readFile(path) + ";new SLLSource()");
 }
 
 function splitAtLastOccurrence(str, delimiter) {

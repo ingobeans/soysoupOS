@@ -1,4 +1,6 @@
-class DesktopWindow {
+let carrot = ImportSLL("carrot.sll");
+
+class DesktopWindow extends carrot.Window {
   load() {
     this.title = "desktop";
     this.color = "#cc8706";
@@ -21,6 +23,6 @@ class DesktopWindow {
 
 class ProgramSource extends Program {
   load(args) {
-    this.window = new DesktopWindow();
+    this.window = new DesktopWindow(this);
   }
 }
