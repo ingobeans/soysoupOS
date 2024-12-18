@@ -177,7 +177,8 @@ class ProgramSource extends Program {
     let shell = new Shell(() => { });
     let process = executeFile(path, argsRaw, shell, cwd);
     if (process["instance"].window == undefined) {
-      process["instance"].window = new ConsoleHostWindow(process["instance"]);
+      let name = process["instance"].filepath[process["instance"].filepath.length - 1].split(".")[0];
+      process["instance"].window = new ConsoleHostWindow(process["instance"], name);
     }
     this.programs.unshift(process["instance"]);
     process["promise"].then(

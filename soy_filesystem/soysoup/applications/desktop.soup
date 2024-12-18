@@ -2,9 +2,7 @@ let carrot = ImportSLL("carrot.sll");
 
 class DesktopWindow extends carrot.Window {
   load() {
-    this.title = "desktop";
     this.color = "#cc8706";
-    this.fullscreen = true;
   }
   draw() {
     drawRect(
@@ -23,6 +21,6 @@ class DesktopWindow extends carrot.Window {
 
 class ProgramSource extends Program {
   load(args) {
-    this.window = new DesktopWindow(this);
+    this.window = new DesktopWindow(this, "desktop", undefined, undefined, true);
   }
 }
