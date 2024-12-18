@@ -247,7 +247,14 @@ function executeFile(path, argsRaw, outputShell, cwd) {
     let contents = fileSystem.readFile(path);
     contents = replacePlaceholders(contents, argsRaw);
     for (let line of contents.split("\n")) {
-      executeFile("soysoup/bin/terminal.soup", line, defaultShell, "");
+      if (line.includes("#")) {
+        line = line.split("#")[0];
+      }
+      line = line.trim();
+      if (line == "") {
+        continue;
+      }
+      executeFile("soysoup/bin/terminal.soup", line, outputShell, "");
     }
     return;
   }
