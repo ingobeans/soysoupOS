@@ -197,7 +197,7 @@ class ProgramSource extends Program {
   load(args) {
     this.programs = [];
     setGraphicsHandler(new CarrotGraphicsHandler(this));
-    this.launchApplication("soysoup/applications/desktop.soup", "", "");
-    this.launchApplication("soysoup/bin/terminal.soup", "", "");
+    // run startup script
+    executeCommand("soysoup/services/carrot_startup.soy", this.outputShell, this.cwd);
   }
 }
