@@ -66,4 +66,4 @@ To temporarily write the program to a file, you can use `edit [filename]` in the
 If you want to include a program in the default filesystem, this is the right option.
 Download the source and navigate to the soy_filesystem folder. This folder contains the base file system. Any file or directory created will exist in their relative paths when running soysoup, as long as you run `filesystem_bundler.py` (in the project root), to compile the filesystem to be included.
 
-You can write your programs in the soy_filesystem, with either the .soup extension, or .js, which gets converted to .soup when the filesystem is compiled.
+You can write your programs in the soy_filesystem, with the .soup extension, and they'll be accessible and executable in your soysoupOS.

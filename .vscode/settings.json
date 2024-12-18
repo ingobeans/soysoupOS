@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.soup": "javascript",
+        "*.sll": "javascript",
+        "*.soy": "shellscript"
+    }
+}

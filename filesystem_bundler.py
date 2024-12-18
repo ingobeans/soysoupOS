@@ -10,10 +10,6 @@ def create_directory_dict(directory_path):
     for entry in os.listdir(directory_path):
         entry_path = os.path.join(directory_path, entry)
         if os.path.isfile(entry_path):
-            if entry.endswith(".js"):
-                entry = entry.removesuffix(".js") + ".soup"
-            # convert .js to executable .soup files instead
-
             directory_dict["content"][entry] = create_file_dict(entry_path)
         elif os.path.isdir(entry_path):
             directory_dict["content"][entry] = create_directory_dict(entry_path)
