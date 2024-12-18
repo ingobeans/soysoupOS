@@ -28,19 +28,14 @@ class ConsoleHostWindow extends carrot_ssl.Window {
     if (lines.length >= maxLines) {
       skipUntil = lines.length - maxLines;
     }
+    let text = "";
     for (let i = 0; i < lines.length; i++) {
       if (!(skipUntil !== null && i < skipUntil)) {
         let line = lines[i];
-        drawAnsiText(
-          this.ctx,
-          0,
-          fontSize * (i - skipUntil + 1),
-          line,
-          "#fff",
-          "#000"
-        );
+        text += line + "\n"
       }
     }
+    drawAnsiText(this.ctx, 0, fontSize, text);
   }
 }
 

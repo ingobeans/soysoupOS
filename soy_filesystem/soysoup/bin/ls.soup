@@ -7,7 +7,8 @@ class ProgramSource extends Program {
       this.quit();
       return;
     }
-    let text = "";
+    let filesText = "";
+    let dirsText = "";
 
     this.readDirectory(args).forEach((item) => {
       let actualPath = getActualPath(item, getActualPath(args, this.cwd));
@@ -15,12 +16,12 @@ class ProgramSource extends Program {
         fileSystem.pathExists(actualPath) &&
         fileSystem.isFile(actualPath) == true;
       if (isFile == true) {
-        text += GREEN_COLOR + item + "\n";
+        filesText += item + "\n";
       } else {
-        text += BLUE_COLOR + item + "\n";
+        dirsText += item + "\n";
       }
     });
-    text = text.trim() + RESET_COLOR;
+    let text = (BLUE_COLOR + dirsText + (filesText ? GREEN_COLOR + filesText : "")).trim() + RESET_COLOR;
     this.outputShell.println(text);
     this.quit();
   }

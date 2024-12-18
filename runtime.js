@@ -47,19 +47,14 @@ class TerminalGraphicsHandler extends GraphicsHandler {
     if (lines.length >= maxLines) {
       skipUntil = lines.length - maxLines;
     }
+    let text = "";
     for (let i = 0; i < lines.length; i++) {
       if (!(skipUntil !== null && i < skipUntil)) {
-        const line = lines[i];
-        drawAnsiText(
-          screenCtx,
-          0,
-          fontSize * (i - skipUntil + 1),
-          line,
-          "#fff",
-          "#000"
-        );
+        let line = lines[i];
+        text += line + "\n"
       }
     }
+    drawAnsiText(screenCtx, 0, fontSize, text);
   }
 }
 
