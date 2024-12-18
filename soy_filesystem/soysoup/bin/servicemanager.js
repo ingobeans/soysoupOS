@@ -9,13 +9,22 @@ class ProgramSource extends Program {
   startService(name, shell) {
     if (this.services.includes(name)) {
       if (this.serviceInstances[name] === undefined) {
-        this.serviceInstances[name] = 1;
-        this.serviceInstances[name] = executeFile(
+        var exitResolve = undefined;
+        var promise = new Promise((resolve) => {
+          exitResolve = resolve;
+        });
+        let serviceInstance = createProgramInstance(
           `soysoup/services/${name}.soup`,
           "",
           shell,
-          ""
-        )["instance"];
+          "",
+          exitResolve
+        );
+        if (serviceInstance !== undefined) {
+          programs.unshift(serviceInstance);
+          this.serviceInstances[name] = serviceInstance;
+          serviceInstance.load("", shell);
+        }
       }
     }
   }
