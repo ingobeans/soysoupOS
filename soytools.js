@@ -47,9 +47,7 @@ function setGraphicsHandler(newGraphicsHandler) {
     ];
   }
 }
-function drawAnsiText(ctx, x, y, text, color, bgcolor) {
-  bgcolor = bgcolor || "rgba(0,0,0,0)";
-  color = color || "#fff";
+function drawAnsiText(ctx, x, y, text, color = "#fff", bgcolor = "rgba(0,0,0,0)") {
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {
@@ -64,8 +62,6 @@ function drawAnsiText(ctx, x, y, text, color, bgcolor) {
       var packet = ansi_up.get_next_packet();
       if (packet.kind == 0) break;
       if (packet.kind == 1) {
-        color = ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : color;
-        bgcolor = ansi_up.bg != null ? rgbToString(ansi_up.bg.rgb) : bgcolor;
         drawAnsiText(
           ctx,
           x + offset,
@@ -76,11 +72,9 @@ function drawAnsiText(ctx, x, y, text, color, bgcolor) {
         );
         offset += getTextWidth(ctx, packet.text);
       } else if (packet.kind == 5) {
-        if (packet.text == "0") {
-          color = "#fff";
-        }
-        bgcolor = "rgba(0,0,0,0)";
         ansi_up.process_ansi(packet);
+        color = ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : "#fff";
+        bgcolor = ansi_up.bg != null ? rgbToString(ansi_up.bg.rgb) : "rgba(0,0,0,0)";
       }
     }
     return [color, bgcolor];
