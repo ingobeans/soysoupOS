@@ -1,4 +1,4 @@
-SLLSource = {
+let SLLSource = {
   windowBorderWidth: 2,
   topbarHeight: 30,
   topbarBackgroundColor: "#fff",

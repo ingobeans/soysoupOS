@@ -1,20 +1,8 @@
-systemVersion = "0.6.0";
+systemVersion = "0.6.1";
 
 fileSystem = new SoyFileSystem();
 
 fileSystem.loadFromString(systemFiles);
-
-function handleProgramError(e) {
-  var msg = e.toString();
-  switch (msg) {
-    case "ReferenceError: WindowComponent is not defined":
-      return "program was designed to run in a desktop environment";
-    case "ReferenceError: ProgramSource is not defined":
-      return "program has no entry point";
-    default:
-      return msg;
-  }
-}
 
 class Shell {
   constructor(outputFunction) {
@@ -165,7 +153,7 @@ function ImportSLL(filename) {
   if (fileSystem.isFile(global_lib_path)) {
     path = global_lib_path;
   }
-  return eval(fileSystem.readFile(path) + ";SLLSource");
+  return eval(fileSystem.readFile(path) + ";if (typeof SLLSource === 'undefined'){throw new Error('SLL has no entry point!')}SLLSource");
 }
 
 function splitAtLastOccurrence(str, delimiter) {
@@ -209,12 +197,11 @@ function generateNewProcessId(requestedPID) {
 function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {
   var data = fileSystem.readFile(path);
   try {
-    eval(data + "\nnewProgramInstance = new ProgramSource()");
+    eval(data + ";if (typeof ProgramSource !== 'function'){throw new Error('program has no entry point!')}newProgramInstance = new ProgramSource()");
   } catch (e) {
     if (e) {
       let msg =
-        "the program " + path + " couldn't run.\n" + handleProgramError(e);
-      console.error(msg);
+        "the program " + path + " couldn't run.\n" + e.toString();
       outputShell.println(error(msg));
       return;
     }
