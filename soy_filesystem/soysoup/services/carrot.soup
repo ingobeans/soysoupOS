@@ -189,6 +189,6 @@ class ProgramSource extends Program {
     this.graphicsHandler = new CarrotGraphicsHandler(this);
     addGraphicsHandler(this.graphicsHandler);
     // run startup script
-    executeCommand("/home/programdata/carrot/carrot_startup.soy", this.outputShell, this.cwd);
+    executeFile("/home/programdata/carrot/carrot_startup.soy", "", this.outputShell, this.cwd);
   }
 }
