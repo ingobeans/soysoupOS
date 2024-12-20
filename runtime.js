@@ -1,27 +1,79 @@
 const canvas = document.getElementById("screen");
 const screenCtx = canvas.getContext("2d");
+const ansi_up = new AnsiUp();
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
 
-function printOut(text, color = "inherit") {
-  if (!text) {
-    return;
+function drawRect(ctx, x, y, width, height, color, lineWidth) {
+  if (lineWidth === undefined) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, height);
+  } else {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.rect(x, y, width, height);
+    ctx.stroke();
   }
-
-  if (text.startsWith("\n")) {
-    text = text.slice(1);
-  }
-
-  text = text.split("\n");
-  text.forEach((message) => {
-    printOutLine(message);
-  });
 }
-
-function printOutLine(text) { }
+function getTextWidth(ctx, text) {
+  ctx.font = font;
+  var metrics = ctx.measureText(text);
+  return metrics.width;
+}
+function setGraphicsHandler(newGraphicsHandler) {
+  if (newGraphicsHandler === undefined) {
+    [lastGraphicsHandler, graphicsHandler] = [
+      undefined,
+      defaultGraphicsHandler,
+    ];
+  } else {
+    [lastGraphicsHandler, graphicsHandler] = [
+      graphicsHandler,
+      newGraphicsHandler,
+    ];
+  }
+}
+function drawAnsiText(ctx, x, y, text, color = "#fff", bgcolor = "rgba(0,0,0,0)") {
+  if (text.includes("\n")) {
+    var texts = text.split("\n");
+    texts.forEach(function (text_piece, index) {
+      [color, bgcolor] = drawAnsiText(ctx, x, y + index * fontSize, text_piece, color, bgcolor);
+    });
+    return [color, bgcolor];
+  }
+  if (text.includes("\u001b[")) {
+    ansi_up.append_buffer(text);
+    let offset = 0;
+    while (true) {
+      var packet = ansi_up.get_next_packet();
+      if (packet.kind == 0) break;
+      if (packet.kind == 1) {
+        drawAnsiText(
+          ctx,
+          x + offset,
+          y,
+          packet.text,
+          color,
+          bgcolor
+        );
+        offset += getTextWidth(ctx, packet.text);
+      } else if (packet.kind == 5) {
+        ansi_up.process_ansi(packet);
+        color = ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : "#fff";
+        bgcolor = ansi_up.bg != null ? rgbToString(ansi_up.bg.rgb) : "rgba(0,0,0,0)";
+      }
+    }
+    return [color, bgcolor];
+  }
+  ctx.font = font;
+  drawRect(ctx, x, y - 13, getTextWidth(ctx, text), fontSize, bgcolor);
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+  return [color, bgcolor];
+}
 
 let commandHistory = [];
 let historyIndex = -1;
@@ -102,7 +154,7 @@ resizeCanvas();
 
 let terminalProcess = undefined;
 
-var defaultShell = new Shell(printOut);
+var defaultShell = new Shell(() => { });
 
 async function createTerminal() {
   terminalPath = "soysoup/bin/terminal.soup";

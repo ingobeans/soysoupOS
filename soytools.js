@@ -1,5 +1,3 @@
-const ansi_up = new AnsiUp();
-
 const RESET_COLOR = "\u001b[0m";
 const MUTED_COLOR = "\u001b[38;5;246m";
 const GREEN_COLOR = "\u001b[38;5;10m";
@@ -18,73 +16,6 @@ let font = undefined;
 let fontSize = undefined;
 updateFont();
 
-function drawRect(ctx, x, y, width, height, color, lineWidth) {
-  if (lineWidth === undefined) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, width, height);
-  } else {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
-    ctx.rect(x, y, width, height);
-    ctx.stroke();
-  }
-}
-function getTextWidth(ctx, text) {
-  ctx.font = font;
-  var metrics = ctx.measureText(text);
-  return metrics.width;
-}
-function setGraphicsHandler(newGraphicsHandler) {
-  if (newGraphicsHandler === undefined) {
-    [lastGraphicsHandler, graphicsHandler] = [
-      undefined,
-      defaultGraphicsHandler,
-    ];
-  } else {
-    [lastGraphicsHandler, graphicsHandler] = [
-      graphicsHandler,
-      newGraphicsHandler,
-    ];
-  }
-}
-function drawAnsiText(ctx, x, y, text, color = "#fff", bgcolor = "rgba(0,0,0,0)") {
-  if (text.includes("\n")) {
-    var texts = text.split("\n");
-    texts.forEach(function (text_piece, index) {
-      [color, bgcolor] = drawAnsiText(ctx, x, y + index * fontSize, text_piece, color, bgcolor);
-    });
-    return [color, bgcolor];
-  }
-  if (text.includes("\u001b[")) {
-    ansi_up.append_buffer(text);
-    let offset = 0;
-    while (true) {
-      var packet = ansi_up.get_next_packet();
-      if (packet.kind == 0) break;
-      if (packet.kind == 1) {
-        drawAnsiText(
-          ctx,
-          x + offset,
-          y,
-          packet.text,
-          color,
-          bgcolor
-        );
-        offset += getTextWidth(ctx, packet.text);
-      } else if (packet.kind == 5) {
-        ansi_up.process_ansi(packet);
-        color = ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : "#fff";
-        bgcolor = ansi_up.bg != null ? rgbToString(ansi_up.bg.rgb) : "rgba(0,0,0,0)";
-      }
-    }
-    return [color, bgcolor];
-  }
-  ctx.font = font;
-  drawRect(ctx, x, y - 13, getTextWidth(ctx, text), fontSize, bgcolor);
-  ctx.fillStyle = color;
-  ctx.fillText(text, x, y);
-  return [color, bgcolor];
-}
 function removeItem(arr, value) {
   var index = arr.indexOf(value);
   if (index > -1) {
@@ -109,15 +40,6 @@ function error(text) {
 function removeAnsiCodes(str) {
   const ansiRegex = /\u001b\[.*?m/g;
   return str.replace(ansiRegex, "");
-}
-
-function ansiToRgb(str) {
-  let text = str;
-  if (text.startsWith("\u001b[")) {
-    text = text.slice(2);
-  }
-  ansi_up.process_ansi({ text: text });
-  return ansi_up.fg.rgb;
 }
 
 function rgbToString(rgb) {
