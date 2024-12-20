@@ -1,0 +1,10 @@
+let carrot = ImportSLL("carrot.sll");
+
+class Window extends carrot.Window {
+}
+
+class ProgramSource extends Program {
+  load(args) {
+    this.window = new Window(this, "wow!");
+  }
+}

@@ -1,4 +1,4 @@
-systemVersion = "0.5.0";
+systemVersion = "0.6.0";
 
 fileSystem = new SoyFileSystem();
 
@@ -58,7 +58,6 @@ class Program {
       this.exitResolve();
     }
     this.outputShell.flush();
-    console.log("PID " + this.pid + " quit");
   }
   dirExists(path) {
     var actualPath = getActualPath(path, this.cwd);
@@ -166,7 +165,7 @@ function ImportSLL(filename) {
   if (fileSystem.isFile(global_lib_path)) {
     path = global_lib_path;
   }
-  return eval(fileSystem.readFile(path) + ";new SLLSource()");
+  return eval(fileSystem.readFile(path) + ";SLLSource");
 }
 
 function splitAtLastOccurrence(str, delimiter) {

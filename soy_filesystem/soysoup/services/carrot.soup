@@ -1,10 +1,5 @@
-let windowBorderWidth = 2;
-let topbarHeight = 30;
-let windowBackgroundColor = "#fff";
-windowBorderColor = "#544323";
-let windowTitleTextColor = "#000";
-
 let carrot_ssl = ImportSLL("carrot.sll");
+
 class ConsoleHostWindow extends carrot_ssl.Window {
   load() {
     let pathSegments = this.parent.filepath.split("/");
@@ -56,10 +51,10 @@ class CarrotGraphicsHandler extends GraphicsHandler {
   drawTopbar(ctx, window) {
     drawAnsiText(
       ctx,
-      windowBorderWidth,
-      windowBorderWidth + fontSize,
+      carrot_ssl.windowBorderWidth,
+      carrot_ssl.windowBorderWidth + fontSize,
       window.title,
-      windowTitleTextColor
+      carrot_ssl.windowTitleTextColor
     );
   }
   draw() {
@@ -78,9 +73,9 @@ class CarrotGraphicsHandler extends GraphicsHandler {
       }
       let windowBack = document.createElement("canvas");
       let windowBackCtx = windowBack.getContext("2d");
-      windowBack.width = program.window.canvas.width + windowBorderWidth * 2;
+      windowBack.width = program.window.canvas.width + carrot_ssl.windowBorderWidth * 2;
       windowBack.height =
-        program.window.canvas.height + windowBorderWidth * 2 + topbarHeight;
+        program.window.canvas.height + carrot_ssl.windowBorderWidth * 2 + carrot_ssl.topbarHeight;
 
       drawRect(
         windowBackCtx,
@@ -88,30 +83,30 @@ class CarrotGraphicsHandler extends GraphicsHandler {
         0,
         windowBack.width,
         windowBack.height,
-        windowBackgroundColor
+        carrot_ssl.topbarBackgroundColor
       );
       if (i == 0) {
         drawRect(
           windowBackCtx,
-          windowBorderWidth / 2,
-          windowBorderWidth / 2,
-          windowBack.width - windowBorderWidth,
-          windowBack.height - windowBorderWidth,
-          windowBorderColor,
-          windowBorderWidth
+          carrot_ssl.windowBorderWidth / 2,
+          carrot_ssl.windowBorderWidth / 2,
+          windowBack.width - carrot_ssl.windowBorderWidth,
+          windowBack.height - carrot_ssl.windowBorderWidth,
+          carrot_ssl.windowBorderColor,
+          carrot_ssl.windowBorderWidth
         );
       }
       this.drawTopbar(windowBackCtx, program.window);
       program.window.draw();
       windowBackCtx.drawImage(
         program.window.ctx.canvas,
-        windowBorderWidth,
-        windowBorderWidth + topbarHeight
+        carrot_ssl.windowBorderWidth,
+        carrot_ssl.windowBorderWidth + carrot_ssl.topbarHeight
       );
       screenCtx.drawImage(
         windowBack,
-        program.window.x - windowBorderWidth,
-        program.window.y - windowBorderWidth
+        program.window.x - carrot_ssl.windowBorderWidth,
+        program.window.y - carrot_ssl.windowBorderWidth
       );
     }
   }
@@ -121,9 +116,8 @@ class ProgramSource extends Program {
   onMousedown(event) {
     let p = this.getProgramAt(event.clientX, event.clientY);
     if (p !== undefined) {
-      console.log(p.filepath);
       p.onMousedown(event);
-      let r = p.window.onFocus !== undefined ? p.window.onFocus() : true;
+      let r = p.window.onFocus();
       if (r !== false) {
         this.programs = moveElement(this.programs, p, 0);
       }
@@ -138,7 +132,7 @@ class ProgramSource extends Program {
         x >= program.window.x &&
         x < program.window.x + program.window.canvas.width &&
         y >= program.window.y &&
-        y < program.window.y + program.window.canvas.height + topbarHeight
+        y < program.window.y + program.window.canvas.height + carrot_ssl.topbarHeight
       ) {
         return program;
       }

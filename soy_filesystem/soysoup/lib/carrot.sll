@@ -1,5 +1,12 @@
-class SLLSource {
-  Window = class {
+SLLSource = {
+  windowBorderWidth: 2,
+  topbarHeight: 30,
+  topbarBackgroundColor: "#fff",
+  windowBorderColor: "#544323",
+  windowBackgroundColor: "rgb(190, 190, 190)",
+  windowTitleTextColor: "#000",
+
+  Window: class {
     constructor(parent, title, width = 850, height = 450, fullscreen = false) {
       this.parent = parent;
       this.title = title;
@@ -24,5 +31,21 @@ class SLLSource {
     }
     // idk whether this should remain a method or be deprecated
     load() { }
+
+    draw() {
+      drawRect(
+        this.ctx,
+        0,
+        0,
+        this.ctx.canvas.width,
+        this.ctx.canvas.height,
+        SLLSource.windowBackgroundColor
+      );
+    }
+
+    onFocus() {
+      // allow focus to be given
+      return true;
+    }
   }
 }

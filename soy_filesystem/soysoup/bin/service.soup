@@ -28,7 +28,6 @@ class ProgramSource extends Program {
       }
       let serviceArgs = args.substring(parts[0].length + 1);
       try {
-        console.log(`service.${serviceArgs};`);
         eval(`service.${serviceArgs};`);
       } catch (err) {
         this.outputShell.println(error(err.toString()));
