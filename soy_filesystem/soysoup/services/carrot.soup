@@ -178,7 +178,7 @@ class ProgramSource extends Program {
     return process;
   }
   quit() {
-    setGraphicsHandler();
+    removeGraphicsHandler(this.graphicsHandler);
     for (let program of this.programs) {
       program.quit();
     }
@@ -186,7 +186,8 @@ class ProgramSource extends Program {
   }
   load(args) {
     this.programs = [];
-    setGraphicsHandler(new CarrotGraphicsHandler(this));
+    this.graphicsHandler = new CarrotGraphicsHandler(this);
+    addGraphicsHandler(this.graphicsHandler);
     // run startup script
     executeCommand("/home/programdata/carrot/carrot_startup.soy", this.outputShell, this.cwd);
   }

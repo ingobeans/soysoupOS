@@ -23,18 +23,34 @@ function getTextWidth(ctx, text) {
   var metrics = ctx.measureText(text);
   return metrics.width;
 }
-function setGraphicsHandler(newGraphicsHandler) {
-  if (newGraphicsHandler === undefined) {
-    [lastGraphicsHandler, graphicsHandler] = [
-      undefined,
-      defaultGraphicsHandler,
-    ];
-  } else {
-    [lastGraphicsHandler, graphicsHandler] = [
-      graphicsHandler,
-      newGraphicsHandler,
-    ];
+function removeGraphicsHandler(graphicsHandler) {
+  if (!graphicsHandlers.includes(graphicsHandler)) {
+    console.error("tried to remove graphics handler thats not registered");
+    return;
   }
+  if (graphicsHandlers.indexOf(graphicsHandler) == activeGraphicsHandlerId) {
+    if (graphicsHandlers[activeGraphicsHandlerId + 1] == undefined) {
+      activeGraphicsHandlerId = 0;
+    }
+  }
+  removeItem(graphicsHandlers, graphicsHandler);
+}
+function addGraphicsHandler(graphicsHandler, makeActive = true) {
+  if (graphicsHandlers.includes(graphicsHandler)) {
+    console.error("tried to add graphics handler thats already registered");
+    return;
+  }
+  graphicsHandlers.push(graphicsHandler);
+  if (makeActive) {
+    activeGraphicsHandlerId = graphicsHandlers.length - 1;
+  }
+}
+function setActiveGraphicsHandler(graphicsHandler) {
+  if (!graphicsHandlers.includes(graphicsHandler)) {
+    console.error("tried to change graphics handler to non registered one");
+    return;
+  }
+  activeGraphicsHandlerId = graphicsHandlers.indexOf(graphicsHandler);
 }
 function drawAnsiText(ctx, x, y, text, color = "#fff", bgcolor = "rgba(0,0,0,0)") {
   if (text.includes("\n")) {
@@ -110,13 +126,13 @@ class TerminalGraphicsHandler extends GraphicsHandler {
   }
 }
 
-let lastGraphicsHandler = undefined;
-let defaultGraphicsHandler = new TerminalGraphicsHandler();
-let graphicsHandler = defaultGraphicsHandler;
+
+let graphicsHandlers = [new TerminalGraphicsHandler()];
+let activeGraphicsHandlerId = 0;
 
 function draw() {
-  if (graphicsHandler) {
-    graphicsHandler.draw();
+  if (graphicsHandlers.length > 0) {
+    graphicsHandlers[activeGraphicsHandlerId].draw();
   }
 }
 
@@ -126,25 +142,33 @@ function update() {
 }
 
 document.addEventListener("keydown", function (event) {
+  if (graphicsHandlers.length == 0) {
+    return;
+  }
   if (
     (event.key.length == 2 || event.key.length == 3) &&
     event.key.startsWith("F") &&
-    !["F1"].includes(event.key)
+    !["F1", "F2", "F3", "F4"].includes(event.key)
   ) {
     return;
   }
-  if (event.key == "F1") {
-    if (lastGraphicsHandler !== undefined) {
-      setGraphicsHandler(lastGraphicsHandler);
+  if (event.key.startsWith("F")) {
+    let id = parseInt(event.key.replace("F", ""));
+    if (graphicsHandlers.length >= id) {
+      setActiveGraphicsHandler(graphicsHandlers[id - 1]);
     }
+    event.preventDefault();
     return;
   }
-  graphicsHandler.onKeypress(event);
+  graphicsHandlers[activeGraphicsHandlerId].onKeypress(event);
 
   event.preventDefault();
 });
 document.addEventListener("mousedown", function (event) {
-  graphicsHandler.onMousedown(event);
+  if (graphicsHandlers.length == 0) {
+    return;
+  }
+  graphicsHandlers[activeGraphicsHandlerId].onMousedown(event);
 
   event.preventDefault();
 });
