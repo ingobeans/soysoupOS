@@ -38,7 +38,10 @@ class ProgramSource extends Program {
   refreshServiceList() {
     this.services = [];
     for (let service of this.readDirectory("/soysoup/services")) {
-      this.services.push(service.split(".")[0]);
+      let parts = service.split(".");
+      if (parts[1] === "soup") {
+        this.services.push(parts[0]);
+      }
     }
   }
   load(args) {

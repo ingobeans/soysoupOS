@@ -188,6 +188,6 @@ class ProgramSource extends Program {
     this.programs = [];
     setGraphicsHandler(new CarrotGraphicsHandler(this));
     // run startup script
-    executeCommand("soysoup/services/carrot_startup.soy", this.outputShell, this.cwd);
+    executeCommand("/home/programdata/carrot/carrot_startup.soy", this.outputShell, this.cwd);
   }
 }
