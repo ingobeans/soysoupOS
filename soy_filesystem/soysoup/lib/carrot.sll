@@ -47,7 +47,7 @@ let SLLSource = {
     }
 
     onMousedown(event) { }
-
+    onMouseup(event) { }
     onMousemove(event) { }
     onFocus() {
       // allow focus to be given

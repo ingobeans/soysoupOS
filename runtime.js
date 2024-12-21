@@ -96,6 +96,7 @@ let historyIndex = -1;
 
 class GraphicsHandler {
   onMousedown(event) { }
+  onMouseup(event) { }
   onMousemove(event) { }
   onKeypress(event) { }
   draw() { }
@@ -170,6 +171,14 @@ document.addEventListener("mousedown", function (event) {
     return;
   }
   graphicsHandlers[activeGraphicsHandlerId].onMousedown(event);
+
+  event.preventDefault();
+});
+document.addEventListener("mouseup", function (event) {
+  if (graphicsHandlers.length == 0) {
+    return;
+  }
+  graphicsHandlers[activeGraphicsHandlerId].onMouseup(event);
 
   event.preventDefault();
 });

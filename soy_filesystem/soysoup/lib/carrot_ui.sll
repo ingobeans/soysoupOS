@@ -21,12 +21,22 @@ let Window = class extends carrot.Window {
   onMousedown(event) {
     this.sendMousedownToHoveredComponent(event);
   }
+  onMouseup(event) {
+    this.sendMouseupToHoveredComponent(event);
+  }
   onMousemove(event) {
     this.sendMousemoveToHoveredComponent(event);
     this.sendHoverStateChangeToHoveredComponent(event);
   }
   getAbsolutePosition() {
     return [this.x, this.y + carrot.topbarHeight];
+  }
+  sendMouseupToHoveredComponent(event) {
+    let component = this.getComponentAt(event.clientX, event.clientY);
+    if (component === null) {
+      return false;
+    }
+    component.onMouseup(event);
   }
   sendMousedownToHoveredComponent(event) {
     let component = this.getComponentAt(event.clientX, event.clientY);
@@ -167,6 +177,8 @@ let SLLSource = {
         this.padding = 8;
         this.autoSized = autoSized;
         this.hoverColor = carrot.highlightColor;
+        this.clicking = false;
+        this.movedOff = false;
         this.setText(text)
       }
       setText(text) {
@@ -189,7 +201,25 @@ let SLLSource = {
         this.setSize(width, height);
       }
       onMousedown() {
-        console.log("click!")
+        this.clicking = true;
+      }
+      onStopHover(event) {
+        super.onStopHover(event);
+        this.movedOff = true;
+      }
+      onHover(event) {
+        super.onHover(event);
+        this.movedOff = false;
+      }
+      onClick(event) {
+
+      }
+      onMouseup(event) {
+        if (this.clicking && !this.movedOff) {
+          this.clicking = false;
+          this.movedOff = false;
+          this.onClick(event);
+        }
       }
       draw() {
         super.draw();

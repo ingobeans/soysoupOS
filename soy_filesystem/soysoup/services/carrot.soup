@@ -45,6 +45,9 @@ class CarrotGraphicsHandler extends GraphicsHandler {
       drawPrograms[0].onKeypress(key);
     }
   }
+  onMouseup(event) {
+    this.parent.onMouseup(event);
+  }
   onMousedown(event) {
     this.parent.onMousedown(event);
   }
@@ -124,6 +127,12 @@ class ProgramSource extends Program {
       if (r !== false) {
         this.programs = moveElement(this.programs, p, 0);
       }
+    }
+  }
+  onMouseup(event) {
+    let p = this.getProgramAt(event.clientX, event.clientY);
+    if (p !== undefined) {
+      p.window.onMouseup(event);
     }
   }
   onMousemove(event) {
