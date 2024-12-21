@@ -1,10 +1,16 @@
-let carrot = ImportSLL("carrot.sll");
+let carrot_ui = ImportSLL("carrot_ui.sll");
 
-class Window extends carrot.Window {
+class Window extends carrot_ui.Window {
+  load() {
+    super.load();
+    this.addComponent(new carrot_ui.Component(50, 50, 250, 250));
+    this.components[0].addComponent(new carrot_ui.BaseComponents.Button(this.components[0].borderWidth, this.components[0].borderWidth, "click me"));
+
+  }
 }
 
 class ProgramSource extends Program {
-  load(args) {
+  load() {
     this.window = new Window(this, "wow!");
   }
 }

@@ -1,0 +1,204 @@
+carrot = ImportSLL("carrot.sll");
+
+let Window = class extends carrot.Window {
+  load() {
+    this.components = [];
+    this.currentlyHoveredComponent = null;
+  }
+  addComponent(component) {
+    component.setWindow(this);
+    this.components.push(component);
+  }
+  removeComponent(component) {
+    if (this.components.includes(component)) {
+      removeItem(this.components, component);
+    }
+  }
+  draw() {
+    super.draw();
+    this.drawComponents();
+  }
+  onMousedown(event) {
+    this.sendMousedownToHoveredComponent(event);
+  }
+  onMousemove(event) {
+    this.sendMousemoveToHoveredComponent(event);
+    this.sendHoverStateChangeToHoveredComponent(event);
+  }
+  getAbsolutePosition() {
+    return [this.x, this.y + carrot.topbarHeight];
+  }
+  sendMousedownToHoveredComponent(event) {
+    let component = this.getComponentAt(event.clientX, event.clientY);
+    if (component === null) {
+      return false;
+    }
+    component.onMousedown(event);
+  }
+  sendMousemoveToHoveredComponent(event) {
+    let component = this.getComponentAt(event.clientX, event.clientY);
+    if (component === null) {
+      return false;
+    }
+    component.onMousemove(event);
+  }
+  sendHoverStateChangeToHoveredComponent(event) {
+    let component = this.getComponentAt(event.clientX, event.clientY);
+    if (this.currentlyHoveredComponent == component) {
+      return;
+    }
+    if (this.currentlyHoveredComponent) {
+      this.currentlyHoveredComponent.onStopHover(event);
+    }
+    this.currentlyHoveredComponent = component;
+    if (component) {
+      component.onHover(event);
+    }
+  }
+  getComponentAt(x, y) {
+    for (let component of this.components) {
+      let [componentX, componentY] = component.getAbsolutePosition();
+      if (x >= componentX && x < componentX + component.width) {
+        if (y >= componentY && y < componentY + component.height) {
+          return component;
+        }
+      }
+    }
+    return null;
+  }
+  drawComponents() {
+    for (let i = this.components.length; i--; i == 0) {
+      let component = this.components[i];
+      component.draw();
+      this.ctx.drawImage(component.canvas, component.x + component.drawOffsetX, component.y + component.drawOffsetY);
+    }
+  }
+}
+
+let Component = class extends Window {
+  constructor(x, y, width, height) {
+    super(undefined, undefined, width, height, false, true);
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.window = undefined;
+
+    this.textColor = "#000";
+    this.color = carrot.windowBackgroundColor;
+    this.borderColor = carrot.windowBorderColor;
+
+    this.setBorderWidth(carrot.windowBorderWidth);
+
+    this.currentlyHoveredComponent = null;
+    this.components = [];
+    this.load();
+  }
+  addComponent(component) {
+    component.setParent(this);
+    this.components.push(component);
+  }
+  setWindow(window) {
+    if (this.window == this.parent) {
+      this.window = window;
+      this.setParent(window);
+    } else {
+      this.window = window;
+    }
+    for (let component of this.components) {
+      component.setWindow(window);
+    }
+  }
+  setParent(parent) {
+    this.parent = parent;
+  }
+  setSize(width, height) {
+    this.width = width;
+    this.height = height;
+    this.reloadCanvas();
+  }
+  reloadCanvas() {
+    this.canvas.width = this.width + this.borderWidth * 2;
+    this.canvas.height = this.height + this.borderWidth * 2;
+  }
+  setBorderWidth(borderWidth) {
+    this.borderWidth = borderWidth;
+    this.drawOffsetX = -this.borderWidth;
+    this.drawOffsetY = -this.borderWidth;
+    this.reloadCanvas();
+  }
+  onHover(event) {
+    this.hovered = true;
+  }
+  onStopHover(event) {
+    this.hovered = false;
+    if (this.currentlyHoveredComponent) {
+      this.currentlyHoveredComponent.onStopHover(event);
+      this.currentlyHoveredComponent = null;
+    }
+  }
+  getAbsolutePosition() {
+    let x = this.x;
+    let y = this.y;
+    let [parentX, parentY] = this.parent.getAbsolutePosition();
+    x += parentX;
+    y += parentY;
+    return [x, y];
+  }
+  load() { }
+  draw() {
+    drawRect(this.ctx, 0, 0, this.width + this.borderWidth * 2, this.height + this.borderWidth * 2, this.borderColor);
+    drawRect(this.ctx, this.borderWidth, this.borderWidth, this.width, this.height, this.color);
+
+    this.drawComponents();
+  }
+}
+
+let SLLSource = {
+  Component: Component,
+  BaseComponents: {
+    Button: class extends Component {
+      constructor(x, y, text, width = undefined, height = undefined) {
+        let autoSized = true;
+        if (width !== undefined || height !== undefined) {
+          autoSized = false;
+        }
+        super(x, y, width, height);
+        this.padding = 8;
+        this.autoSized = autoSized;
+        this.hoverColor = carrot.highlightColor;
+        this.setText(text)
+      }
+      setText(text) {
+        this.text = text;
+        if (this.autoSized) {
+          this.resizeToFitText();
+        }
+      }
+      resizeToFitText() {
+        let lines = this.text.split("\n")
+        let longest = 0;
+        for (let line of lines) {
+          let width = getTextWidth(this.ctx, line);
+          if (width > longest) {
+            longest = width;
+          }
+        }
+        let width = longest + this.padding * 2;
+        let height = lines.length * fontSize + this.padding * 2;
+        this.setSize(width, height);
+      }
+      onMousedown() {
+        console.log("click!")
+      }
+      draw() {
+        super.draw();
+        if (this.hovered) {
+          drawRect(this.ctx, this.borderWidth, this.borderWidth, this.width, this.height, this.hoverColor)
+        }
+        drawAnsiText(this.ctx, this.padding, fontSize + this.padding, this.text, this.textColor);
+      }
+    }
+  },
+  Window: Window
+}

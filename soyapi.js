@@ -1,4 +1,4 @@
-systemVersion = "0.6.1";
+systemVersion = "0.7.0";
 
 fileSystem = new SoyFileSystem();
 
@@ -144,7 +144,6 @@ class Program {
   load(args) { }
   update() { }
   onKeypress(key) { }
-  onMousedown(event) { }
 }
 
 function ImportSLL(filename) {
@@ -202,6 +201,7 @@ function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {
     if (e) {
       let msg =
         "the program " + path + " couldn't run.\n" + e.toString();
+      console.error(e);
       outputShell.println(error(msg));
       return;
     }

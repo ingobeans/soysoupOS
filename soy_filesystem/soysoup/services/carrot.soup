@@ -48,6 +48,9 @@ class CarrotGraphicsHandler extends GraphicsHandler {
   onMousedown(event) {
     this.parent.onMousedown(event);
   }
+  onMousemove(event) {
+    this.parent.onMousemove(event);
+  }
   drawTopbar(ctx, window) {
     drawAnsiText(
       ctx,
@@ -116,11 +119,17 @@ class ProgramSource extends Program {
   onMousedown(event) {
     let p = this.getProgramAt(event.clientX, event.clientY);
     if (p !== undefined) {
-      p.onMousedown(event);
+      p.window.onMousedown(event);
       let r = p.window.onFocus();
       if (r !== false) {
         this.programs = moveElement(this.programs, p, 0);
       }
+    }
+  }
+  onMousemove(event) {
+    let p = this.getProgramAt(event.clientX, event.clientY);
+    if (p !== undefined) {
+      p.window.onMousemove(event);
     }
   }
   getProgramAt(x, y) {

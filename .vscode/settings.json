@@ -3,5 +3,6 @@
         "*.soup": "javascript",
         "*.sll": "javascript",
         "*.soy": "shellscript"
-    }
+    },
+    "editor.tabSize": 2
 }
