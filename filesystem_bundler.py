@@ -15,10 +15,13 @@ def create_directory_dict(directory_path):
             directory_dict["content"][entry] = create_directory_dict(entry_path)
     return directory_dict
 
-folder_path = "soy_filesystem"
-soy_file_system_dict = create_directory_dict(folder_path)
+def update_programs():
+    soy_file_system_dict = create_directory_dict("soy_filesystem")
 
-result = repr(json.dumps(soy_file_system_dict))
+    result = repr(json.dumps(soy_file_system_dict))
 
-with open("programs.js","w",encoding="utf-8") as f:
-    f.write(f"systemFiles = {result}")
+    with open("programs.js","w",encoding="utf-8") as f:
+        f.write(f"systemFiles = {result}")
+
+if __name__ == "__main__":
+    update_programs()
