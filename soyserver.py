@@ -9,6 +9,8 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         return super().do_GET()
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Cache-Control', 'no-store, must-revalidate')
+        self.send_header('Expires', '0')
         super().end_headers()
 
 handler_object = RequestHandler
