@@ -301,9 +301,6 @@ let TopbarComponent = class extends Component {
       }
     }
   }
-  onMousemove(event) {
-    super.onMousemove(event);
-  }
   onWindowResize() {
     this.setSize(this.window.width, carrot.topbarHeight);
     this.closeButton.x =
