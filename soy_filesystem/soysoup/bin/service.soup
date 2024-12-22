@@ -19,6 +19,9 @@ class ProgramSource extends Program {
       serviceManager.startService(parts[0], this.outputShell);
     } else if (parts[1] == "stop") {
       serviceManager.stopService(parts[0]);
+    } else if (parts[1] == "restart") {
+      serviceManager.stopService(parts[0]);
+      serviceManager.startService(parts[0], this.outputShell);
     } else {
       let service = serviceManager.serviceInstances[parts[0]];
       if (service == undefined) {

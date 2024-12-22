@@ -15,6 +15,7 @@ proc kill [pid]                     - terminate process
 service list                        - list running services
 service [service name] start        - start service
 service [service name] stop         - stop service
+service [service name] restart      - restart service
 service [service name] [function]   - call service function
 pwd                                 - prints working directory
 reload                              - reset file system
