@@ -1,4 +1,5 @@
 let carrot_sll = ImportSLL("carrot.sll");
+let carrot_ui_sll = ImportSLL("carrot_ui.sll");
 
 class CarrotGraphicsHandler extends GraphicsHandler {
   constructor(parent) {
@@ -47,33 +48,26 @@ class CarrotGraphicsHandler extends GraphicsHandler {
       let windowBackCtx = windowBack.getContext("2d");
       windowBack.width = program.window.canvas.width + carrot_sll.windowBorderWidth * 2;
       windowBack.height =
-        program.window.canvas.height + carrot_sll.windowBorderWidth * 2 + carrot_sll.topbarHeight;
+        program.window.canvas.height + carrot_sll.windowBorderWidth * 2;
 
+      let color = carrot_sll.windowBorderColor;
+      if (i == 0) {
+        color = carrot_sll.selectedWindowBorderColor;
+      }
       drawRect(
         windowBackCtx,
         0,
         0,
         windowBack.width,
         windowBack.height,
-        carrot_sll.topbarBackgroundColor
+        color
       );
-      if (i == 0) {
-        drawRect(
-          windowBackCtx,
-          carrot_sll.windowBorderWidth / 2,
-          carrot_sll.windowBorderWidth / 2,
-          windowBack.width - carrot_sll.windowBorderWidth,
-          windowBack.height - carrot_sll.windowBorderWidth,
-          carrot_sll.windowBorderColor,
-          carrot_sll.windowBorderWidth
-        );
-      }
       this.drawTopbar(windowBackCtx, program.window);
       program.window.draw();
       windowBackCtx.drawImage(
         program.window.ctx.canvas,
         carrot_sll.windowBorderWidth,
-        carrot_sll.windowBorderWidth + carrot_sll.topbarHeight
+        carrot_sll.windowBorderWidth
       );
       screenCtx.drawImage(
         windowBack,
@@ -116,7 +110,7 @@ class ProgramSource extends Program {
         x >= program.window.x &&
         x < program.window.x + program.window.canvas.width &&
         y >= program.window.y &&
-        y < program.window.y + program.window.canvas.height + carrot_sll.topbarHeight
+        y < program.window.y + program.window.canvas.height
       ) {
         return program;
       }
@@ -151,7 +145,7 @@ class ProgramSource extends Program {
     let process = executeFile(path, argsRaw, shell, cwd);
     if (process["instance"].window == undefined) {
       let name = process["instance"].filepath[process["instance"].filepath.length - 1].split(".")[0];
-      process["instance"].window = new carrot_sll.ConsoleHostWindow(process["instance"], name);
+      process["instance"].window = new carrot_ui_sll.ConsoleHostWindow(process["instance"], name);
     }
     this.programs.unshift(process["instance"]);
     process["promise"].then(

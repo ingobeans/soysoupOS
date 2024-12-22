@@ -1,8 +1,10 @@
 let carrot = ImportSLL("carrot.sll");
 
-let Window = class extends carrot.Window {
+let WindowClass = class extends carrot.Window {
   load() {
     this.components = [];
+    this.topbarComponent = new TopbarComponent();
+    this.addComponent(this.topbarComponent);
     this.currentlyHoveredComponent = null;
   }
   addComponent(component) {
@@ -29,7 +31,7 @@ let Window = class extends carrot.Window {
     this.sendHoverStateChangeToHoveredComponent(event);
   }
   getAbsolutePosition() {
-    return [this.x, this.y + carrot.topbarHeight];
+    return [this.x, this.y];
   }
   sendMouseupToHoveredComponent(event) {
     let component = this.getComponentAt(event.clientX, event.clientY);
@@ -80,12 +82,14 @@ let Window = class extends carrot.Window {
     for (let i = this.components.length; i--; i == 0) {
       let component = this.components[i];
       component.draw();
-      this.ctx.drawImage(component.canvas, component.x + component.drawOffsetX, component.y + component.drawOffsetY);
+      try {
+        this.ctx.drawImage(component.canvas, component.x + component.drawOffsetX, component.y + component.drawOffsetY);
+      } catch { }
     }
   }
 }
 
-let Component = class extends Window {
+let Component = class extends WindowClass {
   constructor(x, y, width, height) {
     super(undefined, undefined, width, height, false, true);
     this.x = x;
@@ -164,71 +168,152 @@ let Component = class extends Window {
   }
 }
 
+let ButtonComponent = class extends Component {
+  constructor(x, y, text, width = undefined, height = undefined) {
+    let autoSized = true;
+    if (width !== undefined || height !== undefined) {
+      autoSized = false;
+    }
+    super(x, y, width, height);
+    this.padding = 8;
+    this.autoSized = autoSized;
+    this.hoverColor = carrot.highlightColor;
+    this.clicking = false;
+    this.movedOff = false;
+    this.setText(text)
+  }
+  setText(text) {
+    this.text = text;
+    if (this.autoSized) {
+      this.resizeToFitText();
+    }
+  }
+  resizeToFitText() {
+    let lines = this.text.split("\n")
+    let longest = 0;
+    for (let line of lines) {
+      let width = getTextWidth(this.ctx, line);
+      if (width > longest) {
+        longest = width;
+      }
+    }
+    let width = longest + this.padding * 2;
+    let height = lines.length * fontSize + this.padding * 2;
+    this.setSize(width, height);
+  }
+  onMousedown() {
+    this.clicking = true;
+  }
+  onStopHover(event) {
+    super.onStopHover(event);
+    this.movedOff = true;
+  }
+  onHover(event) {
+    super.onHover(event);
+    this.movedOff = false;
+  }
+  onClick(event) {
+
+  }
+  onMouseup(event) {
+    if (this.clicking && !this.movedOff) {
+      this.clicking = false;
+      this.movedOff = false;
+      this.onClick(event);
+    }
+  }
+  draw() {
+    super.draw();
+    if (this.hovered) {
+      drawRect(this.ctx, this.borderWidth, this.borderWidth, this.width, this.height, this.hoverColor)
+    }
+    drawAnsiText(this.ctx, this.padding, fontSize + this.padding, this.text, this.textColor);
+  }
+}
+
+let TopbarComponent = class extends Component {
+  constructor() {
+    super(0, 0, 100, 100);
+    this.closeButton = new ButtonComponent(50, 0, "X");
+    this.closeButton.onClick = function () {
+      this.window.parent.quit();
+    }
+    this.addComponent(this.closeButton);
+  }
+  onWindowResize() {
+    this.setSize(this.window.width, carrot.topbarHeight);
+    this.closeButton.x = this.width - this.closeButton.width + this.closeButton.borderWidth;
+  }
+  setWindow(window) {
+    super.setWindow(window);
+    this.onWindowResize();
+  }
+  load() {
+    super.load();
+    this.color = carrot.topbarBackgroundColor;
+  }
+  draw() {
+    super.draw();
+    drawAnsiText(this.ctx, 4, fontSize, this.window.title, carrot.windowTitleTextColor);
+  }
+}
+
+let ConsoleHostComponent = class extends Component {
+  load() {
+    super.load();
+    this.text = "";
+  }
+  draw() {
+    super.draw();
+
+    drawRect(
+      this.ctx,
+      0,
+      0,
+      this.ctx.canvas.width,
+      this.ctx.canvas.height,
+      "#000"
+    );
+    let lines = this.text.split("\n");
+    let maxLines = this.calcMaxLines() - 1;
+    let skipUntil = null;
+    if (lines.length >= maxLines) {
+      skipUntil = lines.length - maxLines;
+    }
+    let text = "";
+    for (let i = 0; i < lines.length; i++) {
+      if (!(skipUntil !== null && i < skipUntil)) {
+        let line = lines[i];
+        text += line + "\n"
+      }
+    }
+    drawAnsiText(this.ctx, 0, fontSize, text);
+  }
+  calcMaxLines() {
+    return Math.floor(this.canvas.height / fontSize);
+  }
+}
+
+let ConsoleHostWindow = class extends WindowClass {
+  load() {
+    super.load();
+    let pathSegments = this.parent.filepath.split("/");
+    this.title = pathSegments[pathSegments.length - 1].split(".")[0];
+    this.consoleHostComponent = new ConsoleHostComponent(0, carrot.topbarHeight, this.width, this.height - carrot.topbarHeight)
+    this.addComponent(this.consoleHostComponent);
+  }
+  draw() {
+    this.consoleHostComponent.text = this.parent.outputShell.text;
+    super.draw();
+  }
+}
+
 let SLLSource = {
   Component: Component,
   BaseComponents: {
-    Button: class extends Component {
-      constructor(x, y, text, width = undefined, height = undefined) {
-        let autoSized = true;
-        if (width !== undefined || height !== undefined) {
-          autoSized = false;
-        }
-        super(x, y, width, height);
-        this.padding = 8;
-        this.autoSized = autoSized;
-        this.hoverColor = carrot.highlightColor;
-        this.clicking = false;
-        this.movedOff = false;
-        this.setText(text)
-      }
-      setText(text) {
-        this.text = text;
-        if (this.autoSized) {
-          this.resizeToFitText();
-        }
-      }
-      resizeToFitText() {
-        let lines = this.text.split("\n")
-        let longest = 0;
-        for (let line of lines) {
-          let width = getTextWidth(this.ctx, line);
-          if (width > longest) {
-            longest = width;
-          }
-        }
-        let width = longest + this.padding * 2;
-        let height = lines.length * fontSize + this.padding * 2;
-        this.setSize(width, height);
-      }
-      onMousedown() {
-        this.clicking = true;
-      }
-      onStopHover(event) {
-        super.onStopHover(event);
-        this.movedOff = true;
-      }
-      onHover(event) {
-        super.onHover(event);
-        this.movedOff = false;
-      }
-      onClick(event) {
-
-      }
-      onMouseup(event) {
-        if (this.clicking && !this.movedOff) {
-          this.clicking = false;
-          this.movedOff = false;
-          this.onClick(event);
-        }
-      }
-      draw() {
-        super.draw();
-        if (this.hovered) {
-          drawRect(this.ctx, this.borderWidth, this.borderWidth, this.width, this.height, this.hoverColor)
-        }
-        drawAnsiText(this.ctx, this.padding, fontSize + this.padding, this.text, this.textColor);
-      }
-    }
+    Button: ButtonComponent,
+    Topbar: TopbarComponent
   },
-  Window: Window
+  Window: WindowClass,
+  ConsoleHostWindow: ConsoleHostWindow,
 }

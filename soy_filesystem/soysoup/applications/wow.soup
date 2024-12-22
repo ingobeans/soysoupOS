@@ -4,7 +4,7 @@ class Window extends carrot_ui.Window {
   load() {
     super.load();
     this.addComponent(new carrot_ui.Component(50, 50, 250, 250));
-    this.components[0].addComponent(new carrot_ui.BaseComponents.Button(this.components[0].borderWidth, this.components[0].borderWidth, "click me"));
+    this.components[1].addComponent(new carrot_ui.BaseComponents.Button(this.components[1].borderWidth, this.components[1].borderWidth, "click me"));
 
   }
 }

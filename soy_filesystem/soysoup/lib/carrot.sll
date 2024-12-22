@@ -46,44 +46,10 @@ let WindowClass = class {
   }
 }
 
-let ConsoleHostWindow = class extends WindowClass {
-  load() {
-    let pathSegments = this.parent.filepath.split("/");
-    this.title = pathSegments[pathSegments.length - 1].split(".")[0];
-  }
-  calcMaxLines() {
-    return Math.floor(this.canvas.height / fontSize);
-  }
-  draw() {
-    drawRect(
-      this.ctx,
-      0,
-      0,
-      this.ctx.canvas.width,
-      this.ctx.canvas.height,
-      "#000"
-    );
-    let lines = this.parent.outputShell.text.split("\n");
-    let maxLines = this.calcMaxLines() - 1;
-    let skipUntil = null;
-    if (lines.length >= maxLines) {
-      skipUntil = lines.length - maxLines;
-    }
-    let text = "";
-    for (let i = 0; i < lines.length; i++) {
-      if (!(skipUntil !== null && i < skipUntil)) {
-        let line = lines[i];
-        text += line + "\n"
-      }
-    }
-    drawAnsiText(this.ctx, 0, fontSize, text);
-  }
-}
 let config = JSON.parse(fileSystem.readFile("/home/programdata/carrot/config.json"));
 
 let exportedClasses = {
-  Window: WindowClass,
-  ConsoleHostWindow: ConsoleHostWindow,
+  Window: WindowClass
 }
 
 // export the exported classes combined with the config properties

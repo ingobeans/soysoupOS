@@ -3,6 +3,7 @@
   "topbarHeight": 30,
   "topbarBackgroundColor": "#fff",
   "windowBorderColor": "#121212",
+  "selectedWindowBorderColor": "#121212",
   "windowBackgroundColor": "rgb(190, 190, 190)",
   "windowTitleTextColor": "#000",
   "highlightColor": "rgb(221, 221, 221)",
