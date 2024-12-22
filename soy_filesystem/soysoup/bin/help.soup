@@ -6,6 +6,7 @@ cat [file]                          - read contents of file
 echo [string]                       - print a string to shell
 edit [file]                         - edit file by path
 exit                                - close terminal instance
+fetch [url]                         - fetch url, returns response text
 help                                - prints this
 ls <directory>                      - list contents of directory
 mkdir [directory]                   - create folder

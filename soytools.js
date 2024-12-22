@@ -16,6 +16,19 @@ let font = undefined;
 let fontSize = undefined;
 updateFont();
 
+// https://stackoverflow.com/a/43467144
+function isValidUrl(string) {
+  let url;
+
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:";
+}
+
 function removeItem(arr, value) {
   var index = arr.indexOf(value);
   if (index > -1) {
