@@ -1,4 +1,4 @@
-carrot = ImportSLL("carrot.sll");
+let carrot = ImportSLL("carrot.sll");
 
 let Window = class extends carrot.Window {
   load() {
