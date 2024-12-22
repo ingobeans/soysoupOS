@@ -162,10 +162,40 @@ document.addEventListener("keydown", function (event) {
     event.preventDefault();
     return;
   }
+  if (event.key == "v" && event.ctrlKey) {
+    console.log("print!")
+    return;
+  }
   graphicsHandlers[activeGraphicsHandlerId].onKeypress(event);
 
   event.preventDefault();
 });
+document.addEventListener("paste", function (event) {
+  let clipText = '';
+  if (window.clipboardData) {
+    clipText = window.clipboardData.getData('Text');
+  } else if (typeof event == 'object' && event.clipboardData) {
+    clipText = event.clipboardData.getData('text/plain');
+  }
+  console.log(clipText);
+  if (graphicsHandlers.length == 0) {
+    return;
+  }
+  let charReplacements = {
+    "\n": "Enter"
+  }
+  for (let char of clipText) {
+    if (charReplacements[char] !== undefined) {
+      char = charReplacements[char]
+    }
+    let mockEvent = {
+      key: char,
+      ctrlKey: false,
+      shiftKey: false,
+    }
+    graphicsHandlers[activeGraphicsHandlerId].onKeypress(mockEvent)
+  }
+})
 document.addEventListener("mousedown", function (event) {
   if (graphicsHandlers.length == 0) {
     return;

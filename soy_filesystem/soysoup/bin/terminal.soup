@@ -1,27 +1,5 @@
 class ProgramSource extends Program {
   onKeypress(event) {
-    if (event.key == "v" && event.ctrlKey) {
-      navigator.clipboard.readText()
-        .then(text => {
-          console.log('Pasted content: ', text);
-          let charReplacements = {
-            "\n": "Enter"
-          }
-          for (let char of text) {
-            if (charReplacements[char] !== undefined) {
-              char = charReplacements[char]
-            }
-            let mockEvent = {
-              key: char,
-              ctrlKey: false,
-              shiftKey: false,
-            }
-            this.onKeypress(mockEvent)
-          }
-        })
-
-      return;
-    }
     if (this.focusedProcess == undefined) {
       this.prompt.onKeypress(event);
     } else {
