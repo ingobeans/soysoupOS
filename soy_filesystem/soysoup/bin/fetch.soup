@@ -2,29 +2,25 @@ class ProgramSource extends Program {
   async load(args) {
     let parsedArgs = parseToParts(args);
     if (parsedArgs.length != 1) {
-      this.outputShell.println(
-        error("invalid args")
-      );
+      this.outputShell.println(error("invalid args"));
       this.quit();
       return;
     }
     let url = parsedArgs[0];
     if (!isValidUrl(url)) {
-      this.outputShell.println(
-        error("invalid url")
-      );
+      this.outputShell.println(error("invalid url"));
       this.quit();
       return;
     }
-    await fetch(url).then(async (value) => {
-      console.log(value);
-      this.outputShell.println(await value.text());
-      this.quit();
-    }).catch((e) => {
-      this.outputShell.println(
-        error(e.toString())
-      );
-      this.quit();
-    });
+    await fetch(url)
+      .then(async (value) => {
+        console.log(value);
+        this.outputShell.println(await value.text());
+        this.quit();
+      })
+      .catch((e) => {
+        this.outputShell.println(error(e.toString()));
+        this.quit();
+      });
   }
 }

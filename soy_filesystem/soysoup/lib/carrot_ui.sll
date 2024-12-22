@@ -91,11 +91,15 @@ let WindowClass = class extends carrot.Window {
       let component = this.components[i];
       component.draw();
       try {
-        this.ctx.drawImage(component.canvas, component.x + component.drawOffsetX, component.y + component.drawOffsetY);
-      } catch { }
+        this.ctx.drawImage(
+          component.canvas,
+          component.x + component.drawOffsetX,
+          component.y + component.drawOffsetY
+        );
+      } catch {}
     }
   }
-}
+};
 
 let Component = class extends WindowClass {
   constructor(x, y, width, height) {
@@ -114,8 +118,8 @@ let Component = class extends WindowClass {
 
     this.currentlyHoveredComponent = null;
     this.components = [];
-    this.load()
-}
+    this.load();
+  }
   addComponent(component) {
     component.setParent(this);
     this.components.push(component);
@@ -168,14 +172,28 @@ let Component = class extends WindowClass {
     y += parentY;
     return [x, y];
   }
-  load() { }
+  load() {}
   draw() {
-    drawRect(this.ctx, 0, 0, this.width + this.borderWidth * 2, this.height + this.borderWidth * 2, this.borderColor);
-    drawRect(this.ctx, this.borderWidth, this.borderWidth, this.width, this.height, this.color);
+    drawRect(
+      this.ctx,
+      0,
+      0,
+      this.width + this.borderWidth * 2,
+      this.height + this.borderWidth * 2,
+      this.borderColor
+    );
+    drawRect(
+      this.ctx,
+      this.borderWidth,
+      this.borderWidth,
+      this.width,
+      this.height,
+      this.color
+    );
 
     this.drawComponents();
   }
-}
+};
 
 let ButtonComponent = class extends Component {
   constructor(x, y, text, width = undefined, height = undefined) {
@@ -189,7 +207,7 @@ let ButtonComponent = class extends Component {
     this.hoverColor = carrot.highlightColor;
     this.clicking = false;
     this.movedOff = false;
-    this.setText(text)
+    this.setText(text);
   }
   setText(text) {
     this.text = text;
@@ -198,7 +216,7 @@ let ButtonComponent = class extends Component {
     }
   }
   resizeToFitText() {
-    let lines = this.text.split("\n")
+    let lines = this.text.split("\n");
     let longest = 0;
     for (let line of lines) {
       let width = getTextWidth(this.ctx, line);
@@ -221,9 +239,7 @@ let ButtonComponent = class extends Component {
     super.onHover(event);
     this.movedOff = false;
   }
-  onClick(event) {
-
-  }
+  onClick(event) {}
   onMouseup(event) {
     if (this.clicking && !this.movedOff) {
       this.clicking = false;
@@ -234,11 +250,24 @@ let ButtonComponent = class extends Component {
   draw() {
     super.draw();
     if (this.hovered) {
-      drawRect(this.ctx, this.borderWidth, this.borderWidth, this.width, this.height, this.hoverColor)
+      drawRect(
+        this.ctx,
+        this.borderWidth,
+        this.borderWidth,
+        this.width,
+        this.height,
+        this.hoverColor
+      );
     }
-    drawAnsiText(this.ctx, this.padding, fontSize + this.padding, this.text, this.textColor);
+    drawAnsiText(
+      this.ctx,
+      this.padding,
+      fontSize + this.padding,
+      this.text,
+      this.textColor
+    );
   }
-}
+};
 
 let TopbarComponent = class extends Component {
   constructor() {
@@ -246,12 +275,13 @@ let TopbarComponent = class extends Component {
     this.closeButton = new ButtonComponent(50, 0, "X");
     this.closeButton.onClick = function () {
       this.window.parent.quit();
-    }
+    };
     this.addComponent(this.closeButton);
   }
   onWindowResize() {
     this.setSize(this.window.width, carrot.topbarHeight);
-    this.closeButton.x = this.width - this.closeButton.width + this.closeButton.borderWidth;
+    this.closeButton.x =
+      this.width - this.closeButton.width + this.closeButton.borderWidth;
   }
   load() {
     super.load();
@@ -259,9 +289,15 @@ let TopbarComponent = class extends Component {
   }
   draw() {
     super.draw();
-    drawAnsiText(this.ctx, 4, fontSize, this.window.title, carrot.windowTitleTextColor);
+    drawAnsiText(
+      this.ctx,
+      4,
+      fontSize,
+      this.window.title,
+      carrot.windowTitleTextColor
+    );
   }
-}
+};
 
 let ConsoleHostComponent = class extends Component {
   load() {
@@ -289,7 +325,7 @@ let ConsoleHostComponent = class extends Component {
     for (let i = 0; i < lines.length; i++) {
       if (!(skipUntil !== null && i < skipUntil)) {
         let line = lines[i];
-        text += line + "\n"
+        text += line + "\n";
       }
     }
     drawAnsiText(this.ctx, 0, fontSize, text);
@@ -297,28 +333,33 @@ let ConsoleHostComponent = class extends Component {
   calcMaxLines() {
     return Math.floor(this.canvas.height / fontSize);
   }
-}
+};
 
 let ConsoleHostWindow = class extends WindowClass {
   load() {
     super.load();
     let pathSegments = this.parent.filepath.split("/");
     this.title = pathSegments[pathSegments.length - 1].split(".")[0];
-    this.consoleHostComponent = new ConsoleHostComponent(0, carrot.topbarHeight, this.width, this.height - carrot.topbarHeight)
+    this.consoleHostComponent = new ConsoleHostComponent(
+      0,
+      carrot.topbarHeight,
+      this.width,
+      this.height - carrot.topbarHeight
+    );
     this.addComponent(this.consoleHostComponent);
   }
   draw() {
     this.consoleHostComponent.text = this.parent.outputShell.text;
     super.draw();
   }
-}
+};
 
 let SLLSource = {
   Component: Component,
   BaseComponents: {
     Button: ButtonComponent,
-    Topbar: TopbarComponent
+    Topbar: TopbarComponent,
   },
   Window: WindowClass,
   ConsoleHostWindow: ConsoleHostWindow,
-}
+};

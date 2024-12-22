@@ -21,6 +21,12 @@ class DesktopWindow extends carrot.Window {
 
 class ProgramSource extends Program {
   load(args) {
-    this.window = new DesktopWindow(this, "desktop", undefined, undefined, true);
+    this.window = new DesktopWindow(
+      this,
+      "desktop",
+      undefined,
+      undefined,
+      true
+    );
   }
 }

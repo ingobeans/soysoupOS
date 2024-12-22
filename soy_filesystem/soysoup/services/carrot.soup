@@ -46,7 +46,8 @@ class CarrotGraphicsHandler extends GraphicsHandler {
       }
       let windowBack = document.createElement("canvas");
       let windowBackCtx = windowBack.getContext("2d");
-      windowBack.width = program.window.canvas.width + carrot_sll.windowBorderWidth * 2;
+      windowBack.width =
+        program.window.canvas.width + carrot_sll.windowBorderWidth * 2;
       windowBack.height =
         program.window.canvas.height + carrot_sll.windowBorderWidth * 2;
 
@@ -54,14 +55,7 @@ class CarrotGraphicsHandler extends GraphicsHandler {
       if (i == 0) {
         color = carrot_sll.selectedWindowBorderColor;
       }
-      drawRect(
-        windowBackCtx,
-        0,
-        0,
-        windowBack.width,
-        windowBack.height,
-        color
-      );
+      drawRect(windowBackCtx, 0, 0, windowBack.width, windowBack.height, color);
       this.drawTopbar(windowBackCtx, program.window);
       program.window.draw();
       windowBackCtx.drawImage(
@@ -141,11 +135,17 @@ class ProgramSource extends Program {
   }
   launchApplication(path, argsRaw, cwd) {
     // launches a program with a window & fresh shell
-    let shell = new Shell(() => { });
+    let shell = new Shell(() => {});
     let process = executeFile(path, argsRaw, shell, cwd);
     if (process["instance"].window == undefined) {
-      let name = process["instance"].filepath[process["instance"].filepath.length - 1].split(".")[0];
-      process["instance"].window = new carrot_ui_sll.ConsoleHostWindow(process["instance"], name);
+      let name =
+        process["instance"].filepath[
+          process["instance"].filepath.length - 1
+        ].split(".")[0];
+      process["instance"].window = new carrot_ui_sll.ConsoleHostWindow(
+        process["instance"],
+        name
+      );
     }
     this.programs.unshift(process["instance"]);
     process["promise"].then(
@@ -167,6 +167,11 @@ class ProgramSource extends Program {
     this.graphicsHandler = new CarrotGraphicsHandler(this);
     addGraphicsHandler(this.graphicsHandler);
     // run startup script
-    executeFile("/home/programdata/carrot/carrot_startup.soy", "", this.outputShell, this.cwd);
+    executeFile(
+      "/home/programdata/carrot/carrot_startup.soy",
+      "",
+      this.outputShell,
+      this.cwd
+    );
   }
 }

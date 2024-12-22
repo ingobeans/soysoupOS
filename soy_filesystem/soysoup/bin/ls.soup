@@ -21,7 +21,12 @@ class ProgramSource extends Program {
         dirsText += item + "\n";
       }
     });
-    let text = (BLUE_COLOR + dirsText + (filesText ? GREEN_COLOR + filesText : "")).trim() + RESET_COLOR;
+    let text =
+      (
+        BLUE_COLOR +
+        dirsText +
+        (filesText ? GREEN_COLOR + filesText : "")
+      ).trim() + RESET_COLOR;
     this.outputShell.println(text);
     this.quit();
   }

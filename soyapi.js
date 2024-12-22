@@ -9,7 +9,7 @@ class Shell {
     this.outputFunction = outputFunction;
     this.text = "";
   }
-  onKeypress(key) { }
+  onKeypress(key) {}
   print(text, flush = true) {
     this.setText(this.text + text);
 
@@ -141,9 +141,9 @@ class Program {
     return fileSystem.createDirectory(actualPath);
   }
 
-  load(args) { }
-  update() { }
-  onKeypress(key) { }
+  load(args) {}
+  update() {}
+  onKeypress(key) {}
 }
 
 function ImportSLL(filename) {
@@ -152,7 +152,10 @@ function ImportSLL(filename) {
   if (fileSystem.isFile(global_lib_path)) {
     path = global_lib_path;
   }
-  return eval(fileSystem.readFile(path) + ";if (typeof SLLSource === 'undefined'){throw new Error('SLL has no entry point!')}SLLSource");
+  return eval(
+    fileSystem.readFile(path) +
+      ";if (typeof SLLSource === 'undefined'){throw new Error('SLL has no entry point!')}SLLSource"
+  );
 }
 
 function splitAtLastOccurrence(str, delimiter) {
@@ -196,11 +199,13 @@ function generateNewProcessId(requestedPID) {
 function createProgramInstance(path, argsRaw, outputShell, cwd, exitResolve) {
   var data = fileSystem.readFile(path);
   try {
-    eval(data + ";if (typeof ProgramSource !== 'function'){throw new Error('program has no entry point!')}newProgramInstance = new ProgramSource()");
+    eval(
+      data +
+        ";if (typeof ProgramSource !== 'function'){throw new Error('program has no entry point!')}newProgramInstance = new ProgramSource()"
+    );
   } catch (e) {
     if (e) {
-      let msg =
-        "the program " + path + " couldn't run.\n" + e.toString();
+      let msg = "the program " + path + " couldn't run.\n" + e.toString();
       console.error(e);
       outputShell.println(error(msg));
       return;

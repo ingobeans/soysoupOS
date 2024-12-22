@@ -4,7 +4,7 @@ class ProgramSource extends Program {
       this.prompt.onKeypress(event);
     } else {
       if (event.key == "z" && event.ctrlKey) {
-        this.focusedProcess.outputShell = new Shell(() => { });
+        this.focusedProcess.outputShell = new Shell(() => {});
         this.outputShell.println(
           "dropped focus from PID " + this.focusedProcess.pid
         );
@@ -13,7 +13,7 @@ class ProgramSource extends Program {
         return;
       } else if (event.key == "c" && event.ctrlKey) {
         this.focusedProcess.quit();
-        this.focusedProcess.outputShell = new Shell(() => { });
+        this.focusedProcess.outputShell = new Shell(() => {});
         this.focusedProcess = undefined;
         this.startNewPrompt();
         return;
@@ -78,7 +78,7 @@ class ProgramSource extends Program {
     if (text[text.length - 1] == "&") {
       text = text.slice(0, -1);
       runInBackground = true;
-      newShell = new Shell(() => { });
+      newShell = new Shell(() => {});
     }
     let process = executeCommand(text, newShell, this.cwd);
     if (process != undefined) {

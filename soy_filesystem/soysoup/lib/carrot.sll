@@ -1,10 +1,17 @@
 let WindowClass = class {
-  constructor(parent, title, width = 850, height = 450, fullscreen = false, skipCallingLoad = false) {
+  constructor(
+    parent,
+    title,
+    width = 850,
+    height = 450,
+    fullscreen = false,
+    skipCallingLoad = false
+  ) {
     this.parent = parent;
     this.title = title;
     this.width = width;
     this.height = height;
-    this.fullscreen = fullscreen
+    this.fullscreen = fullscreen;
 
     this.canvas = document.createElement("canvas");
     if (this.fullscreen) {
@@ -14,17 +21,16 @@ let WindowClass = class {
       this.canvas.width = this.width;
       this.canvas.height = this.height;
     }
-    [this.x, this.y] = serviceManager.serviceInstances["carrot"].getNewWindowPosition(
-      this.canvas.width,
-      this.canvas.height
-    );
+    [this.x, this.y] = serviceManager.serviceInstances[
+      "carrot"
+    ].getNewWindowPosition(this.canvas.width, this.canvas.height);
     this.ctx = this.canvas.getContext("2d");
     if (!skipCallingLoad) {
       this.load();
     }
   }
 
-  load() { }
+  load() {}
 
   draw() {
     drawRect(
@@ -36,22 +42,24 @@ let WindowClass = class {
       SLLSource.windowBackgroundColor
     );
   }
-  onWindowResize() { }
+  onWindowResize() {}
 
-  onMousedown(event) { }
-  onMouseup(event) { }
-  onMousemove(event) { }
+  onMousedown(event) {}
+  onMouseup(event) {}
+  onMousemove(event) {}
   onFocus() {
     // allow focus to be given
     return true;
   }
-}
+};
 
-let config = JSON.parse(fileSystem.readFile("/home/programdata/carrot/config.json"));
+let config = JSON.parse(
+  fileSystem.readFile("/home/programdata/carrot/config.json")
+);
 
 let exportedClasses = {
-  Window: WindowClass
-}
+  Window: WindowClass,
+};
 
 // export the exported classes combined with the config properties
 let SLLSource = { ...config, ...exportedClasses };

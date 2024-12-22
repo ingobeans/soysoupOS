@@ -52,11 +52,25 @@ function setActiveGraphicsHandler(graphicsHandler) {
   }
   activeGraphicsHandlerId = graphicsHandlers.indexOf(graphicsHandler);
 }
-function drawAnsiText(ctx, x, y, text, color = "#fff", bgcolor = "rgba(0,0,0,0)") {
+function drawAnsiText(
+  ctx,
+  x,
+  y,
+  text,
+  color = "#fff",
+  bgcolor = "rgba(0,0,0,0)"
+) {
   if (text.includes("\n")) {
     var texts = text.split("\n");
     texts.forEach(function (text_piece, index) {
-      [color, bgcolor] = drawAnsiText(ctx, x, y + index * fontSize, text_piece, color, bgcolor);
+      [color, bgcolor] = drawAnsiText(
+        ctx,
+        x,
+        y + index * fontSize,
+        text_piece,
+        color,
+        bgcolor
+      );
     });
     return [color, bgcolor];
   }
@@ -67,19 +81,13 @@ function drawAnsiText(ctx, x, y, text, color = "#fff", bgcolor = "rgba(0,0,0,0)"
       var packet = ansi_up.get_next_packet();
       if (packet.kind == 0) break;
       if (packet.kind == 1) {
-        drawAnsiText(
-          ctx,
-          x + offset,
-          y,
-          packet.text,
-          color,
-          bgcolor
-        );
+        drawAnsiText(ctx, x + offset, y, packet.text, color, bgcolor);
         offset += getTextWidth(ctx, packet.text);
       } else if (packet.kind == 5) {
         ansi_up.process_ansi(packet);
         color = ansi_up.fg != null ? rgbToString(ansi_up.fg.rgb) : "#fff";
-        bgcolor = ansi_up.bg != null ? rgbToString(ansi_up.bg.rgb) : "rgba(0,0,0,0)";
+        bgcolor =
+          ansi_up.bg != null ? rgbToString(ansi_up.bg.rgb) : "rgba(0,0,0,0)";
       }
     }
     return [color, bgcolor];
@@ -95,11 +103,11 @@ let commandHistory = [];
 let historyIndex = -1;
 
 class GraphicsHandler {
-  onMousedown(event) { }
-  onMouseup(event) { }
-  onMousemove(event) { }
-  onKeypress(event) { }
-  draw() { }
+  onMousedown(event) {}
+  onMouseup(event) {}
+  onMousemove(event) {}
+  onKeypress(event) {}
+  draw() {}
 }
 class TerminalGraphicsHandler extends GraphicsHandler {
   onKeypress(key) {
@@ -121,13 +129,12 @@ class TerminalGraphicsHandler extends GraphicsHandler {
     for (let i = 0; i < lines.length; i++) {
       if (!(skipUntil !== null && i < skipUntil)) {
         let line = lines[i];
-        text += line + "\n"
+        text += line + "\n";
       }
     }
     drawAnsiText(screenCtx, 0, fontSize, text);
   }
 }
-
 
 let graphicsHandlers = [new TerminalGraphicsHandler()];
 let activeGraphicsHandlerId = 0;
@@ -163,7 +170,7 @@ document.addEventListener("keydown", function (event) {
     return;
   }
   if (event.key == "v" && event.ctrlKey) {
-    console.log("print!")
+    console.log("print!");
     return;
   }
   graphicsHandlers[activeGraphicsHandlerId].onKeypress(event);
@@ -171,31 +178,31 @@ document.addEventListener("keydown", function (event) {
   event.preventDefault();
 });
 document.addEventListener("paste", function (event) {
-  let clipText = '';
+  let clipText = "";
   if (window.clipboardData) {
-    clipText = window.clipboardData.getData('Text');
-  } else if (typeof event == 'object' && event.clipboardData) {
-    clipText = event.clipboardData.getData('text/plain');
+    clipText = window.clipboardData.getData("Text");
+  } else if (typeof event == "object" && event.clipboardData) {
+    clipText = event.clipboardData.getData("text/plain");
   }
   console.log(clipText);
   if (graphicsHandlers.length == 0) {
     return;
   }
   let charReplacements = {
-    "\n": "Enter"
-  }
+    "\n": "Enter",
+  };
   for (let char of clipText) {
     if (charReplacements[char] !== undefined) {
-      char = charReplacements[char]
+      char = charReplacements[char];
     }
     let mockEvent = {
       key: char,
       ctrlKey: false,
       shiftKey: false,
-    }
-    graphicsHandlers[activeGraphicsHandlerId].onKeypress(mockEvent)
+    };
+    graphicsHandlers[activeGraphicsHandlerId].onKeypress(mockEvent);
   }
-})
+});
 document.addEventListener("mousedown", function (event) {
   if (graphicsHandlers.length == 0) {
     return;
@@ -226,7 +233,7 @@ resizeCanvas();
 
 let terminalProcess = undefined;
 
-var defaultShell = new Shell(() => { });
+var defaultShell = new Shell(() => {});
 
 async function createTerminal() {
   let terminalPath = "soysoup/bin/terminal.soup";

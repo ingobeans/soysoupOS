@@ -1,4 +1,5 @@
 # soysoupOS
+
 ![image](https://github.com/user-attachments/assets/05a70bb9-92f2-4045-8c74-f6cc2d05c1e0)
 soysoupOS is widely regarded by me as the operating system of the future.
 
