@@ -99,7 +99,7 @@ class ProgramSource extends Program {
         this.currentlyHoveredProgram.window.onStopHover(event);
       }
       if (p !== null) {
-        p.window.onHover(event);
+        p.window.onStartHover(event);
       }
     }
     this.currentlyHoveredProgram = p;

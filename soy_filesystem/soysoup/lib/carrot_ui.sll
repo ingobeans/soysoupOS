@@ -34,7 +34,7 @@ let WindowClass = class extends carrot.Window {
     this.sendMousemoveToHoveredComponent(event);
     this.sendHoverStateChangeToHoveredComponent(event);
   }
-  onHover(event) {
+  onStartHover(event) {
     this.hovered = true;
   }
   onStopHover(event) {
@@ -83,7 +83,7 @@ let WindowClass = class extends carrot.Window {
     }
     this.currentlyHoveredComponent = component;
     if (component) {
-      component.onHover(event);
+      component.onStartHover(event);
     }
   }
   getComponentAt(x, y) {
@@ -236,8 +236,8 @@ let ButtonComponent = class extends Component {
     super.onStopHover(event);
     this.movedOff = true;
   }
-  onHover(event) {
-    super.onHover(event);
+  onStartHover(event) {
+    super.onStartHover(event);
     this.movedOff = false;
   }
   onClick(event) {}
