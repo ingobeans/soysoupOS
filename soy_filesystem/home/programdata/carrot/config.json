@@ -1,11 +1,11 @@
 {
   "windowBorderWidth": 2,
   "topbarHeight": 30,
-  "topbarBackgroundColor": "#fff",
-  "windowBorderColor": "#121212",
-  "selectedWindowBorderColor": "#121212",
+  "topbarBackgroundColor": "rgb(255,255,255)",
+  "windowBorderColor": "rgb(18,18,18)",
+  "selectedWindowBorderColor": "rgb(18,18,18)",
   "windowBackgroundColor": "rgb(190, 190, 190)",
-  "windowTitleTextColor": "#000",
+  "windowTitleTextColor": "rgb(0,0,0)",
   "highlightColor": "rgb(221, 221, 221)",
-  "wallpaperColor": "#ff7070"
+  "wallpaperColor": "rgb(255, 112, 112)"
 }
