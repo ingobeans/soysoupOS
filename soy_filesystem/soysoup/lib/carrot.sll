@@ -79,16 +79,12 @@ let ConsoleHostWindow = class extends WindowClass {
     drawAnsiText(this.ctx, 0, fontSize, text);
   }
 }
+let config = JSON.parse(fileSystem.readFile("/home/programdata/carrot/config.json"));
 
-let SLLSource = {
-  windowBorderWidth: 2,
-  topbarHeight: 30,
-  topbarBackgroundColor: "#fff",
-  windowBorderColor: "#544323",
-  windowBackgroundColor: "rgb(190, 190, 190)",
-  windowTitleTextColor: "#000",
-  highlightColor: "rgb(221, 221, 221)",
-
+let exportedClasses = {
   Window: WindowClass,
   ConsoleHostWindow: ConsoleHostWindow,
 }
+
+// export the exported classes combined with the config properties
+let SLLSource = { ...config, ...exportedClasses };

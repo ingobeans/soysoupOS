@@ -2,7 +2,7 @@ let carrot = ImportSLL("carrot.sll");
 
 class DesktopWindow extends carrot.Window {
   load() {
-    this.color = "#cc8706";
+    this.color = carrot.wallpaperColor;
   }
   draw() {
     drawRect(
