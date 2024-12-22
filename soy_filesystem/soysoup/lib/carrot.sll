@@ -1,3 +1,85 @@
+let WindowClass = class {
+  constructor(parent, title, width = 850, height = 450, fullscreen = false, skipCallingLoad = false) {
+    this.parent = parent;
+    this.title = title;
+    this.width = width;
+    this.height = height;
+    this.fullscreen = fullscreen
+
+    this.canvas = document.createElement("canvas");
+    if (this.fullscreen) {
+      this.canvas.width = screenCtx.canvas.width;
+      this.canvas.height = screenCtx.canvas.height;
+    } else {
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+    }
+    [this.x, this.y] = serviceManager.serviceInstances["carrot"].getNewWindowPosition(
+      this.canvas.width,
+      this.canvas.height
+    );
+    this.ctx = this.canvas.getContext("2d");
+    if (!skipCallingLoad) {
+      this.load();
+    }
+  }
+
+  load() { }
+
+  draw() {
+    drawRect(
+      this.ctx,
+      0,
+      0,
+      this.ctx.canvas.width,
+      this.ctx.canvas.height,
+      SLLSource.windowBackgroundColor
+    );
+  }
+
+  onMousedown(event) { }
+  onMouseup(event) { }
+  onMousemove(event) { }
+  onFocus() {
+    // allow focus to be given
+    return true;
+  }
+}
+
+let ConsoleHostWindow = class extends WindowClass {
+  load() {
+    let pathSegments = this.parent.filepath.split("/");
+    this.title = pathSegments[pathSegments.length - 1].split(".")[0];
+  }
+  calcMaxLines() {
+    return Math.floor(this.canvas.height / fontSize);
+  }
+  draw() {
+    drawRect(
+      this.ctx,
+      0,
+      0,
+      this.ctx.canvas.width,
+      this.ctx.canvas.height,
+      "#000"
+    );
+    let lines = this.parent.outputShell.text.split("\n");
+    let maxLines = this.calcMaxLines() - 1;
+    let skipUntil = null;
+    if (lines.length >= maxLines) {
+      skipUntil = lines.length - maxLines;
+    }
+    let text = "";
+    for (let i = 0; i < lines.length; i++) {
+      if (!(skipUntil !== null && i < skipUntil)) {
+        let line = lines[i];
+        text += line + "\n"
+      }
+    }
+    drawAnsiText(this.ctx, 0, fontSize, text);
+  }
+}
+
 let SLLSource = {
   windowBorderWidth: 2,
   topbarHeight: 30,
@@ -7,51 +89,6 @@ let SLLSource = {
   windowTitleTextColor: "#000",
   highlightColor: "rgb(221, 221, 221)",
 
-  Window: class {
-    constructor(parent, title, width = 850, height = 450, fullscreen = false, skipCallingLoad = false) {
-      this.parent = parent;
-      this.title = title;
-      this.width = width;
-      this.height = height;
-      this.fullscreen = fullscreen
-
-      this.canvas = document.createElement("canvas");
-      if (this.fullscreen) {
-        this.canvas.width = screenCtx.canvas.width;
-        this.canvas.height = screenCtx.canvas.height;
-      } else {
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
-      }
-      [this.x, this.y] = serviceManager.serviceInstances["carrot"].getNewWindowPosition(
-        this.canvas.width,
-        this.canvas.height
-      );
-      this.ctx = this.canvas.getContext("2d");
-      if (!skipCallingLoad) {
-        this.load();
-      }
-    }
-
-    load() { }
-
-    draw() {
-      drawRect(
-        this.ctx,
-        0,
-        0,
-        this.ctx.canvas.width,
-        this.ctx.canvas.height,
-        SLLSource.windowBackgroundColor
-      );
-    }
-
-    onMousedown(event) { }
-    onMouseup(event) { }
-    onMousemove(event) { }
-    onFocus() {
-      // allow focus to be given
-      return true;
-    }
-  }
+  Window: WindowClass,
+  ConsoleHostWindow: ConsoleHostWindow,
 }

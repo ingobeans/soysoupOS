@@ -1,39 +1,5 @@
 let carrot_sll = ImportSLL("carrot.sll");
 
-class ConsoleHostWindow extends carrot_sll.Window {
-  load() {
-    let pathSegments = this.parent.filepath.split("/");
-    this.title = pathSegments[pathSegments.length - 1].split(".")[0];
-  }
-  calcMaxLines() {
-    return Math.floor(this.canvas.height / fontSize);
-  }
-  draw() {
-    drawRect(
-      this.ctx,
-      0,
-      0,
-      this.ctx.canvas.width,
-      this.ctx.canvas.height,
-      "#000"
-    );
-    let lines = this.parent.outputShell.text.split("\n");
-    let maxLines = this.calcMaxLines() - 1;
-    let skipUntil = null;
-    if (lines.length >= maxLines) {
-      skipUntil = lines.length - maxLines;
-    }
-    let text = "";
-    for (let i = 0; i < lines.length; i++) {
-      if (!(skipUntil !== null && i < skipUntil)) {
-        let line = lines[i];
-        text += line + "\n"
-      }
-    }
-    drawAnsiText(this.ctx, 0, fontSize, text);
-  }
-}
-
 class CarrotGraphicsHandler extends GraphicsHandler {
   constructor(parent) {
     super();
@@ -185,7 +151,7 @@ class ProgramSource extends Program {
     let process = executeFile(path, argsRaw, shell, cwd);
     if (process["instance"].window == undefined) {
       let name = process["instance"].filepath[process["instance"].filepath.length - 1].split(".")[0];
-      process["instance"].window = new ConsoleHostWindow(process["instance"], name);
+      process["instance"].window = new carrot_sll.ConsoleHostWindow(process["instance"], name);
     }
     this.programs.unshift(process["instance"]);
     process["promise"].then(
