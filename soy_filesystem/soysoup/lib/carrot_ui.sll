@@ -58,6 +58,7 @@ let WindowClass = class extends carrot.Window {
       return false;
     }
     component.onMouseup(event);
+    return true;
   }
   sendMousedownToHoveredComponent(event) {
     let component = this.getComponentAt(event.clientX, event.clientY);
@@ -65,6 +66,7 @@ let WindowClass = class extends carrot.Window {
       return false;
     }
     component.onMousedown(event);
+    return true;
   }
   sendMousemoveToHoveredComponent(event) {
     let component = this.getComponentAt(event.clientX, event.clientY);
@@ -72,6 +74,7 @@ let WindowClass = class extends carrot.Window {
       return false;
     }
     component.onMousemove(event);
+    return true;
   }
   sendHoverStateChangeToHoveredComponent(event) {
     let component = this.getComponentAt(event.clientX, event.clientY);
@@ -293,7 +296,7 @@ let TopbarComponent = class extends Component {
     }
   }
   onMouseup(event) {
-    let result = this.sendMousedownToHoveredComponent(event);
+    let result = this.sendMouseupToHoveredComponent(event);
     // if other component was interacted with, stop dragging window
     if (!result) {
       if (this.draggingWindow) {
