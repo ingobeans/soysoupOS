@@ -1,4 +1,4 @@
-let systemVersion = "0.7.0";
+let systemVersion = "0.7.1";
 
 let fileSystem = new SoyFileSystem();
 
@@ -262,7 +262,16 @@ function executeFile(path, argsRaw, outputShell, cwd) {
   );
   if (instance !== undefined) {
     programs.unshift(instance);
-    instance.load(argsRaw, outputShell);
+    try {
+      instance.load(argsRaw, outputShell);
+    } catch (e) {
+      if (e) {
+        let msg = "the program " + path + " crashed.\n" + e.toString();
+        console.error(e);
+        outputShell.println(error(msg));
+        return;
+      }
+    }
 
     return { promise: promise, pid: instance.pid, instance: instance };
   }

@@ -44,6 +44,11 @@ class ProgramSource extends Program {
       }
     }
   }
+  quit() {
+    serviceManagerPID = undefined;
+    serviceManager = undefined;
+    super.quit();
+  }
   load(args) {
     if (typeof serviceManagerPID === "undefined") {
       setServiceManager(this);
