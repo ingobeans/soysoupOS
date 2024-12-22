@@ -44,6 +44,8 @@ let WindowClass = class {
   }
   onWindowResize() {}
 
+  onHover(event) {}
+  onStopHover(event) {}
   onMousedown(event) {}
   onMouseup(event) {}
   onMousemove(event) {}

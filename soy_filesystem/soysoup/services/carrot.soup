@@ -75,7 +75,7 @@ class CarrotGraphicsHandler extends GraphicsHandler {
 class ProgramSource extends Program {
   onMousedown(event) {
     let p = this.getProgramAt(event.clientX, event.clientY);
-    if (p !== undefined) {
+    if (p !== null) {
       p.window.onMousedown(event);
       let r = p.window.onFocus();
       if (r !== false) {
@@ -85,15 +85,24 @@ class ProgramSource extends Program {
   }
   onMouseup(event) {
     let p = this.getProgramAt(event.clientX, event.clientY);
-    if (p !== undefined) {
+    if (p !== null) {
       p.window.onMouseup(event);
     }
   }
   onMousemove(event) {
     let p = this.getProgramAt(event.clientX, event.clientY);
-    if (p !== undefined) {
+    if (p !== null) {
       p.window.onMousemove(event);
     }
+    if (this.currentlyHoveredProgram !== p) {
+      if (this.currentlyHoveredProgram !== null) {
+        this.currentlyHoveredProgram.window.onStopHover(event);
+      }
+      if (p !== null) {
+        p.window.onHover(event);
+      }
+    }
+    this.currentlyHoveredProgram = p;
   }
   getProgramAt(x, y) {
     for (let program of this.programs) {
@@ -109,6 +118,7 @@ class ProgramSource extends Program {
         return program;
       }
     }
+    return null;
   }
   getNewWindowPosition(width, height) {
     let step = 25;
@@ -165,6 +175,7 @@ class ProgramSource extends Program {
   load(args) {
     this.programs = [];
     this.graphicsHandler = new CarrotGraphicsHandler(this);
+    this.currentlyHoveredProgram = null;
     addGraphicsHandler(this.graphicsHandler);
     // run startup script
     executeFile(
