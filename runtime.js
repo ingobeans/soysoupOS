@@ -229,7 +229,7 @@ let terminalProcess = undefined;
 var defaultShell = new Shell(() => { });
 
 async function createTerminal() {
-  terminalPath = "soysoup/bin/terminal.soup";
+  let terminalPath = "soysoup/bin/terminal.soup";
   if (fileSystem.isFile(terminalPath) != true) {
     defaultShell.println(error("terminal is missing"));
   }

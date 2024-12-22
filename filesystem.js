@@ -1,5 +1,5 @@
-illegal_file_characters = ["\n", ":", "<", ">", '"', "|", "?", "*", "\\"];
-illegal_dir_characters = ["\n", ":", "<", ">", '"', "|", "?", "*", "\\", "."];
+let illegal_file_characters = ["\n", ":", "<", ">", '"', "|", "?", "*", "\\"];
+let illegal_dir_characters = ["\n", ":", "<", ">", '"', "|", "?", "*", "\\", "."];
 
 class SoyFileSystem {
   constructor() {

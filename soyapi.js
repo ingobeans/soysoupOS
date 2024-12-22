@@ -1,6 +1,6 @@
-systemVersion = "0.7.0";
+let systemVersion = "0.7.0";
 
-fileSystem = new SoyFileSystem();
+let fileSystem = new SoyFileSystem();
 
 fileSystem.loadFromString(systemFiles);
 
