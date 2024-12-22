@@ -20,6 +20,9 @@ let WindowClass = class extends carrot.Window {
     super.draw();
     this.drawComponents();
   }
+  onWindowResize() {
+    this.sendWindowResizeToComponents();
+  }
   onMousedown(event) {
     this.sendMousedownToHoveredComponent(event);
   }
@@ -32,6 +35,11 @@ let WindowClass = class extends carrot.Window {
   }
   getAbsolutePosition() {
     return [this.x, this.y];
+  }
+  sendWindowResizeToComponents() {
+    for (let component of this.components) {
+      component.onWindowResize();
+    }
   }
   sendMouseupToHoveredComponent(event) {
     let component = this.getComponentAt(event.clientX, event.clientY);
@@ -106,8 +114,8 @@ let Component = class extends WindowClass {
 
     this.currentlyHoveredComponent = null;
     this.components = [];
-    this.load();
-  }
+    this.load()
+}
   addComponent(component) {
     component.setParent(this);
     this.components.push(component);
@@ -122,6 +130,7 @@ let Component = class extends WindowClass {
     for (let component of this.components) {
       component.setWindow(window);
     }
+    this.onWindowResize();
   }
   setParent(parent) {
     this.parent = parent;
@@ -243,10 +252,6 @@ let TopbarComponent = class extends Component {
   onWindowResize() {
     this.setSize(this.window.width, carrot.topbarHeight);
     this.closeButton.x = this.width - this.closeButton.width + this.closeButton.borderWidth;
-  }
-  setWindow(window) {
-    super.setWindow(window);
-    this.onWindowResize();
   }
   load() {
     super.load();

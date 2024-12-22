@@ -36,6 +36,7 @@ let WindowClass = class {
       SLLSource.windowBackgroundColor
     );
   }
+  onWindowResize() { }
 
   onMousedown(event) { }
   onMouseup(event) { }
