@@ -138,6 +138,7 @@ class TerminalGraphicsHandler extends GraphicsHandler {
 
 let graphicsHandlers = [new TerminalGraphicsHandler()];
 let activeGraphicsHandlerId = 0;
+let mouse = { x: 0, y: 0 };
 
 function draw() {
   if (graphicsHandlers.length > 0) {
@@ -223,6 +224,8 @@ document.addEventListener("mousemove", function (event) {
   if (graphicsHandlers.length == 0) {
     return;
   }
+  mouse.x = event.clientX;
+  mouse.y = event.clientY;
   graphicsHandlers[activeGraphicsHandlerId].onMousemove(event);
 
   event.preventDefault();

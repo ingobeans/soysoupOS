@@ -277,7 +277,32 @@ let TopbarComponent = class extends Component {
     this.closeButton.onClick = function () {
       this.window.parent.quit();
     };
+    this.draggingWindow = false;
+    this.draggingOffset = { x: 0, y: 0 };
     this.addComponent(this.closeButton);
+  }
+  onMousedown(event) {
+    let result = this.sendMousedownToHoveredComponent(event);
+    // if other component was interacted with, start dragging window
+    if (!result) {
+      this.draggingWindow = true;
+      this.draggingOffset = {
+        x: this.window.x - event.clientX,
+        y: this.window.y - event.clientY,
+      };
+    }
+  }
+  onMouseup(event) {
+    let result = this.sendMousedownToHoveredComponent(event);
+    // if other component was interacted with, stop dragging window
+    if (!result) {
+      if (this.draggingWindow) {
+        this.draggingWindow = false;
+      }
+    }
+  }
+  onMousemove(event) {
+    super.onMousemove(event);
   }
   onWindowResize() {
     this.setSize(this.window.width, carrot.topbarHeight);
@@ -289,6 +314,10 @@ let TopbarComponent = class extends Component {
     this.color = carrot.topbarBackgroundColor;
   }
   draw() {
+    if (this.draggingWindow) {
+      this.window.x = this.draggingOffset.x + mouse.x;
+      this.window.y = this.draggingOffset.y + mouse.y;
+    }
     super.draw();
     drawAnsiText(
       this.ctx,
