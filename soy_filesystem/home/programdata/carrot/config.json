@@ -7,5 +7,6 @@
   "windowBackgroundColor": "rgb(190, 190, 190)",
   "windowTitleTextColor": "rgb(0,0,0)",
   "highlightColor": "rgb(221, 221, 221)",
-  "wallpaperColor": "rgb(0, 125, 90)"
+  "wallpaperColor": "rgb(0, 125, 90)",
+  "selectionColor": "rgba(99, 181, 248, 0.5)"
 }

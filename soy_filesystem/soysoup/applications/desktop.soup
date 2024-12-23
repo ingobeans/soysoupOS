@@ -3,6 +3,10 @@ let carrot = ImportSLL("carrot.sll");
 class DesktopWindow extends carrot.Window {
   load() {
     this.color = carrot.wallpaperColor;
+    this.selectionColor = carrot.selectionColor;
+
+    this.selectionStart = { x: 0, y: 0 };
+    this.selecting = false;
   }
   draw() {
     drawRect(
@@ -13,6 +17,38 @@ class DesktopWindow extends carrot.Window {
       this.ctx.canvas.height,
       this.color
     );
+    if (this.selecting) {
+      drawRect(
+        this.ctx,
+        this.selectionStart.x,
+        this.selectionStart.y,
+        mouse.x - this.selectionStart.x,
+        mouse.y - this.selectionStart.y,
+        this.selectionColor
+      );
+      drawRect(
+        this.ctx,
+        this.selectionStart.x,
+        this.selectionStart.y,
+        mouse.x - this.selectionStart.x,
+        mouse.y - this.selectionStart.y,
+        this.selectionColor,
+        2
+      );
+    }
+  }
+  onMousedown(event) {
+    super.onMousedown(event);
+    this.selectionStart = { x: event.clientX, y: event.clientY };
+    this.selecting = true;
+  }
+  onMouseup(event) {
+    super.onMouseup(event);
+    this.selecting = false;
+  }
+  onStopHover(event) {
+    super.onStopHover(event);
+    this.selecting = false;
   }
   onFocus() {
     return false;
